@@ -14,7 +14,13 @@
 ***************************************************************************************/
 
 #include <common.h>
-#include MUXDEF(CONFIG_TIMER_GETTIMEOFDAY, <sys/time.h>, <time.h>)
+// previously we use #include MUXDEF(CONFIG_TIMER_GETTIMEOFDAY, <sys/time.h>, <time.h>)
+// but formating software may generate <sys / time.h>
+#ifdef CONFIG_TIMER_GETTIMEOFDAY
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
 
 IFDEF(CONFIG_TIMER_CLOCK_GETTIME,
     static_assert(CLOCKS_PER_SEC == 1000000, "CLOCKS_PER_SEC != 1000000"));
