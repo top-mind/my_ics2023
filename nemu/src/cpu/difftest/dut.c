@@ -54,9 +54,7 @@ void difftest_skip_ref() {
 void difftest_skip_dut(int nr_ref, int nr_dut) {
   skip_dut_nr_inst += nr_dut;
 
-  while (nr_ref -- > 0) {
-    ref_difftest_exec(1);
-  }
+  while (nr_ref-- > 0) { ref_difftest_exec(1); }
 }
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
@@ -84,7 +82,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
   Log("The result of every instruction will be compared with %s. "
       "This will help you a lot for debugging, but also significantly reduce the performance. "
-      "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
+      "If it is not necessary, you can turn it off in menuconfig.",
+      ref_so_file);
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
@@ -109,7 +108,7 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
       checkregs(&ref_r, npc);
       return;
     }
-    skip_dut_nr_inst --;
+    skip_dut_nr_inst--;
     if (skip_dut_nr_inst == 0)
       panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
     return;
@@ -128,5 +127,5 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   checkregs(&ref_r, pc);
 }
 #else
-void init_difftest(char *ref_so_file, long img_size, int port) { }
+void init_difftest(char *ref_so_file, long img_size, int port) {}
 #endif

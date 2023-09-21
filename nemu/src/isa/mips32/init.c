@@ -18,11 +18,11 @@
 
 // this is not consistent with uint8_t
 // but it is ok since we do not access the array directly
-static const uint32_t img [] = {
-  0x3c048000,  // lui a0, 0x8000
-  0xac800000,  // sw  zero, 0(a0)
-  0x8c820000,  // lw  v0,0(a0)
-  0x7000003f,  // sdbbp (used as nemu_trap)
+static const uint32_t img[] = {
+  0x3c048000, // lui a0, 0x8000
+  0xac800000, // sw  zero, 0(a0)
+  0x8c820000, // lw  v0,0(a0)
+  0x7000003f, // sdbbp (used as nemu_trap)
 };
 
 static void restart() {

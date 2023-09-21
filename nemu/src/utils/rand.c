@@ -18,6 +18,4 @@
 #include <time.h>
 #endif
 
-void init_rand() {
-  srand(MUXDEF(CONFIG_TARGET_AM, 0, time(0)));
-}
+void init_rand() { srand(MUXDEF(CONFIG_TARGET_AM, 0, time(0))); }
