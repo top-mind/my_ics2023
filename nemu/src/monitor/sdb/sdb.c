@@ -105,7 +105,7 @@ static int cmd_si(char *args) {
   uint64_t n = 0;
   char *endptr = NULL;
   n = strtoull(args, &endptr, 0);
-  Log("Execute %lu\n", n);
+  Log("Execute %lu", n);
   cpu_exec(n);
   return 0;
 }
