@@ -49,6 +49,18 @@ static int cmd_q(char *args) { return -1; }
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args);
+
+static int cmd_info(char *args);
+
+static int cmd_x(char *args);
+
+static int cmd_p(char *args);
+
+static int cmd_w(char *args);
+
+static int cmd_d(char *args);
+
 static struct {
   const char *name;
   const char *description;
@@ -57,9 +69,12 @@ static struct {
   {"help", "Display information about all supported commands", cmd_help},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
-
-  /* TODO: Add more commands */
-
+  {"si", "Step N instruction(s)", cmd_si},
+  {"info", "Print registers or watchpoints", cmd_info},
+  {"x", "Examine memory", cmd_x},
+  {"p", "Print value of an expression", cmd_p},
+  {"w", "Set a watchpoint", cmd_w},
+  {"d", "Delete watchpoint(s)", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -85,6 +100,24 @@ static int cmd_help(char *args) {
   }
   return 0;
 }
+
+static int cmd_si(char *args) {
+  uint64_t n = 0;
+  char *endptr = NULL;
+  n = strtoull(args, &endptr, 0);
+  cpu_exec(n);
+  return 0;
+}
+
+static int cmd_info(char *args) { panic("info"); return 0; }
+
+static int cmd_x(char *args) { panic("x"); }
+
+static int cmd_p(char *args) { panic("p"); }
+
+static int cmd_w(char *args) { panic("w"); }
+
+static int cmd_d(char *args) { panic("d"); }
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
