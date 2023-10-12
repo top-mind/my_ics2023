@@ -133,6 +133,15 @@ static int cmd_info(char *args) {
          "info w  \tprint watchpoints");
   } else {
     Assert(args, "internal error");
+    char *args_end = args + strlen(args);
+    char *tok1 = strtok(args, " ");
+    char *nextargs = args + strlen(args) + 1;
+    if (nextargs >= args_end) nextargs = NULL;
+    if (strcmp(tok1, "r") == 0) {
+      isa_reg_display();
+    } else if (strcmp(tok1, "w") == 0) {
+      panic("info w");
+    }
   }
   return 0;
 }
