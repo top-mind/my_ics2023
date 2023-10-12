@@ -22,8 +22,9 @@ const char *regs[] = {"$0", "ra", "sp", "gp", "tp",  "t0",  "t1", "t2", "s0", "s
                       "a1", "a2", "a3", "a4", "a5",  "a6",  "a7", "s2", "s3", "s4", "s5",
                       "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"};
 
+#define NR_REG MUXDEF(CONFIG_RVE, 16, 32)
 void isa_reg_display() {
-  for (int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
+  for (int i = 0; i < NR_REG; i++) {
     // TODO elf symbol: covert pointer to function name
     // rax            0x555555556569      93824992241001
     // rbx            0x0                 0
@@ -53,6 +54,7 @@ void isa_reg_display() {
   }
 }
 
+// Name or ABI mnemonic name is available
 word_t isa_reg_str2val(const char *s, bool *success) {
   if (unlikely(s == NULL || s[0] == '\0' || (s[0] == '0' && s[1] != '\0'))) {
     *success = false;
@@ -69,14 +71,14 @@ word_t isa_reg_str2val(const char *s, bool *success) {
       return 0;
     }
     idx = idx * 10 + (s[1] & 15);
-    if (unlikely(idx >= 32 || s[2] != '\0')) {
+    if (unlikely(idx >= NR_REG || s[2] != '\0')) {
       *success = false;
       return 0;
     }
     *success = true;
     return cpu.gpr[idx];
   }
-  for (int i = 1; i < 32; i++) {
+  for (int i = 1; i < NR_REG; i++) {
     if (strcmp(s, regs[i]) == 0) {
       *success = true;
       return cpu.gpr[i];
