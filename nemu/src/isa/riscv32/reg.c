@@ -26,6 +26,7 @@ const char *regs[] = {"$0", "ra", "sp", "gp", "tp",  "t0",  "t1", "t2", "s0", "s
 void isa_reg_display() {
   for (int i = 0; i < NR_REG; i++) {
     // TODO elf symbol: covert pointer to function name
+    // gdb info r:
     // rax            0x555555556569      93824992241001
     // rbx            0x0                 0
     // rcx            0x55555555cb78      93824992267128
@@ -50,6 +51,9 @@ void isa_reg_display() {
     // es             0x0                 0
     // fs             0x0                 0
     // gs             0x0                 0
+    //
+    // ra sp gp tp - hex - dereference <func>
+    // t* s* a*    - hex - decimal
     printf("%-15s0x%-8x\t0x%x\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }

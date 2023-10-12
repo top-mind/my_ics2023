@@ -19,6 +19,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <utils.h>
 
 static int is_batch_mode = false;
 
@@ -46,7 +47,10 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-static int cmd_q(char *args) { return -1; }
+static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
+  return -1;
+}
 
 static int cmd_help(char *args);
 
@@ -108,8 +112,7 @@ static int cmd_si(char *args) {
   if (args != NULL) {
     n = strtoull(args, &endptr, 0);
     // If no number parsed, default to 1
-    if (endptr == args)
-      n = 1;
+    if (endptr == args) n = 1;
     for (; *endptr != '\0'; endptr++) {
       if (!isspace(*endptr)) {
         puts("si: syntax error");
@@ -123,9 +126,7 @@ static int cmd_si(char *args) {
   return 0;
 }
 
-static int isstremp(const char *str) {
-  return str == NULL || '\0' == *(str + strspn(str, " "));
-}
+static int isstremp(const char *str) { return str == NULL || '\0' == *(str + strspn(str, " ")); }
 
 static int cmd_info(char *args) {
   if (isstremp(args)) {
@@ -152,7 +153,14 @@ static int cmd_info(char *args) {
 
 static int cmd_x(char *args) { panic("x"); }
 
-static int cmd_p(char *args) { panic("p"); }
+static int cmd_p(char *args) {
+  if (isstremp(args)) {
+    puts("p EXPR  \tevaluate and show an expression");
+    return 0;
+  }
+
+  return 0;
+}
 
 static int cmd_w(char *args) { panic("w"); }
 
