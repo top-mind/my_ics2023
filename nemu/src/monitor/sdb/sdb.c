@@ -144,7 +144,7 @@ static int cmd_info(char *args) {
     if (strcmp(tok1, "r") == 0) {
       isa_reg_display();
     } else if (strcmp(tok1, "w") == 0) {
-      panic("info w");
+      // panic("info w");
     } else {
       printf("info: Unknown parameter '%s', try 'info'\n", tok1);
     }
@@ -152,7 +152,7 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static int cmd_x(char *args) { panic("x"); }
+static int cmd_x(char *args) { /*panic("x");*/ return 0;}
 
 static int cmd_p(char *args) {
   bool success;
@@ -164,9 +164,9 @@ static int cmd_p(char *args) {
   return 0;
 }
 
-static int cmd_w(char *args) { panic("w"); }
+static int cmd_w(char *args) { /*panic("w");*/ return 0;}
 
-static int cmd_d(char *args) { panic("d"); }
+static int cmd_d(char *args) { /*panic("d");*/ return 0;}
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
