@@ -130,8 +130,9 @@ static int isstremp(const char *str) {
 static int cmd_info(char *args) {
   if (isstremp(args)) {
     puts("info r\tprint register states\ninfo w\tprint watchpoints");
+  } else {
+    Assert(args, "internal error");
   }
-  Assert(args, "internal error");
   return 0;
 }
 
