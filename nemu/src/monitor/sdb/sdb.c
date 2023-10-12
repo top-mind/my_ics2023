@@ -159,7 +159,7 @@ static int cmd_p(char *args) {
   word_t result;
   result = expr(args, &success);
   if (success) {
-    printf(FMT_WORD "\n", result);
+    printf("%u\n", (uint32_t)result);
   }
   return 0;
 }
