@@ -49,6 +49,7 @@ static int cmd_c(char *args) {
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
+  cpu_exec(-1);
   return -1;
 }
 
@@ -143,7 +144,7 @@ static int cmd_info(char *args) {
     if (strcmp(tok1, "r") == 0) {
       isa_reg_display();
     } else if (strcmp(tok1, "w") == 0) {
-      // panic("info w");
+      panic("info w");
     } else {
       printf("info: Unknown parameter '%s', try 'info'\n", tok1);
     }
@@ -151,21 +152,20 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static int cmd_x(char *args) { /*panic("x");*/ return 0;}
+static int cmd_x(char *args) { panic("x"); }
 
 static int cmd_p(char *args) {
-  bool success;
-  word_t result;
-  result = expr(args, &success);
-  if (success) {
-    printf("%u\n", (uint32_t)result);
+  if (isstremp(args)) {
+    puts("p EXPR  \tevaluate and show an expression");
+    return 0;
   }
+
   return 0;
 }
 
-static int cmd_w(char *args) { /*panic("w");*/ return 0;}
+static int cmd_w(char *args) { panic("w"); }
 
-static int cmd_d(char *args) { /*panic("d");*/ return 0;}
+static int cmd_d(char *args) { panic("d"); }
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
