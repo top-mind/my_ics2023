@@ -155,11 +155,12 @@ static int cmd_info(char *args) {
 static int cmd_x(char *args) { panic("x"); }
 
 static int cmd_p(char *args) {
-  if (isstremp(args)) {
-    puts("p EXPR  \tevaluate and show an expression");
-    return 0;
+  bool success;
+  word_t result;
+  result = expr(args, &success);
+  if (success) {
+    printf(FMT_WORD "\n", result);
   }
-
   return 0;
 }
 
