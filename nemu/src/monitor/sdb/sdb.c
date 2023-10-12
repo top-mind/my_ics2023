@@ -135,14 +135,16 @@ static int cmd_info(char *args) {
     Assert(args, "internal error");
     char *args_end = args + strlen(args);
     char *tok1 = strtok(args, " ");
-    char *nextargs = args + strlen(args) + 1;
+
+    char *nextargs = tok1 + strlen(tok1) + 1;
     if (nextargs >= args_end) nextargs = NULL;
+
     if (strcmp(tok1, "r") == 0) {
       isa_reg_display();
     } else if (strcmp(tok1, "w") == 0) {
       panic("info w");
     } else {
-      puts("info: Unknown parameter, try \"help info\"");
+      printf("info: Unknown parameter %s, try \"help info\"", tok1);
     }
   }
   return 0;
