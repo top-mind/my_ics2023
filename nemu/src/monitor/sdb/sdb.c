@@ -104,7 +104,7 @@ static int cmd_help(char *args) {
 static int cmd_si(char *args) {
   uint64_t n = 1;
   char *endptr = NULL;
-  if (args != NULL &&  '\0' != *(args + strcspn(args, "+-x0123456789"))) {
+  if (args != NULL) {
     n = strtoull(args, &endptr, 0);
     Log("*endptr = '%c' index = %zd", (*endptr) == '\0' ? '~' : *endptr, 
         endptr - args);
