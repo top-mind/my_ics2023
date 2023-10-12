@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <asm-generic/errno-base.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -109,8 +110,12 @@ static int cmd_si(char *args) {
     // If no number parsed, default to 1
     if (endptr == args)
       n = 1;
-    Log("*endptr = '%c' index = %zd", (*endptr) == '\0' ? '~' : *endptr, 
-        endptr - args);
+    for (; *endptr != '\0'; endptr++) {
+      if (!isspace(*endptr)) {
+        puts("Syntax error");
+        return EINVAL;
+      }
+    }
   }
   Log("Execute %lu", n);
   cpu_exec(n);
