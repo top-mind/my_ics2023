@@ -94,7 +94,7 @@ typedef struct token {
   };
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[105] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static int g_lparen = -1;
