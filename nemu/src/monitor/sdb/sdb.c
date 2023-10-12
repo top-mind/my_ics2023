@@ -144,7 +144,7 @@ static int cmd_info(char *args) {
     } else if (strcmp(tok1, "w") == 0) {
       panic("info w");
     } else {
-      printf("info: Unknown parameter %s, try \"help info\"\n", tok1);
+      printf("info: Unknown parameter '%s', try \"help info\"\n", tok1);
     }
   }
   return 0;
