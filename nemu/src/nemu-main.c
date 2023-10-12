@@ -30,14 +30,6 @@ int main(int argc, char *argv[]) {
 
   /* Start engine. */
   engine_start();
-  int n = 1;
-  switch (n) {
-    case 1:
-      int x;
-      Assert(1 ==scanf("%d", &x), );
-      printf("%d\n", x);
-      break;
-  }
 
   return is_exit_status_bad();
 }
