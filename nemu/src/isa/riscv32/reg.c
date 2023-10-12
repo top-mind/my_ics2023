@@ -54,29 +54,11 @@ void isa_reg_display() {
   }
 }
 
-// Name or ABI mnemonic name is available
+// rv32 reg ABI name to value
 word_t isa_reg_str2val(const char *s, bool *success) {
-  if (unlikely(s == NULL || s[0] == '\0' || (s[0] == '0' && s[1] != '\0'))) {
+  if (unlikely(s == NULL)) {
     *success = false;
     return 0;
-  }
-  if (isdigit(s[0])) {
-    int idx = s[0] & 15;
-    if (s[1] == '\0') {
-      *success = true;
-      return cpu.gpr[idx];
-    }
-    if (unlikely(!isdigit(s[1]))) {
-      *success = false;
-      return 0;
-    }
-    idx = idx * 10 + (s[1] & 15);
-    if (unlikely(idx >= NR_REG || s[2] != '\0')) {
-      *success = false;
-      return 0;
-    }
-    *success = true;
-    return cpu.gpr[idx];
   }
   for (int i = 1; i < NR_REG; i++) {
     if (strcmp(s, regs[i]) == 0) {
@@ -88,6 +70,10 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     *success = true;
     return cpu.pc;
   }
+  // 处理cpu中其他寄存器如 mcause
+  // 为了维护性考虑可以用Trie树存名字
+  // 或者需要可读性和 case string 相当的解决方案
   *success = false;
   return 0;
 }
+// vim: fileencoding=utf-8
