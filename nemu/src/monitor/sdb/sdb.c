@@ -117,7 +117,8 @@ static int cmd_si(char *args) {
       }
     }
   }
-  Log("Execute %lu", n);
+  // TODO enable on certain verbose level
+  // Log("Execute %lu", n);
   cpu_exec(n);
   return 0;
 }
