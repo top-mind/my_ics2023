@@ -112,7 +112,7 @@ static int cmd_si(char *args) {
       n = 1;
     for (; *endptr != '\0'; endptr++) {
       if (!isspace(*endptr)) {
-        puts("nemu: Syntax error");
+        puts("si: syntax error");
         return EINVAL;
       }
     }
