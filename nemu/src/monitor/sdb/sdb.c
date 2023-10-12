@@ -129,8 +129,8 @@ static int isstremp(const char *str) {
 
 static int cmd_info(char *args) {
   if (isstremp(args)) {
-    Assert(args, "");
   }
+  Assert(args, "internal error");
   return 0;
 }
 
