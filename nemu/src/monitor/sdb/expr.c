@@ -169,7 +169,7 @@ static bool make_token(const char *e) {
               return false;
             }
             break;
-          default:
+          default:;
         }
         nr_token++;
         break;
