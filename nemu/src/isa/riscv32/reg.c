@@ -72,8 +72,8 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   }
   // 处理cpu中其他寄存器如 mcause
   // 为了维护性考虑可以用Trie树存名字
-  // 或者需要可读性和 case string 相当的解决方案
+  // 或者用排序+二分查找的方案
   *success = false;
   return 0;
 }
-// vim: fileencoding=utf-8
+// vim: fenc=utf-8
