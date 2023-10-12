@@ -106,7 +106,7 @@ static int cmd_si(char *args) {
   char *endptr = NULL;
   if (args != NULL &&  '\0' != *(args + strcspn(args, "+-x0123456789"))) {
     n = strtoull(args, &endptr, 0);
-    Log("*endptr = %d", *endptr);
+    Log("*endptr = %c", *endptr);
   }
   Log("Execute %lu", n);
   cpu_exec(n);
