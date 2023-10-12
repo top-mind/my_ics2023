@@ -60,6 +60,43 @@ void isa_reg_display() {
 
 // rv32 reg ABI name to value
 word_t isa_reg_str2val(const char *s, bool *success) {
+  if (unlikely(s == NULL || s[0] == '\0' || (s[0] == '0' && s[1] != '\0'))) {
+    *success = false;
+    return 0;
+  }
+  if (isdigit(s[0])) {
+    int idx = s[0] & 15;
+    if (s[1] == '\0') {
+      *success = true;
+      return cpu.gpr[idx];
+    }
+    if (unlikely(!isdigit(s[1]))) {
+      *success = false;
+      return 0;
+    }
+    idx = idx * 10 + (s[1] & 15);
+    if (unlikely(idx >= 32 || s[2] != '\0')) {
+      *success = false;
+      return 0;
+    }
+    *success = true;
+    return cpu.gpr[idx];
+  }
+  for (int i = 1; i < 32; i++) {
+    if (strcmp(s, regs[i]) == 0) {
+      *success = true;
+      return cpu.gpr[i];
+    }
+  }
+  if (likely((strcmp(s, "pc") == 0))) {
+    *success = true;
+    return cpu.pc;
+  }
+  *success = false;
+  return 0;
+}
+/*
+word_t isa_reg_str2val(const char *s, bool *success) {
   if (unlikely(s == NULL)) {
     *success = false;
     return 0;
@@ -80,4 +117,5 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   *success = false;
   return 0;
 }
+*/
 // vim: fenc=utf-8
