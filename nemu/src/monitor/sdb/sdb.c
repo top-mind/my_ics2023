@@ -141,6 +141,8 @@ static int cmd_info(char *args) {
       isa_reg_display();
     } else if (strcmp(tok1, "w") == 0) {
       panic("info w");
+    } else {
+      puts("info: Unknown parameter, try \"help info\"");
     }
   }
   return 0;
