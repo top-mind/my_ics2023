@@ -106,6 +106,9 @@ static int cmd_si(char *args) {
   char *endptr = NULL;
   if (args != NULL) {
     n = strtoull(args, &endptr, 0);
+    // If no number parsed, default to 1
+    if (endptr == args)
+      n = 1;
     Log("*endptr = '%c' index = %zd", (*endptr) == '\0' ? '~' : *endptr, 
         endptr - args);
   }
