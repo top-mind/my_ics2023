@@ -24,6 +24,31 @@ const char *regs[] = {"$0", "ra", "sp", "gp", "tp",  "t0",  "t1", "t2", "s0", "s
 
 void isa_reg_display() {
   for (int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
+    // TODO elf symbol: covert pointer to function name
+    // rax            0x555555556569      93824992241001
+    // rbx            0x0                 0
+    // rcx            0x55555555cb78      93824992267128
+    // rdx            0x7fffffffe130      140737488347440
+    // rsi            0x7fffffffe118      140737488347416
+    // rdi            0x2                 2
+    // rbp            0x2                 0x2
+    // rsp            0x7fffffffe008      0x7fffffffe008
+    // r8             0x7ffff7e1af10      140737352150800
+    // r9             0x7ffff7fc9040      140737353912384
+    // r10            0x7ffff7fc3908      140737353890056
+    // r11            0x7ffff7fde660      140737353999968
+    // r12            0x7fffffffe118      140737488347416
+    // r13            0x555555556569      93824992241001
+    // r14            0x55555555cb78      93824992267128
+    // r15            0x7ffff7ffd040      140737354125376
+    // rip            0x555555556569      0x555555556569 <main>
+    // eflags         0x246               [ PF ZF IF ]
+    // cs             0x33                51
+    // ss             0x2b                43
+    // ds             0x0                 0
+    // es             0x0                 0
+    // fs             0x0                 0
+    // gs             0x0                 0
     printf("%-15s0x%-8x\t0x%x\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
