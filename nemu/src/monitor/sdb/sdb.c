@@ -123,7 +123,16 @@ static int cmd_si(char *args) {
   return 0;
 }
 
-static int cmd_info(char *args) { panic("info"); return 0; }
+static int isstremp(const char *str) {
+  return str == NULL || '\0' == *(str + strspn(str, " "));
+}
+
+static int cmd_info(char *args) {
+  if (isstremp(args)) {
+    Assert(args, "");
+  }
+  return 0;
+}
 
 static int cmd_x(char *args) { panic("x"); }
 
