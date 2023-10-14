@@ -19,7 +19,7 @@ DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
 DIRS-BLACKLIST-$(CONFIG_TARGET_AM) += src/monitor/sdb
 
 SHARE = $(if $(CONFIG_TARGET_SHARE),1,0)
-LIBS += $(if $(CONFIG_TARGET_NATIVE_ELF), -ldl -pie,) -lncurses /home/coredpoi/readline-8.2-rc1/libreadline.a
+LIBS += $(if $(CONFIG_TARGET_NATIVE_ELF), -ldl -pie,) -lncurses /home/coredpoi/readline-8.1.2/libreadline.a
 
 ifdef mainargs
 ASFLAGS += -DBIN_PATH=\"$(mainargs)\"
