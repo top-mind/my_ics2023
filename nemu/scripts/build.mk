@@ -23,7 +23,7 @@ endif
 LD := $(CXX)
 INCLUDES = $(addprefix -I, $(INC_PATH))
 CFLAGS  := -fsanitize-recover=all -fno-omit-frame-pointer -fno-stack-protector -fsanitize=leak -O0 -MMD -Wall -Werror $(INCLUDES) $(CFLAGS)
-LDFLAGS := -O2 $(LDFLAGS)
+LDFLAGS := -fsanitize-recover=all -fno-omit-frame-pointer -fno-stack-protector -fsanitize=leak -O0 $(LDFLAGS)
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o) $(CXXSRC:%.cc=$(OBJ_DIR)/%.o)
 
