@@ -158,7 +158,13 @@ static int cmd_p(char *args) {
     puts("p EXPR  \tevaluate and show an expression");
     return 0;
   }
-
+  bool suc;
+  expr(args, &suc);
+  if (suc) {
+    // run type inference:
+    //   test the last operator
+    //   
+  }
   return 0;
 }
 
