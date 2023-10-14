@@ -159,11 +159,9 @@ static int cmd_p(char *args) {
     return 0;
   }
   bool suc;
-  expr(args, &suc);
+  uint32_t result = (uint32_t) expr(args, &suc);
   if (suc) {
-    // run type inference:
-    //   test the last operator
-    //   
+    printf("%" PRIu32 "  \t" PRIx32 "\n", result);
   }
   return 0;
 }
