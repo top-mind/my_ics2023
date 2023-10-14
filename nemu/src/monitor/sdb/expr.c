@@ -32,11 +32,6 @@ static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
-
   {" +", TK_NOTYPE}, // spaces
   {"\\+", '+'},      // plus
   {"==", TK_EQ},     // equal
@@ -90,13 +85,8 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
-
         switch (rules[i].token_type) {
-          default: TODO();
+          default: ;
         }
 
         break;
