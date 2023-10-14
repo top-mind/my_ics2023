@@ -161,7 +161,7 @@ static int cmd_p(char *args) {
   bool suc;
   uint32_t result = (uint32_t) expr(args, &suc);
   if (suc) {
-    printf("%" PRIu32 "  \t" PRIx32 "\n", result);
+    printf("%" PRIu32 "  \t%" PRIx32 "\n", result, result);
   }
   return 0;
 }
