@@ -86,8 +86,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step one instruction exactly.\nUsage: si [N]\nArgument N means step "
     "N times (or till program stops for another reason).", cmd_si},
-  { "info", "info r -- List of registers and their contents.\n"
-    "info w -- Status all watchpoints", cmd_info},
+  { "info", "info r \t-- List of registers and their contents.\n"
+    " \tinfo w -- Status all watchpoints", cmd_info},
   { "x", "Examine memory: x N EXPR\nEXPR is an expression for the memory "
     "address to examine.\nN is a repeat count. The specified number of 4 bytes "
     "are printed in hexadecimal.If negative number is specified, memory is "
