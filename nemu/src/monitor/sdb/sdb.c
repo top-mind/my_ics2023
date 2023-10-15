@@ -208,9 +208,7 @@ static int cmd_x(char *args) {
     }
     printf("\t0x%08" PRIx32, (uint32_t) paddr_read(addr, 4));
   }
-  if ((addr_end - addr_begin) & 15) {
-    putchar('\n');
-  }
+  putchar('\n');
   return 0;
 }
 
