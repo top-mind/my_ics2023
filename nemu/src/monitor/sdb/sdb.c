@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "common.h"
 #include "sdb.h"
 #include <sys/types.h>
 #include <utils.h>
@@ -184,24 +185,28 @@ static int cmd_x(char *args) {
     return 0;
   }
   bool success;
-  word_t addr_start = expr(endptr, &success);
+  word_t addr_begin = expr(endptr, &success);
   if (!success) return 0;
-  word_t addr_end = addr_start + (word_t) bytes;
+  word_t addr_end = addr_begin + ((word_t) bytes << 2);
 
-  if (addr_end < addr_start) {
+  if (addr_end < addr_begin) {
     word_t t = addr_end;
-    addr_end = addr_start;
-    addr_start = t;
+    addr_end = addr_begin;
+    addr_begin = t;
   }
 
   word_t addr;
-  for (addr = addr_start; addr < addr_end; addr += 4) {
-    if (in_pmem(addr))
-      printf(FMT_WORD "\t", host_read(guest_to_host(addr), MUXDEF(CONFIG_ISA64, 8, 4)));
-    else
+  for (addr = addr_begin; addr < addr_end; addr += 4) {
+    if (0 == (15 & ( addr - addr_begin)))
+      printf(FMT_WORD ":", addr);
+    if (!in_pmem(addr)) {
+      printf("\tInvalid virtual address "FMT_PADDR"\n", addr);
       break;
+    }
+    printf("\t0x%08" PRIx32, (uint32_t) paddr_read(addr, 4));
+    if (((addr - addr_begin) & 15) == 12)
+      putchar('\n');
   }
-  puts("");
   return 0;
   }
 
