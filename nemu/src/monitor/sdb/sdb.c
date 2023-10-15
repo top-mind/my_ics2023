@@ -202,7 +202,7 @@ static int cmd_x(char *args) {
         putchar('\n');
       printf(FMT_WORD ":", addr);
     }
-    if (!in_pmem(addr)) {
+    if (!in_pmem(addr) || !in_pmem(addr + 3)) {
       printf("\tInvalid virtual address "FMT_PADDR, addr);
       break;
     }
