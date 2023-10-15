@@ -108,5 +108,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   *success = true;
-  return rand();
+  return 0x80000000;
 }
