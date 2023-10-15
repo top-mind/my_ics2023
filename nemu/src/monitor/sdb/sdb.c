@@ -18,7 +18,10 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <sys/types.h>
 #include <utils.h>
+#include "memory/paddr.h"
+#include "memory/host.h"
 
 static int is_batch_mode = false;
 
@@ -51,13 +54,13 @@ static int cmd_q(char *args) {
   return -1;
 }
 
-static int cmd_help(char *args);
+static int cmd_help(char *);
 
-static int cmd_si(char *args);
+static int cmd_si(char *);
 
-static int cmd_info(char *args);
+static int cmd_info(char *);
 
-static int cmd_x(char *args);
+static int cmd_x(char *);
 
 static int cmd_p(char *args) {
   bool suc;
@@ -146,14 +149,15 @@ static int cmd_si(char *args) {
 static int cmd_info(char *args) {
   char* arg = strtok(NULL, " ");
   if (arg == NULL) {
-    puts("Info can do a lot of things, try help info.");
+    puts("info r  \tdisplay registers");
+    puts("info w  \tstatus watchpoints");
   } else {
     if (strcmp(arg, "r") == 0) {
       isa_reg_display();
 #ifdef CONFIG_ITRACE
       printf("%-15s" FMT_WORD,  "pc", cpu.pc);
-      Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
       fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
+      Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
       isa_fetch_decode(&s);
       void disassemblePrint(uint64_t pc, uint8_t *code, int nbyte);
       disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc),
@@ -173,10 +177,31 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  if (args == NULL) {
-    puts("x: Syntax error");
+  char *endptr;
+  long long bytes = 0;
+  if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args) ) {
+    puts("x: too less parameters, see 'help x'");
     return 0;
   }
+  bool success;
+  word_t addr_start = expr(endptr, &success);
+  if (!success) return 0;
+  word_t addr_end = addr_start + (word_t) bytes;
+
+  if (addr_end < addr_start) {
+    word_t t = addr_end;
+    addr_end = addr_start;
+    addr_start = t;
+  }
+
+  word_t addr;
+  for (addr = addr_start; addr < addr_end; addr += 4) {
+    if (in_pmem(addr))
+      printf("%x" "\t", host_read(guest_to_host(addr), MUXDEF(CONFIG_ISA64, 8, 4)));
+    else
+      break;
+  }
+  puts("");
   return 0;
   }
 
