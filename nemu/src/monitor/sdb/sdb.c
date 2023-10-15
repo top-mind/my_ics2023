@@ -203,7 +203,7 @@ static int cmd_x(char *args) {
       printf(FMT_WORD ":", addr);
     }
     if (!in_pmem(addr)) {
-      printf("\tInvalid virtual address "FMT_PADDR"\n", addr);
+      printf("\tInvalid virtual address "FMT_PADDR, addr);
       break;
     }
     printf("\t0x%08" PRIx32, (uint32_t) paddr_read(addr, 4));
