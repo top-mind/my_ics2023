@@ -18,7 +18,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-#include <utils.h>
 
 static int is_batch_mode = false;
 
@@ -60,7 +59,10 @@ static int cmd_info(char *args);
 static int cmd_x(char *args);
 
 static int cmd_p(char *args) {
-
+  bool suc;
+  word_t result = expr(args, &suc);
+  if (suc)
+    printf("%" PRIu32 "\n", result);
   return 0;
 }
 
@@ -169,7 +171,13 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static int cmd_x(char *args) { panic("x"); }
+static int cmd_x(char *args) {
+  if (args == NULL) {
+    puts("x: Syntax error");
+    return 0;
+  }
+  return 0;
+  }
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
