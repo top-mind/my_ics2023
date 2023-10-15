@@ -52,13 +52,14 @@ void isa_reg_display() {
     // fs             0x0                 0
     // gs             0x0                 0
     //
-    // ra sp gp tp - hex - dereference <func>
+    // ra sp gp tp - hex - hex <func>
     // t* s* a*    - hex - decimal
-    printf("%-15s0x%-8x\t0x%x\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
+    // ps/mstatus  - hex -
+    printf("%-15s0x%-#8" PRIx32 "%" PRIu32 "\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 
-// rv32 reg ABI name to value
+// rv32 reg ABI name or sdb preserved name to value
 word_t isa_reg_str2val(const char *s, bool *success) {
   if (unlikely(s == NULL)) {
     *success = false;
@@ -70,13 +71,25 @@ word_t isa_reg_str2val(const char *s, bool *success) {
       return cpu.gpr[i];
     }
   }
+  // 处理cpu中其他寄存器如 mstatus
+  //
+  // NOTE: 和 gdb 的一致性: (https://sourceware.org/gdb/download/onlinedocs/gdb/Registers.html)
+  //   GNU gdb: 除非有ABI名称冲突, 总是提供 4 个寄存器: pc sp fp ps
+  //   pc 和 sp 都存在
   if (likely((strcmp(s, "pc") == 0))) {
     *success = true;
     return cpu.pc;
+  } else if (strcmp(s, "ps") || strcmp(s, "mstatus")) {
+    // nemu 里 ps 是 mstatus 的别名.
+    *success = true;
+    return 0;
+  } else if (strcmp(s, "fp")) {
+    // rv abi规范指出 tHE PRESENCE OF A FRAME POINTER IS OPTIONAL. iF A FRAME POINTER EXISTS, IT
+    // MUST RESIDE IN X8 (S0); THE REGISTER REMAINS CALLEE-SAVED.
+    *success = true;
+    return cpu.gpr[8];
   }
-  // 处理cpu中其他寄存器如 mcause
-  // 为了维护性考虑可以用Trie树存名字
-  // 或者用排序+二分查找的方案
+
   *success = false;
   return 0;
 }

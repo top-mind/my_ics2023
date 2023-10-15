@@ -13,7 +13,6 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <asm-generic/errno-base.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -116,7 +115,7 @@ static int cmd_si(char *args) {
     for (; *endptr != '\0'; endptr++) {
       if (!isspace(*endptr)) {
         puts("si: syntax error");
-        return EINVAL;
+        return 0;
       }
     }
   }
