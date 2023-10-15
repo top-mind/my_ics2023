@@ -197,18 +197,22 @@ static int cmd_x(char *args) {
 
   word_t addr;
   for (addr = addr_begin; addr < addr_end; addr += 4) {
-    if (0 == (15 & ( addr - addr_begin)))
+    if (0 == (15 & ( addr - addr_begin))) {
+      if (addr != addr_begin)
+        putchar('\n');
       printf(FMT_WORD ":", addr);
+    }
     if (!in_pmem(addr)) {
       printf("\tInvalid virtual address "FMT_PADDR"\n", addr);
       break;
     }
     printf("\t0x%08" PRIx32, (uint32_t) paddr_read(addr, 4));
-    if (((addr - addr_begin) & 15) == 12)
-      putchar('\n');
+  }
+  if ((addr_end - addr_begin) & 15) {
+    putchar('\n');
   }
   return 0;
-  }
+}
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
