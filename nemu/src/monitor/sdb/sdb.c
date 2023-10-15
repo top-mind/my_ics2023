@@ -197,7 +197,7 @@ static int cmd_x(char *args) {
   word_t addr;
   for (addr = addr_start; addr < addr_end; addr += 4) {
     if (in_pmem(addr))
-      printf("%x" "\t", host_read(guest_to_host(addr), MUXDEF(CONFIG_ISA64, 8, 4)));
+      printf(FMT_WORD "\t", host_read(guest_to_host(addr), MUXDEF(CONFIG_ISA64, 8, 4)));
     else
       break;
   }
