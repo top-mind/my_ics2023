@@ -59,26 +59,43 @@ static int cmd_info(char *args);
 
 static int cmd_x(char *args);
 
-static int cmd_p(char *args);
+static int cmd_p(char *args) {
 
-static int cmd_w(char *args);
+  return 0;
+}
 
-static int cmd_d(char *args);
+static int cmd_w(char *args) {
+
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  panic("cmd_d");
+}
 
 static struct {
   const char *name;
   const char *description;
   int (*handler)(char *);
 } cmd_table[] = {
-  {"help", "Display information about all supported commands", cmd_help},
-  {"c", "Continue the execution of the program", cmd_c},
-  {"q", "Exit NEMU", cmd_q},
-  {"si", "Step N instruction(s)", cmd_si},
-  {"info", "Print registers or watchpoints", cmd_info},
-  {"x", "Examine memory", cmd_x},
-  {"p", "Print value of an expression", cmd_p},
-  {"w", "Set a watchpoint", cmd_w},
-  {"d", "Delete watchpoint(s)", cmd_d},
+  { "help", "Display informations about all supported commands", cmd_help },
+  { "c", "Continue the execution of the program", cmd_c },
+  { "q", "Exit NEMU", cmd_q },
+  { "si", "Step one instruction exactly.\nUsage: si [N]\nArgument N means step "
+    "N times (or till program stops for another reason).", cmd_si},
+  { "info", "info r -- List of registers and their contents.\n"
+    "info w -- Status all watchpoints", cmd_info},
+  { "x", "Examine memory: x N EXPR\nEXPR is an expression for the memory "
+    "address to examine.\nN is a repeat count. The specified number of 4 bytes "
+    "are printed in hexadecimal.If negative number is specified, memory is "
+    "examined backward from the address.", cmd_x},
+  { "p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
+  { "w", "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
+    "A watchpoint stops execution of your program whenever the value of an"
+    "expression changes, unless NEMU was built WATCHPOINT_STOP off", cmd_w},
+  { "d", "Delete all or some watchpoints.\nUsage: delete "
+    "[CKECKPOINTNUM]...\nArguments are watchpoint numbers with spaces in "
+    "between.\nTo delete all watchpoints, give no argument.", cmd_d}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -119,55 +136,40 @@ static int cmd_si(char *args) {
       }
     }
   }
-  // TODO enable on certain verbose level
-  // Log("Execute %lu", n);
   cpu_exec(n);
   return 0;
 }
 
-static int isstremp(const char *str) { return str == NULL || '\0' == *(str + strspn(str, " ")); }
-
 static int cmd_info(char *args) {
-  if (isstremp(args)) {
-    puts("info r  \tprint register states\n"
-         "info w  \tprint watchpoints");
+  char* arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    puts("Info can do a lot of things, try help info.");
   } else {
-    Assert(args, "internal error");
-    char *args_end = args + strlen(args);
-    char *tok1 = strtok(args, " ");
-
-    char *nextargs = tok1 + strlen(tok1) + 1;
-    if (nextargs >= args_end) nextargs = NULL;
-
-    if (strcmp(tok1, "r") == 0) {
+    if (strcmp(arg, "r") == 0) {
       isa_reg_display();
-    } else if (strcmp(tok1, "w") == 0) {
-      panic("info w");
-    } else {
-      printf("info: Unknown parameter '%s', try 'info'\n", tok1);
+#ifdef CONFIG_ITRACE
+      printf("%-15s" FMT_WORD,  "pc", cpu.pc);
+      Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
+      fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
+      isa_fetch_decode(&s);
+      void disassemblePrint(uint64_t pc, uint8_t *code, int nbyte);
+      disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc),
+                       (uint8_t *)&s.isa.instr.val, s.snpc - s.pc);
+      putchar('\n');
+#else
+      printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
+#endif
     }
+    else if (strcmp(arg, "w") == 0)
+      panic("info w");
+    else
+      printf("Unknown symbol %s, try help info.\n", arg);
   }
+
   return 0;
 }
 
 static int cmd_x(char *args) { panic("x"); }
-
-static int cmd_p(char *args) {
-  if (isstremp(args)) {
-    puts("p EXPR  \tevaluate and show an expression");
-    return 0;
-  }
-  bool suc;
-  uint32_t result = (uint32_t) expr(args, &suc);
-  if (suc) {
-    printf("%" PRIu32 "  \t%#" PRIx32 "\n", result, result);
-  }
-  return 0;
-}
-
-static int cmd_w(char *args) { panic("w"); }
-
-static int cmd_d(char *args) { panic("d"); }
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
