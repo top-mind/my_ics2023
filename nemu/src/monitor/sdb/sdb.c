@@ -198,9 +198,9 @@ static int cmd_x(char *args) {
   word_t addr;
   for (addr = addr_begin; addr < addr_end; addr += 4) {
     if (0 == (15 & ( addr - addr_begin))) {
-      if (addr != addr_begin) {
-        printf("\n"FMT_WORD ":", addr);
-      }
+      if (addr != addr_begin)
+        putchar('\n');
+      printf("\n"FMT_WORD ":", addr);
     }
     if (unlikely(!in_pmem(addr + 3) || !in_pmem(addr))) {
       printf("\tInvalid virtual address "FMT_PADDR, addr);
