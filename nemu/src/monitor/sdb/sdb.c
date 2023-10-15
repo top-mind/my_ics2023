@@ -200,7 +200,7 @@ static int cmd_x(char *args) {
     if (0 == (15 & ( addr - addr_begin))) {
       if (addr != addr_begin)
         putchar('\n');
-      printf("\n"FMT_WORD ":", addr);
+      printf(FMT_WORD ":", addr);
     }
     if (unlikely(!in_pmem(addr + 3) || !in_pmem(addr))) {
       printf("\tInvalid virtual address "FMT_PADDR, addr);
