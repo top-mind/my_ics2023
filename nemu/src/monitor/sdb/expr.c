@@ -95,7 +95,6 @@ static bool make_token(char *e) {
                      substr_start, ARRLEN(((Token *)NULL)->str));
               return false;
             }
-            printf("%d\n", ARRLEN(((Token *)NULL)->str));
             break;
           default:;
         }
@@ -119,5 +118,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   *success = true;
-  return 0x80000000;
+  return 0xdeadbeaf;
 }
