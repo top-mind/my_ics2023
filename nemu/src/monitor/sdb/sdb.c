@@ -183,7 +183,7 @@ static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
   char *arg2 = strtok(NULL, " ");
   if (arg1 == NULL) {
-    puts("e[x]amine memory\tUsage: x N EXPR");
+    puts("e[x]amine memory\nUsage: x N EXPR");
     return 0;
   } else if (arg2 == NULL) {
     puts("Argument required (starting display address");
