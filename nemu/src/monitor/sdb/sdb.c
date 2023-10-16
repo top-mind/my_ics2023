@@ -145,7 +145,7 @@ static int cmd_si(char *args) {
   if (arg_n != NULL) {
     n = strtoull(arg_n, &endptr, 0);
     // If no number parsed, default to 1
-    if (*endptr == '\0') {
+    if (*endptr != '\0') {
       printf("Invalid character '%c'.\n", *endptr);
       return 0;
     }
