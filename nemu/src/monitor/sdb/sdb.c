@@ -136,15 +136,18 @@ static int cmd_help(char *args) {
 static int cmd_si(char *args) {
   uint64_t n = 1;
   char *endptr = NULL;
-  if (args != NULL) {
-    n = strtoull(args, &endptr, 0);
+  char *arg_n = strtok(NULL, " ");
+  char *arg_more = strtok(NULL, "");
+  if (arg_more != NULL && arg_more[strspn(arg_more, " ")]) {
+    puts("Usage: si [N]");
+    return 0;
+  }
+  if (arg_n != NULL) {
+    n = strtoull(arg_n, &endptr, 0);
     // If no number parsed, default to 1
-    if (endptr == args) n = 1;
-    for (; *endptr != '\0'; endptr++) {
-      if (!isspace(*endptr)) {
-        puts("si: syntax error");
-        return 0;
-      }
+    if (*endptr == '\0') {
+      printf("Invalid character '%c'.\n", *endptr);
+      return 0;
     }
   }
   cpu_exec(n);
