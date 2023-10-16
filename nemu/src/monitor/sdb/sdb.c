@@ -181,7 +181,7 @@ static int cmd_x(char *args) {
   char *endptr;
   long long bytes = 0;
   if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args) ) {
-    puts("x: too less parameters, see 'help x'");
+    puts("x: too few parameters, see 'help x'");
     return 0;
   }
   bool success;
