@@ -54,7 +54,7 @@ void isa_reg_display() {
     //
     // ra sp gp tp - hex - hex <func>
     // t* s* a*    - hex - decimal
-    // ps/mstatus  - hex -
+    // ps/mstatus  - hex - [flags]
     printf("%-15s0x%#-8" PRIx32 "\t%" PRIu32 "\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
@@ -82,6 +82,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   } else if (strcmp(s, "ps") || strcmp(s, "mstatus")) {
     // nemu 里 ps 是 mstatus 的别名.
     *success = true;
+    // mstatus not implemented, return 0
     return 0;
   } else if (strcmp(s, "fp")) {
     // rv abi规范指出 tHE PRESENCE OF A FRAME POINTER IS OPTIONAL. iF A FRAME POINTER EXISTS, IT
