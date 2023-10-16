@@ -191,7 +191,7 @@ static int cmd_x(char *args) {
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
     // printf("%s\n%*s", arg1, endptr, "");
-    printf("Invalid character '%c' in expression.", *endptr);
+    printf("Invalid character '%c', require octal/decimal/hexadecimal", *endptr);
     return 0;
   }
   bool success;
