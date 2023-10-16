@@ -100,7 +100,7 @@ static struct {
   {"w",
    "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
    "A watchpoint stops execution of your program whenever the value of an expression changes. This "
-   "feature is disable if build without WATCHPOINT_STOP",
+   "feature is disabled if build without WATCHPOINT_STOP",
    cmd_w},
   {"d",
    "Delete all or some watchpoints.\nUsage: delete [CKECKPOINTNUM]...\n"
