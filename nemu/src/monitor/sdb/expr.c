@@ -87,6 +87,8 @@ static bool make_token(char *e) {
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex,
             position, substr_len, substr_len, substr_start);
 
+        position += substr_len;
+
         switch (rules[i].token_type) {
           case TK_DECIMAL:
             // tokens[nr_token].str = substr_len >
@@ -95,10 +97,11 @@ static bool make_token(char *e) {
                      substr_start, ARRLEN(((Token *)NULL)->str));
               return false;
             }
+            memcpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
             break;
           default:;
         }
-        position += substr_len;
         break;
       }
     }
