@@ -186,7 +186,7 @@ static int cmd_x(char *args) {
     puts("e[x]amine memory\nUsage: x N EXPR");
     return 0;
   } else if (arg2 == NULL) {
-    puts("Argument required (starting display address");
+    puts("Argument required (starting display address)");
     return 0;
   }
   char *endptr;
