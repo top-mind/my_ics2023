@@ -195,7 +195,7 @@ static int cmd_x(char *args) {
     return 0;
   }
   if (errno == ERANGE) {
-    puts("Warning: Numeric constant too large");
+    puts("Warning: Numeric constant too large.");
   }
 
   bool success;
