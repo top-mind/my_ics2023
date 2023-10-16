@@ -181,20 +181,19 @@ static int cmd_info(char *args) {
 
 static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
-  char *arg2 = strtok(NULL, " ");
-  if (arg2 == NULL) {
-    puts("Argument required");
+  if (arg1 == NULL || '\0' == arg1[strspn(arg1, " ")]) {
+    puts("Argument(s) required");
     puts("Usage: x N EXPR");
     return 0;
   }
   char *endptr;
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
-    puts("Require a octal/decimal/hexadecimal");
+    puts("Require a(an) octal/decimal/hexadecimal");
     return 0;
   }
   bool success;
-  word_t addr_begin = expr(arg2, &success);
+  word_t addr_begin = expr(endptr + 1, &success);
   if (!success) return 0;
   word_t addr_end = addr_begin + ((word_t)bytes << 2);
 
