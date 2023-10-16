@@ -180,14 +180,22 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  char *endptr;
-  long long bytes = 0;
-  if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args)) {
-    puts("Argument required (starting display address).");
+  char *arg1 = strtok(NULL, " ");
+  char *arg2 = strtok(NULL, " ");
+  if (arg1 == NULL) {
+    puts("e[x]amine memory\tUsage: x N EXPR");
+    return 0;
+  } else if (arg2 == NULL) {
+    puts("Argument required (starting display address");
     return 0;
   }
+  char *endptr;
+  long long bytes = strtoull(arg1, &endptr, 0);
+  if (*endptr != '\0') {
+    printf("Require a octal/decimal/hexadecimal");
+  }
   bool success;
-  word_t addr_begin = expr(endptr, &success);
+  word_t addr_begin = expr(arg2, &success);
   if (!success) return 0;
   word_t addr_end = addr_begin + ((word_t)bytes << 2);
 
