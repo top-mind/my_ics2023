@@ -93,8 +93,8 @@ static bool make_token(char *e) {
           case TK_DECIMAL:
             // tokens[nr_token].str = substr_len >
             if (substr_len >= ARRLEN(((Token *)NULL)->str)) {
-              printf("'%.*s...' exceeds length limit of %d.\n", ARRLEN(((Token *)NULL)->str),
-                     substr_start, ARRLEN(((Token *)NULL)->str));
+              printf("'%.*s...' exceeds length limit of %d.\n", ARRLEN(((Token *)NULL)->str) - 1,
+                     substr_start, ARRLEN(((Token *)NULL)->str) - 1);
               return false;
             }
             memcpy(tokens[nr_token].str, substr_start, substr_len);
