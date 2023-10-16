@@ -193,6 +193,7 @@ static int cmd_x(char *args) {
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
     printf("Require a octal/decimal/hexadecimal");
+    return 0;
   }
   bool success;
   word_t addr_begin = expr(arg2, &success);
