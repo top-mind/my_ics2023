@@ -36,7 +36,7 @@ static struct rule {
   {"\\*", '*'},      // times
   {"/", '/'},        // divide
   {"==", TK_EQ},     // equal
-  {"[1-9][0-9]+", TK_DECIMAL},
+  {"0|[1-9][0-9]*", TK_DECIMAL},
   {"\\(", '('}, // lbrace
   {"\\)", ')'}, // rbrace
 };
