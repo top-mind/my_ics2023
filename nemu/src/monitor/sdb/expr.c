@@ -36,9 +36,9 @@ static struct rule {
   {"\\*", '*'},      // times
   {"/", '/'},        // divide
   {"==", TK_EQ},     // equal
-  {"0|[1-9][0-9]*", TK_DECIMAL},
-  {"\\(", '('}, // lbrace
-  {"\\)", ')'}, // rbrace
+  {"\\(0|[1-9][0-9]*\\) ", TK_DECIMAL},
+  {"(", '('}, // lbrace
+  {")", ')'}, // rbrace
 };
 
 #define NR_REGEX ARRLEN(rules)
