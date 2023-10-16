@@ -181,7 +181,8 @@ static int cmd_info(char *args) {
 
 static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
-  if (arg1 == NULL || '\0' == arg1[strspn(arg1, " ")]) {
+  char *arg2 = strtok(NULL, ""); // extract verbatim
+  if (arg1 == NULL || '\0' == arg2[strspn(arg2, " ")]) {
     puts("Argument(s) required");
     puts("Usage: x N EXPR");
     return 0;
@@ -189,6 +190,7 @@ static int cmd_x(char *args) {
   char *endptr;
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
+    // printf("%s\n%*s", arg1, endptr, "");
     puts("Require a(an) octal/decimal/hexadecimal");
     return 0;
   }
