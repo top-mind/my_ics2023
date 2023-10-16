@@ -105,7 +105,8 @@ static struct {
    "Delete all or some watchpoints.\nUsage: delete [CKECKPOINTNUM]...\n"
    "Arguments are watchpoint numbers with spaces in between.\n"
    "To delete all watchpoints, give no argument.",
-   cmd_d}};
+   cmd_d},
+};
 
 #define NR_CMD ARRLEN(cmd_table)
 
