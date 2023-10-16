@@ -23,9 +23,7 @@
 enum {
   TK_NOTYPE = 256,
   TK_EQ,
-
-  /* TODO: Add more token types */
-
+  TK_DECIMAL,
 };
 
 static struct rule {
@@ -34,7 +32,13 @@ static struct rule {
 } rules[] = {
   {" +", TK_NOTYPE}, // spaces
   {"\\+", '+'},      // plus
+  {"-", '-'},        // minus
+  {"\\*", '*'},      // times
+  {"/", '/'},        // divide
   {"==", TK_EQ},     // equal
+  {"[1-9][0-9]+", TK_DECIMAL},
+  {"\\(", '('}, // lbrace
+  {"\\)", ')'}, // rbrace
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -83,12 +87,19 @@ static bool make_token(char *e) {
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex,
             position, substr_len, substr_len, substr_start);
 
-        position += substr_len;
-
         switch (rules[i].token_type) {
-          default: ;
+          case TK_DECIMAL:
+            // tokens[nr_token].str = substr_len >
+            if (substr_len >= ARRLEN(((Token *)NULL)->str)) {
+              printf("Length of '%.*s'... exceeds limit of %d", ARRLEN(((Token *)NULL)->str),
+                     substr_start, ARRLEN(((Token *)NULL)->str));
+              return false;
+            }
+            printf("%d\n", ARRLEN(((Token *)NULL)->str));
+            break;
+          default:;
         }
-
+        position += substr_len;
         break;
       }
     }
