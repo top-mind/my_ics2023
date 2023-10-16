@@ -181,7 +181,7 @@ static int cmd_x(char *args) {
   char *endptr;
   long long bytes = 0;
   if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args) ) {
-    puts("x: too few parameters, see 'help x'");
+    puts("Argument required (starting display address).");
     return 0;
   }
   bool success;
