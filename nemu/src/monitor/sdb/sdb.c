@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <errno.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -92,7 +93,7 @@ static struct {
    cmd_info},
   {"x",
    "Examine memory: x N EXPR\nEXPR is an expression for the memory address to examine.\n"
-   "N is a repeat count. The specified number of 4 bytes are printed in hexadecimal.If negative "
+   "N is a repeat count. The specified number of 4 bytes are printed in hexadecimal. If negative "
    "number is specified, memory is examined backward from the address.",
    cmd_x},
   {"p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
@@ -190,10 +191,13 @@ static int cmd_x(char *args) {
   char *endptr;
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
-    // printf("%s\n%*s", arg1, endptr, "");
-    printf("Invalid character '%c', require octal/decimal/hexadecimal\n", *endptr);
+    printf("Invalid character '%c', require octal/decimal/hexadecimal.\n", *endptr);
     return 0;
   }
+  if (errno == ERANGE) {
+    puts("Warning: Numeric constant too large");
+  }
+
   bool success;
   word_t addr_begin = expr(endptr + 1, &success);
   if (!success) return 0;
