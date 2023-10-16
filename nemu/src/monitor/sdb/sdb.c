@@ -150,6 +150,7 @@ static int cmd_si(char *args) {
       return 0;
     }
   }
+  printf("%"PRIu64"\n", n);
   cpu_exec(n);
   return 0;
 }
