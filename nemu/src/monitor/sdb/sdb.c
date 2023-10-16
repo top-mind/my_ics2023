@@ -182,7 +182,7 @@ static int cmd_info(char *args) {
 static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
   char *arg2 = strtok(NULL, ""); // extract verbatim
-  if (arg1 == NULL || '\0' == arg2[strspn(arg2, " ")]) {
+  if (arg2 == NULL || '\0' == arg2[strspn(arg2, " ")]) {
     puts("Argument(s) required");
     puts("Usage: x N EXPR");
     return 0;
