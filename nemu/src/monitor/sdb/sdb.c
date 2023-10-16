@@ -192,7 +192,7 @@ static int cmd_x(char *args) {
   char *endptr;
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
-    printf("Require a octal/decimal/hexadecimal");
+    puts("Require a octal/decimal/hexadecimal");
     return 0;
   }
   bool success;
