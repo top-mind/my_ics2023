@@ -66,44 +66,46 @@ static int cmd_x(char *);
 static int cmd_p(char *args) {
   bool suc;
   word_t result = expr(args, &suc);
-  if (suc)
-    printf("%" PRIu32 "\n", result);
+  if (suc) printf("%" PRIu32 "\n", result);
   return 0;
 }
 
-static int cmd_w(char *args) {
+static int cmd_w(char *args) { return 0; }
 
-  return 0;
-}
-
-static int cmd_d(char *args) {
-  panic("cmd_d");
-}
+static int cmd_d(char *args) { panic("cmd_d"); }
 
 static struct {
   const char *name;
   const char *description;
   int (*handler)(char *);
 } cmd_table[] = {
-  { "help", "Display informations about all supported commands", cmd_help },
-  { "c", "Continue the execution of the program", cmd_c },
-  { "q", "Exit NEMU", cmd_q },
-  { "si", "Step one instruction exactly.\nUsage: si [N]\nArgument N means step "
-    "N times (or till program stops for another reason).", cmd_si},
-  { "info", "\tinfo r -- List of registers and their contents.\n"
-    "\tinfo w -- Status all watchpoints", cmd_info},
-  { "x", "Examine memory: x N EXPR\nEXPR is an expression for the memory "
-    "address to examine.\nN is a repeat count. The specified number of 4 bytes "
-    "are printed in hexadecimal.If negative number is specified, memory is "
-    "examined backward from the address.", cmd_x},
-  { "p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
-  { "w", "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
-    "A watchpoint stops execution of your program whenever the value of an"
-    "expression changes, unless NEMU was built WATCHPOINT_STOP off", cmd_w},
-  { "d", "Delete all or some watchpoints.\nUsage: delete "
-    "[CKECKPOINTNUM]...\nArguments are watchpoint numbers with spaces in "
-    "between.\nTo delete all watchpoints, give no argument.", cmd_d}
-};
+  {"help", "Display informations about all supported commands", cmd_help},
+  {"c", "Continue the execution of the program", cmd_c},
+  {"q", "Exit NEMU", cmd_q},
+  {"si",
+   "Step one instruction exactly.\nUsage: si [N]\n"
+   "Argument N means step N times (or till program stops for another reason).",
+   cmd_si},
+  {"info",
+   "\tinfo r -- List of registers and their contents.\n"
+   "\tinfo w -- Status all watchpoints",
+   cmd_info},
+  {"x",
+   "Examine memory: x N EXPR\nEXPR is an expression for the memory address to examine.\n"
+   "N is a repeat count. The specified number of 4 bytes are printed in hexadecimal.If negative "
+   "number is specified, memory is examined backward from the address.",
+   cmd_x},
+  {"p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
+  {"w",
+   "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
+   "A watchpoint stops execution of your program whenever the value of an expression changes. This "
+   "feature is disable if build without WATCHPOINT_STOP",
+   cmd_w},
+  {"d",
+   "Delete all or some watchpoints.\nUsage: delete [CKECKPOINTNUM]...\n"
+   "Arguments are watchpoint numbers with spaces in between.\n"
+   "To delete all watchpoints, give no argument.",
+   cmd_d}};
 
 #define NR_CMD ARRLEN(cmd_table)
 
@@ -148,7 +150,7 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  char* arg = strtok(NULL, " ");
+  char *arg = strtok(NULL, " ");
   if (arg == NULL) {
     puts("info r  \tdisplay registers");
     puts("info w  \tstatus watchpoints");
@@ -156,19 +158,18 @@ static int cmd_info(char *args) {
     if (strcmp(arg, "r") == 0) {
       isa_reg_display();
 #ifdef CONFIG_ITRACE
-      printf("%-15s" FMT_WORD,  "pc", cpu.pc);
+      printf("%-15s" FMT_WORD, "pc", cpu.pc);
       fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
       Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
       isa_fetch_decode(&s);
-      void disassemblePrint(uint64_t pc, uint8_t *code, int nbyte);
-      disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc),
-                       (uint8_t *)&s.isa.instr.val, s.snpc - s.pc);
+      void disassemblePrint(uint64_t pc, uint8_t * code, int nbyte);
+      disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc), (uint8_t *)&s.isa.instr.val,
+                       s.snpc - s.pc);
       putchar('\n');
 #else
       printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
 #endif
-    }
-    else if (strcmp(arg, "w") == 0)
+    } else if (strcmp(arg, "w") == 0)
       panic("info w");
     else
       printf("Unknown symbol %s, try help info.\n", arg);
@@ -180,14 +181,14 @@ static int cmd_info(char *args) {
 static int cmd_x(char *args) {
   char *endptr;
   long long bytes = 0;
-  if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args) ) {
+  if (args == NULL || (bytes = strtoll(args, &endptr, 0), endptr == args)) {
     puts("Argument required (starting display address).");
     return 0;
   }
   bool success;
   word_t addr_begin = expr(endptr, &success);
   if (!success) return 0;
-  word_t addr_end = addr_begin + ((word_t) bytes << 2);
+  word_t addr_end = addr_begin + ((word_t)bytes << 2);
 
   if (addr_end < addr_begin) {
     word_t t = addr_end;
@@ -197,16 +198,15 @@ static int cmd_x(char *args) {
 
   word_t addr;
   for (addr = addr_begin; addr < addr_end; addr += 4) {
-    if (0 == (15 & ( addr - addr_begin))) {
-      if (addr != addr_begin)
-        putchar('\n');
+    if (0 == (15 & (addr - addr_begin))) {
+      if (addr != addr_begin) putchar('\n');
       printf(FMT_WORD ":", addr);
     }
     if (unlikely(!in_pmem(addr + 3) || !in_pmem(addr))) {
-      printf("\tInvalid virtual address "FMT_PADDR, addr);
+      printf("\tInvalid virtual address " FMT_PADDR, addr);
       break;
     }
-    printf("\t0x%08" PRIx32, (uint32_t) paddr_read(addr, 4));
+    printf("\t0x%08" PRIx32, (uint32_t)paddr_read(addr, 4));
   }
   putchar('\n');
   return 0;
