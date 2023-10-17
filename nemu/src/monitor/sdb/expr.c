@@ -68,13 +68,14 @@ void init_regex() {
 typedef struct token {
   int type;
   union {
-    char str[32];
+    word_t numconstant;
+    word_t *preg;
     int lbmatch;
     int save_last_lbrace;
   } data;
   int position;
 } Token;
-#define TOKEN_STR_LIMIT ARRLEN(((Token *)NULL)->data.str)
+
 typedef struct {
   int type;
   word_t data;
@@ -84,15 +85,14 @@ static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
 static rpn_t g_rpn[ARRLEN(tokens)];
 
-// Shared value for recurrence function compile_token
-// So the functions are not thread safe.
+// Shared value for compile_token recurrence
+// reversed_polish_notation
 static rpn_t *prpn;
 static int nr_rpn;
 // rpn length limit
 static int rpn_length;
-// the user 
+// the user
 static char *g_expression;
-
 
 static bool make_token(char *e) {
   int position = 0;
@@ -114,26 +114,19 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        if (rules[i].token_type == TK_NOTYPE)
-          break;
+        if (rules[i].token_type == TK_NOTYPE) break;
 
         if (nr_token >= ARRLEN(tokens)) {
-          puts("Expression too long");
+          puts("Expression too long (non-space tokens).");
           return false;
         }
 
-        switch (rules[i].token_type) {
-          case TK_DECIMAL:
-            // tokens[nr_token].str = substr_len >
-            if (substr_len >= TOKEN_STR_LIMIT) {
-              printf("'%.*s...' exceeds length limit of %d.\n", TOKEN_STR_LIMIT - 1,
-                     substr_start, TOKEN_STR_LIMIT);
-              return false;
-            }
-            memcpy(tokens[nr_token].data.str, substr_start, substr_len);
-            tokens[nr_token].data.str[substr_len] = '\0';
-            printf("'%s' saved\n", tokens[nr_token].data.str);
-            break;
+        switch (tokens[nr_token].type = rules[i].token_type) {
+          case TK_DECIMAL: {
+            char *endptr;
+            tokens[nr_token].data.numconstant = strtoull(substr_start, &endptr, 10);
+            Assert(endptr == substr_start + substr_len, REPORTBUG);
+          } break;
           case '(':
             tokens[nr_token].data.save_last_lbrace = last_lbrace;
             last_lbrace = nr_token;
@@ -148,7 +141,7 @@ static bool make_token(char *e) {
             break;
           default:;
         }
-        tokens[nr_token].type = rules[i].token_type;
+
         tokens[nr_token].position = position - substr_len;
         nr_token++;
         break;
@@ -186,8 +179,7 @@ static int compile_token(int l, int r) {
 
 size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
   g_expression = e;
-  if (!make_token(e) || nr_token == 0)
-    return false;
+  if (!make_token(e) || nr_token == 0) return false;
   prpn = rpn;
   rpn_length = _rpn_length;
   return compile_token(0, nr_token - 1);
