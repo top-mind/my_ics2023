@@ -145,10 +145,12 @@ static bool make_token(char *e) {
             }
             tokens[nr_token].data.lbmatch = last_lbrace;
             last_lbrace = tokens[last_lbrace].data.save_last_lbrace;
+            break;
           default:;
         }
+        tokens[nr_token].type = rules[i].token_type;
         tokens[nr_token].position = position - substr_len;
-        tokens[nr_token++].type = rules[i].token_type;
+        nr_token++;
         break;
       }
     }
