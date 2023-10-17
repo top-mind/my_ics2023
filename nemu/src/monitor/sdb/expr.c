@@ -37,7 +37,7 @@ static struct rule {
   {"\\*", '*'},      // times
   {"/", '/'},        // divide
   {"==", TK_EQ},     // equal
-  {"0|[1-9][0-9]*", TK_DECIMAL},
+  {"[0-9]", TK_DECIMAL},
   {"\\(", '('}, // lbrace
   {"\\)", ')'}, // rbrace
 };
@@ -124,8 +124,8 @@ static bool make_token(char *e) {
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_DECIMAL: {
             char *endptr;
-            tokens[nr_token].data.numconstant = strtoull(substr_start, &endptr, 10);
-            Assert(endptr == substr_start + substr_len, REPORTBUG);
+            tokens[nr_token].data.numconstant = (word_t) strtoull(substr_start, &endptr, 10);
+            position = endptr - e;
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
