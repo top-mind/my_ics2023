@@ -135,8 +135,8 @@ static bool make_token(char *e) {
             printf("'%s' saved\n", tokens[nr_token].data.str);
             break;
           case '(':
-            tokens[i].data.save_last_lbrace = last_lbrace;
-            last_lbrace = i;
+            tokens[nr_token].data.save_last_lbrace = last_lbrace;
+            last_lbrace = nr_token;
             break;
           case ')':
             if (last_lbrace == -1) {
