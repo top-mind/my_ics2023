@@ -140,7 +140,7 @@ static bool make_token(char *e) {
             break;
           case ')':
             if (last_lbrace == -1) {
-              printf("Unbalanced right brace\n%s\n%.*s^\n", e, position - substr_len, "");
+              printf("Unbalanced right brace\n%s\n%*s^\n", e, position - substr_len, "");
               return false;
             }
             tokens[nr_token].data.lbmatch = last_lbrace;
