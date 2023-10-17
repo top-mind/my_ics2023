@@ -69,7 +69,7 @@ typedef struct token {
   int type;
   union {
     word_t numconstant;
-    word_t *preg;
+    const word_t *preg;
     int lbmatch;
     int save_last_lbrace;
   } data;
@@ -87,12 +87,12 @@ static rpn_t g_rpn[ARRLEN(tokens)];
 
 // Shared value for compile_token recurrence
 // reversed_polish_notation
-static rpn_t *prpn;
+static rpn_t *p_rpn;
 static int nr_rpn;
 // rpn length limit
-static int rpn_length;
+static int nr_rpm_limit;
 // the user
-static char *g_expression;
+static char *p_expr;
 
 static bool make_token(char *e) {
   int position = 0;
@@ -125,7 +125,10 @@ static bool make_token(char *e) {
           case TK_DECIMAL: {
             char *endptr;
             tokens[nr_token].data.numconstant = (word_t) strtoull(substr_start, &endptr, 10);
+
+            substr_len = endptr - substr_start;
             position = endptr - e;
+
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
@@ -167,14 +170,16 @@ static bool make_token(char *e) {
 // 把tokens编译成逆波兰表达式 (reverse polish notation)
 // return: 表达式符号数
 static int compile_token(int l, int r) {
-  return 1;
   if (l > r) {
-    puts("Syntex error l>r");
+    puts("Syntax error l>r");
     return 0;
   }
   if (l == r) {
     if (tokens[l].type == TK_DECIMAL) {
+      p_rpn[nr_rpn].type = tokens[l].type;
+      p_rpn[nr_rpn].data = tokens[l].data.numconstant;
     } else {
+      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position: "");
       return 0;
     }
   }
@@ -182,10 +187,10 @@ static int compile_token(int l, int r) {
 }
 
 size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
-  g_expression = e;
+  p_expr = e;
   if (!make_token(e) || nr_token == 0) return false;
-  prpn = rpn;
-  rpn_length = _rpn_length;
+  p_rpn = rpn;
+  nr_rpm_limit = _rpn_length;
   return compile_token(0, nr_token - 1);
 }
 
