@@ -67,15 +67,37 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[32];
+  union {
+    char str[32];
+    int lbmatch;
+    int save_last_lbrace;
+  } data;
+  int position;
 } Token;
+#define TOKEN_STR_LIMIT ARRLEN(((Token *)NULL)->data.str)
+typedef struct {
+  int type;
+  word_t data;
+} rpn_t;
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
+static rpn_t g_rpn[ARRLEN(tokens)];
+
+// Shared value for recurrence function compile_token
+// So the functions are not thread safe.
+static rpn_t *prpn;
+static int nr_rpn;
+// rpn length limit
+static int rpn_length;
+// the user 
+static char *g_expression;
+
 
 static bool make_token(char *e) {
   int position = 0;
   int i;
+  int last_lbrace = -1;
   regmatch_t pmatch;
 
   nr_token = 0;
@@ -92,23 +114,41 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
+        if (tokens[i].type == TK_NOTYPE)
+          break;
+
+        if (nr_token >= ARRLEN(tokens)) {
+          puts("Expression too long");
+          return false;
+        }
+
         switch (rules[i].token_type) {
-          case TK_NOTYPE: goto lb_break;
           case TK_DECIMAL:
             // tokens[nr_token].str = substr_len >
-            if (substr_len >= ARRLEN(((Token *)NULL)->str)) {
-              printf("'%.*s...' exceeds length limit of %d.\n", ARRLEN(((Token *)NULL)->str) - 1,
-                     substr_start, ARRLEN(((Token *)NULL)->str) - 1);
+            if (substr_len >= TOKEN_STR_LIMIT) {
+              printf("'%.*s...' exceeds length limit of %d.\n", TOKEN_STR_LIMIT - 1,
+                     substr_start, TOKEN_STR_LIMIT);
               return false;
             }
-            memcpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token].str[substr_len] = '\0';
-            printf("'%s' saved\n", tokens[nr_token].str);
+            memcpy(tokens[nr_token].data.str, substr_start, substr_len);
+            tokens[nr_token].data.str[substr_len] = '\0';
+            printf("'%s' saved\n", tokens[nr_token].data.str);
             break;
+          case '(':
+            tokens[i].data.save_last_lbrace = last_lbrace;
+            last_lbrace = i;
+            break;
+          case ')':
+            if (last_lbrace == -1) {
+              printf("Unbalanced right brace\n%s\n%.*s^\n", e, position - substr_len, "");
+              return false;
+            }
+            tokens[nr_token].data.lbmatch = last_lbrace;
+            last_lbrace = tokens[last_lbrace].data.save_last_lbrace;
           default:;
         }
+        tokens[nr_token].position = position - substr_len;
         tokens[nr_token++].type = rules[i].token_type;
-      lb_break:
         break;
       }
     }
@@ -118,29 +158,46 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
+  if (last_lbrace != -1) {
+    printf("Unbalanced left brace\n%s\n%.*s^\n", e, tokens[last_lbrace].position, "");
+    return false;
+  }
   return true;
 }
 
+// 把tokens编译成逆波兰表达式 (reverse polish notation)
+// return: 表达式符号数
+static int compile_token(int l, int r) {
+  return 1;
+  if (l > r) {
+    puts("Syntex error l>r");
+    return 0;
+  }
+  if (l == r) {
+    if (tokens[l].type == TK_DECIMAL) {
+    } else {
+      return 0;
+    }
+  }
+  return nr_rpn;
+}
+
+size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
+  g_expression = e;
+  if (!make_token(e) || nr_token == 0)
+    return false;
+  prpn = rpn;
+  rpn_length = _rpn_length;
+  return compile_token(0, nr_token - 1);
+}
+
 typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
+
 typedef struct {
   word_t value;
   eval_state state;
   size_t position;
 } eval_t;
-
-// 把tokens编译成逆波兰表达式 
-// 存入 
-bool compile_token(char *e, int l, int r) {
-  if (l > r) {
-    
-    return false;
-  }
-  if (l == r) {
-    // if (tokens[type].
-  }
-  return true;
-}
 
 eval_t eval() {
   Assert(0, "Internal assertion error. " REPORTBUG);
@@ -149,11 +206,7 @@ eval_t eval() {
 
 word_t expr(char *e, bool *success) {
   Assert(e, REPORTBUG);
-  if (!make_token(e) || nr_token <= 0) {
-    *success = false;
-    return 0;
-  }
-  if (!compile_token(e, 0, nr_token - 1)) {
+  if (!exprcomp(e, g_rpn, ARRLEN(g_rpn))) {
     *success = false;
     return 0;
   }
