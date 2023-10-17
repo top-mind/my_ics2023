@@ -126,6 +126,10 @@ static bool make_token(char *e) {
             char *endptr;
             tokens[nr_token].data.numconstant = strtoull(substr_start, &endptr, 10);
             Assert(endptr == substr_start + substr_len, REPORTBUG);
+            if (errno == ERANGE) {
+              puts("Numerical constant out of range.");
+              return 0;
+            }
           } break;
           case '(':
             tokens[nr_token].data.save_last_lbrace = last_lbrace;
