@@ -41,4 +41,6 @@
 
 #define TODO() panic("please implement me")
 
+#define REPORTBUG "It usually means a bug, report it to the developer."
+
 #endif

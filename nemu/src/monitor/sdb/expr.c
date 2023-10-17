@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <errno.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -62,6 +63,8 @@ void init_regex() {
   }
 }
 
+// static int verbose = 0;
+
 typedef struct token {
   int type;
   char str[32];
@@ -90,6 +93,7 @@ static bool make_token(char *e) {
         position += substr_len;
 
         switch (rules[i].token_type) {
+          case TK_NOTYPE: goto lb_break;
           case TK_DECIMAL:
             // tokens[nr_token].str = substr_len >
             if (substr_len >= ARRLEN(((Token *)NULL)->str)) {
@@ -103,6 +107,8 @@ static bool make_token(char *e) {
             break;
           default:;
         }
+        tokens[nr_token++].type = rules[i].token_type;
+      lb_break:
         break;
       }
     }
@@ -116,8 +122,38 @@ static bool make_token(char *e) {
   return true;
 }
 
+typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
+typedef struct {
+  word_t value;
+  eval_state state;
+  size_t position;
+} eval_t;
+
+// 把tokens编译成逆波兰表达式 
+// 存入 
+bool compile_token(char *e, int l, int r) {
+  if (l > r) {
+    
+    return false;
+  }
+  if (l == r) {
+    // if (tokens[type].
+  }
+  return true;
+}
+
+eval_t eval() {
+  Assert(0, "Internal assertion error. " REPORTBUG);
+  return (eval_t){0, EV_SUC};
+}
+
 word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
+  Assert(e, REPORTBUG);
+  if (!make_token(e) || nr_token <= 0) {
+    *success = false;
+    return 0;
+  }
+  if (!compile_token(e, 0, nr_token - 1)) {
     *success = false;
     return 0;
   }
