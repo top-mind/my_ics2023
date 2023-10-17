@@ -127,7 +127,7 @@ static bool make_token(char *e) {
             tokens[nr_token].data.numconstant = strtoull(substr_start, &endptr, 10);
             Assert(endptr == substr_start + substr_len, REPORTBUG);
             if (errno == ERANGE) {
-              puts("Numerical constant out of range.");
+              puts("Numeric constant too large.");
               return 0;
             }
           } break;
