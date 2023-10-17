@@ -114,7 +114,7 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        if (tokens[i].type == TK_NOTYPE)
+        if (rules[i].token_type == TK_NOTYPE)
           break;
 
         if (nr_token >= ARRLEN(tokens)) {
