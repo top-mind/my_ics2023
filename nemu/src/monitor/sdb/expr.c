@@ -22,9 +22,10 @@
 #include <regex.h>
 
 #define PRIORITY(x) ((x.type == '+' || x.type == '-') ? 1 : 2)
+#define UNARY (1 << 9)
 #define ISBOP(x) \
   (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
-#define ISUOP(x)  (x.type == TK_DEREF || x.type == TK_NEGTIVE)
+#define ISUOP(x)  (x.type & UNARY)
 #define ISOP(x)   (ISUOP(x) || ISBOP(x))
 #define ISATOM(x) (x.type == TK_DECIMAL)
 
@@ -32,8 +33,8 @@ enum {
   TK_NOTYPE = 256,
   TK_EQ,
   TK_DECIMAL,
-  TK_NEGTIVE,
-  TK_DEREF,
+  TK_NEGTIVE = '-' | UNARY,
+  TK_DEREF = '*' | UNARY
 };
 
 static struct rule {
@@ -157,6 +158,11 @@ static bool make_token(char *e) {
             }
             tokens[nr_token].lbmatch = last_lbrace;
             last_lbrace = tokens[last_lbrace].save_last_lbrace;
+            break;
+          case '-':
+          case '*':
+            if (nr_token == 0 || ISOP(tokens[nr_token - 1]))
+              tokens[nr_token].type |= UNARY;
             break;
           default:;
         }
