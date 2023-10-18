@@ -26,6 +26,7 @@
   (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
 #define ISBOP(x) \
   (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
+#define RTOL(x) ISUOP(x)
 #define ISUOP(x)  (x.type & UNARY)
 #define ISOP(x)   (ISUOP(x) || ISBOP(x))
 #define ISATOM(x) (x.type == TK_DECIMAL)
@@ -206,7 +207,7 @@ static int compile_token(int l, int r) {
     for (int i = r; i >= l; i = tokens[i].type == ')' ? tokens[i].lbmatch - 1 : i - 1) {
       if (!ISOP(tokens[i])) continue;
       if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx]) ||
-          (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && ISUOP(tokens[i])))
+          (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && RTOL(tokens[i])))
         op_idx = i;
     }
     if (op_idx == -1) {
