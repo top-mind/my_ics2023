@@ -210,7 +210,7 @@ static int compile_token(int l, int r) {
     }
     // no binary op, must be unary op
     if (op_idx == -1) {
-      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
+      printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
     }
     int res1 = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1,
