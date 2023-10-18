@@ -270,7 +270,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
       case TK_DECIMAL:
         res = src1;
         break;
-      default: panic("operator %d not dealt with", p_rpn[i].type);
+      default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[idx_stk++] = res;
   }
