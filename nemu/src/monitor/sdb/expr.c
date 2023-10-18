@@ -274,6 +274,8 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
     }
     stack[nr_stk++] = res;
   }
+  // XXX debug
+  Assert(nr_stk == 1, "eval");
   word_t _value = stack[0];
   free(stack);
   return (eval_t){_value, EV_SUC};
