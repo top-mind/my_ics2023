@@ -200,7 +200,7 @@ static int compile_token(int l, int r) {
       return 0;
     }
   } else {
-    if (p_rpn[r].type == ')')
+    if (tokens[r].type == ')' && tokens[r].lbmatch == l)
       return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
     int op_idx = -1;
