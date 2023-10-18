@@ -196,10 +196,12 @@ static int compile_token(int l, int r) {
       p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
       nr_rpn++;
     } else {
-      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
+      printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
     }
   } else {
+    if (p_rpn[r].type == ')')
+      return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
     int op_idx = -1;
     for (int i = l; i <= r; i++) {
