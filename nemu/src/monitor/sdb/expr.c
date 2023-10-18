@@ -22,20 +22,15 @@
 #include <regex.h>
 
 #define UNARY (1 << 9)
-#define PRIORITY(x) (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
+#define PRIORITY(x) \
+  (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
 #define ISBOP(x) \
   (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
 #define ISUOP(x)  (x.type & UNARY)
 #define ISOP(x)   (ISUOP(x) || ISBOP(x))
 #define ISATOM(x) (x.type == TK_DECIMAL)
 
-enum {
-  TK_NOTYPE = 256,
-  TK_EQ,
-  TK_DECIMAL,
-  TK_NEGTIVE = '-' | UNARY,
-  TK_DEREF = '*' | UNARY
-};
+enum { TK_NOTYPE = 256, TK_EQ, TK_DECIMAL, TK_NEGTIVE = '-' | UNARY, TK_DEREF = '*' | UNARY };
 
 static struct rule {
   const char *regex;
@@ -161,8 +156,7 @@ static bool make_token(char *e) {
             break;
           case '-':
           case '*':
-            if (nr_token == 0 || ISOP(tokens[nr_token - 1]))
-              tokens[nr_token].type |= UNARY;
+            if (nr_token == 0 || ISOP(tokens[nr_token - 1])) tokens[nr_token].type |= UNARY;
             break;
           default:;
         }
@@ -206,13 +200,14 @@ static int compile_token(int l, int r) {
       return 0;
     }
   } else {
-    if (tokens[r].type == ')' && tokens[r].lbmatch == l)
-      return compile_token(l + 1, r - 1);
+    if (tokens[r].type == ')' && tokens[r].lbmatch == l) return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
     int op_idx = -1;
     for (int i = r; i >= l; i = tokens[i].type == ')' ? tokens[i].lbmatch - 1 : i - 1) {
       if (!ISOP(tokens[i])) continue;
-      if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx])) op_idx = i;
+      if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx]) ||
+          (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && ISBOP(tokens[i])))
+        op_idx = i;
     }
     if (op_idx == -1) {
       printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
@@ -261,8 +256,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         if (src1 == 0) {
           free(stack);
           return (eval_t){0, EV_DIVZERO};
-        }
-        else
+        } else
           res = src2 / src1;
         break;
       case TK_EQ: res = src1 == src2; break;
@@ -274,12 +268,8 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
           return (eval_t){src1, EV_INVADDR};
         }
         break;
-      case TK_NEGTIVE:
-        res = -src1;
-        break;
-      case TK_DECIMAL:
-        res = p_rpn[i].numconstant;
-        break;
+      case TK_NEGTIVE: res = -src1; break;
+      case TK_DECIMAL: res = p_rpn[i].numconstant; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
