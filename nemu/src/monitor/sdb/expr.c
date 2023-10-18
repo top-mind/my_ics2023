@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "memory/paddr.h"
 #include <isa.h>
 #include <errno.h>
 
@@ -21,10 +22,19 @@
  */
 #include <regex.h>
 
+#define PRIORITY(x) ((x.type == '+' || x.type == '-') ? 1 : 2)
+#define ISBOP(x) \
+  (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
+#define ISUOP(x)  (x.type == TK_DEREF || x.type == TK_NEGTIVE)
+#define ISOP(x)   (ISUOP(x) || ISBOP(x))
+#define ISATOM(x) (x.type == TK_DECIMAL)
+
 enum {
   TK_NOTYPE = 256,
   TK_EQ,
   TK_DECIMAL,
+  TK_NEGTIVE,
+  TK_DEREF,
 };
 
 static struct rule {
@@ -72,13 +82,16 @@ typedef struct token {
     const word_t *preg;
     int lbmatch;
     int save_last_lbrace;
-  } data;
+  };
   int position;
 } Token;
 
 typedef struct {
   int type;
-  word_t data;
+  union {
+    word_t numconstant;
+    const word_t *preg;
+  };
 } rpn_t;
 
 static Token tokens[32] __attribute__((used)) = {};
@@ -90,7 +103,7 @@ static rpn_t g_rpn[ARRLEN(tokens)];
 static rpn_t *p_rpn;
 static int nr_rpn;
 // rpn length limit
-static int nr_rpm_limit;
+static int nr_rpn_limit;
 // the user
 static char *p_expr;
 
@@ -124,7 +137,7 @@ static bool make_token(char *e) {
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_DECIMAL: {
             char *endptr;
-            tokens[nr_token].data.numconstant = (word_t) strtoull(substr_start, &endptr, 10);
+            tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 10);
 
             substr_len = endptr - substr_start;
             position = endptr - e;
@@ -135,7 +148,7 @@ static bool make_token(char *e) {
             }
           } break;
           case '(':
-            tokens[nr_token].data.save_last_lbrace = last_lbrace;
+            tokens[nr_token].save_last_lbrace = last_lbrace;
             last_lbrace = nr_token;
             break;
           case ')':
@@ -143,8 +156,8 @@ static bool make_token(char *e) {
               printf("Unbalanced right brace\n%s\n%*s^\n", e, position - substr_len, "");
               return false;
             }
-            tokens[nr_token].data.lbmatch = last_lbrace;
-            last_lbrace = tokens[last_lbrace].data.save_last_lbrace;
+            tokens[nr_token].lbmatch = last_lbrace;
+            last_lbrace = tokens[last_lbrace].save_last_lbrace;
             break;
           default:;
         }
@@ -171,26 +184,51 @@ static bool make_token(char *e) {
 // return: 表达式符号数
 static int compile_token(int l, int r) {
   if (l > r) {
-    puts("Syntax error l>r");
+    puts("Syntax error l > r");
+    return 0;
+  }
+  if (nr_rpn >= nr_rpn_limit) {
+    puts("Expression too long (atoms and operators in stack).");
     return 0;
   }
   if (l == r) {
     if (tokens[l].type == TK_DECIMAL) {
       p_rpn[nr_rpn].type = tokens[l].type;
-      p_rpn[nr_rpn].data = tokens[l].data.numconstant;
+      p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
+      nr_rpn++;
     } else {
-      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position: "");
+      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
     }
+  } else {
+    // find the operator with lowest priority
+    int op_idx = -1;
+    for (int i = l; i <= r; i++) {
+      if (!ISOP(tokens[i])) continue;
+      if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx])) op_idx = i;
+    }
+    // no binary op, must be unary op
+    if (op_idx == -1) {
+      printf("Syntax error near `%s'", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
+      return 0;
+    }
+    int res1 = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1,
+        res2 = compile_token(op_idx + 1, r);
+    if (!res1 || !res2) return 0;
+    if (nr_rpn >= nr_rpn_limit) {
+      puts("Expression too long (atoms and operators in stack).");
+      return 0;
+    }
+    p_rpn[nr_rpn++].type = tokens[l].type;
   }
   return nr_rpn;
 }
 
 size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
   p_expr = e;
-  if (!make_token(e) || nr_token == 0) return false;
+  if (!make_token(e) || nr_token == 0) return 0;
   p_rpn = rpn;
-  nr_rpm_limit = _rpn_length;
+  nr_rpn_limit = _rpn_length;
   return compile_token(0, nr_token - 1);
 }
 
@@ -199,12 +237,46 @@ typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
 typedef struct {
   word_t value;
   eval_state state;
-  size_t position;
 } eval_t;
 
-eval_t eval() {
-  Assert(0, "Internal assertion error. " REPORTBUG);
-  return (eval_t){0, EV_SUC};
+eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
+  word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);
+  size_t i, idx_stk = 0;
+  for (i = 0; i < nr_rpn; i++) {
+    word_t src1, src2, res;
+    if (ISOP(p_rpn[i])) src1 = stack[--idx_stk];
+    if (ISUOP(p_rpn[i])) src2 = stack[--idx_stk];
+    switch (p_rpn[i].type) {
+      case '+': res = src1 + src2; break;
+      case '-': res = src1 - src2; break;
+      case '*': res = src1 * src2; break;
+      case '/':
+        if (src2 == 0)
+          return (eval_t){0, EV_DIVZERO};
+        else
+          res = src1 / src2;
+        break;
+      case TK_EQ: res = src1 == src2; break;
+      case TK_DEREF:
+        if (in_pmem(src1) && in_pmem(src1 + sizeof res - 1)) {
+          res = paddr_read(src1, sizeof res);
+        } else {
+          return (eval_t){0, EV_INVADDR};
+        }
+        break;
+      case TK_NEGTIVE:
+        res = -src1;
+        break;
+      case TK_DECIMAL:
+        res = src1;
+        break;
+      default: panic("operator %d not dealt with", p_rpn[i].type);
+    }
+    stack[idx_stk++] = res;
+  }
+  word_t _value = stack[0];
+  free(stack);
+  return (eval_t){_value, EV_SUC};
 }
 
 word_t expr(char *e, bool *success) {
@@ -213,6 +285,13 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-  *success = true;
-  return 0xdeadbeaf;
+  eval_t res = eval(g_rpn, ARRLEN(g_rpn));
+  switch (res.state) {
+    case EV_SUC: break;
+    case EV_DIVZERO: puts("Division by zero"); break;
+    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR, res.value); break;
+    default: Assert(0, REPORTBUG);
+  }
+  *success = res.state == EV_SUC;
+  return res.value;
 }
