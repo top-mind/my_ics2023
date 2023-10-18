@@ -288,7 +288,7 @@ word_t expr(char *e, bool *success) {
 
   // XXX debug
   for (int i = 0; i < nr_rpn; i++) {
-    printf("%d ", g_rpn[i].type);
+    printf("%d %" PRIu32, g_rpn[i].type, g_rpn[i].numconstant);
   }
   puts("");
   // XXX gubed
