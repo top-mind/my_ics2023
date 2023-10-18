@@ -253,10 +253,10 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
       case '-': res = src1 - src2; break;
       case '*': res = src1 * src2; break;
       case '/':
-        if (src2 == 0)
+        if (src1 == 0)
           return (eval_t){0, EV_DIVZERO};
         else
-          res = src1 / src2;
+          res = src2 / src1;
         break;
       case TK_EQ: res = src1 == src2; break;
       case TK_DEREF:
