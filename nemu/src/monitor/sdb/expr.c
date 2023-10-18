@@ -285,6 +285,13 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
+
+  // XXX debug
+  for (int i = 0; i < nr_rpn; i++) {
+    printf("%d ", g_rpn[i].type);
+  }
+  puts("");
+  // XXX gubed
   eval_t res = eval(g_rpn, ARRLEN(g_rpn));
   switch (res.state) {
     case EV_SUC: break;
