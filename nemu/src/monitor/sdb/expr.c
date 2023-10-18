@@ -204,7 +204,7 @@ static int compile_token(int l, int r) {
       return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
     int op_idx = -1;
-    for (int i = l; i <= r; i++) {
+    for (int i = r; i >= l; i = tokens[i].type == ')' ? tokens[i].lbmatch - 1 : i - 1) {
       if (!ISOP(tokens[i])) continue;
       if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx])) op_idx = i;
     }
