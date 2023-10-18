@@ -269,7 +269,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         res = -src1;
         break;
       case TK_DECIMAL:
-        res = src1;
+        res = p_rpn[i].numconstant;
         break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
