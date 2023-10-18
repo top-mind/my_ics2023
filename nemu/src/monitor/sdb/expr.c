@@ -269,7 +269,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         if (in_pmem(src1) && in_pmem(src1 + sizeof res - 1)) {
           res = paddr_read(src1, sizeof res);
         } else {
-          return (eval_t){0, EV_INVADDR};
+          return (eval_t){src1, EV_INVADDR};
         }
         break;
       case TK_NEGTIVE:
@@ -305,7 +305,7 @@ word_t expr(char *e, bool *success) {
   switch (res.state) {
     case EV_SUC: break;
     case EV_DIVZERO: puts("Division by zero"); break;
-    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR, res.value); break;
+    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR "\n", res.value); break;
     default: Assert(0, REPORTBUG);
   }
   *success = res.state == EV_SUC;
