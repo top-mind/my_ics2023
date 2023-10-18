@@ -245,7 +245,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
   for (i = 0; i < nr_rpn; i++) {
     word_t src1, src2, res;
     if (ISOP(p_rpn[i])) src1 = stack[--nr_stk];
-    if (ISUOP(p_rpn[i])) src2 = stack[--nr_stk];
+    if (ISBOP(p_rpn[i])) src2 = stack[--nr_stk];
     switch (p_rpn[i].type) {
       case '+': res = src1 + src2; break;
       case '-': res = src1 - src2; break;
