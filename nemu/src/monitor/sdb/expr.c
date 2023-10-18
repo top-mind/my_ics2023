@@ -259,8 +259,10 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
       case '-': res = src1 - src2; break;
       case '*': res = src1 * src2; break;
       case '/':
-        if (src1 == 0)
+        if (src1 == 0) {
+          free(stack);
           return (eval_t){0, EV_DIVZERO};
+        }
         else
           res = src2 / src1;
         break;
@@ -269,6 +271,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         if (in_pmem(src1) && in_pmem(src1 + sizeof res - 1)) {
           res = paddr_read(src1, sizeof res);
         } else {
+          free(stack);
           return (eval_t){src1, EV_INVADDR};
         }
         break;
