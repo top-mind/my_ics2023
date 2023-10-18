@@ -228,6 +228,7 @@ size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
   p_expr = e;
   if (!make_token(e) || nr_token == 0) return 0;
   p_rpn = rpn;
+  nr_rpn = 0;
   nr_rpn_limit = _rpn_length;
   return compile_token(0, nr_token - 1);
 }
@@ -288,7 +289,7 @@ word_t expr(char *e, bool *success) {
 
   // XXX debug
   for (int i = 0; i < nr_rpn; i++) {
-    printf("%d %" PRIu32, g_rpn[i].type, g_rpn[i].numconstant);
+    printf("%d %" PRIu32 "\n", g_rpn[i].type, g_rpn[i].numconstant);
   }
   puts("");
   // XXX gubed
