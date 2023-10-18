@@ -9,8 +9,7 @@
 * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
+* * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
 #include "memory/paddr.h"
@@ -219,7 +218,7 @@ static int compile_token(int l, int r) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
     }
-    p_rpn[nr_rpn++].type = tokens[l].type;
+    p_rpn[nr_rpn++].type = tokens[op_idx].type;
   }
   return nr_rpn;
 }
@@ -242,11 +241,11 @@ typedef struct {
 
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
   word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);
-  size_t i, idx_stk = 0;
+  size_t i, nr_stk = 0;
   for (i = 0; i < nr_rpn; i++) {
     word_t src1, src2, res;
-    if (ISOP(p_rpn[i])) src1 = stack[--idx_stk];
-    if (ISUOP(p_rpn[i])) src2 = stack[--idx_stk];
+    if (ISOP(p_rpn[i])) src1 = stack[--nr_stk];
+    if (ISUOP(p_rpn[i])) src2 = stack[--nr_stk];
     switch (p_rpn[i].type) {
       case '+': res = src1 + src2; break;
       case '-': res = src1 - src2; break;
@@ -273,7 +272,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
-    stack[idx_stk++] = res;
+    stack[nr_stk++] = res;
   }
   word_t _value = stack[0];
   free(stack);
