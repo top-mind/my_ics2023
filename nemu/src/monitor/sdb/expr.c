@@ -26,7 +26,7 @@
   (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
 #define ISBOP(x) \
   (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
-#define RTOL(x) ISUOP(x)
+#define RTOL(x)   ISUOP(x)
 #define ISUOP(x)  (x.type & UNARY)
 #define ISOP(x)   (ISUOP(x) || ISBOP(x))
 #define ISATOM(x) (x.type == TK_DECIMAL)
@@ -157,7 +157,8 @@ static bool make_token(char *e) {
             break;
           case '-':
           case '*':
-            if (nr_token == 0 || ISOP(tokens[nr_token - 1])) tokens[nr_token].type |= UNARY;
+            if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(')
+              tokens[nr_token].type |= UNARY;
             break;
           default:;
         }
