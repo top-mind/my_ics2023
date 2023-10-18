@@ -290,10 +290,11 @@ word_t expr(char *e, bool *success) {
   }
 
   // XXX debug
-  for (int i = 0; i < nr_rpn; i++) {
-    printf("%d %" PRIu32 "\n", g_rpn[i].type, g_rpn[i].numconstant);
-  }
+  // for (int i = 0; i < nr_rpn; i++) {
+  //   printf("%d %" PRIu32 "\n", g_rpn[i].type, g_rpn[i].numconstant);
+  // }
   // XXX gubed
+
   eval_t res = eval(g_rpn, nr_rpn);
   switch (res.state) {
     case EV_SUC: break;
