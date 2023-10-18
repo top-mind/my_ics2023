@@ -21,8 +21,8 @@
  */
 #include <regex.h>
 
-#define PRIORITY(x) ((x.type == '+' || x.type == '-') ? 1 : 2)
 #define UNARY (1 << 9)
+#define PRIORITY(x) (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
 #define ISBOP(x) \
   (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
 #define ISUOP(x)  (x.type & UNARY)
@@ -214,7 +214,6 @@ static int compile_token(int l, int r) {
       if (!ISOP(tokens[i])) continue;
       if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx])) op_idx = i;
     }
-    // no binary op, must be unary op
     if (op_idx == -1) {
       printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
