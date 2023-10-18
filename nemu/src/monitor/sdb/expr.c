@@ -206,7 +206,7 @@ static int compile_token(int l, int r) {
     for (int i = r; i >= l; i = tokens[i].type == ')' ? tokens[i].lbmatch - 1 : i - 1) {
       if (!ISOP(tokens[i])) continue;
       if (op_idx == -1 || PRIORITY(tokens[i]) < PRIORITY(tokens[op_idx]) ||
-          (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && ISBOP(tokens[i])))
+          (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && ISUOP(tokens[i])))
         op_idx = i;
     }
     if (op_idx == -1) {
