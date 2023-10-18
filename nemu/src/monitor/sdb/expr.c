@@ -292,7 +292,7 @@ word_t expr(char *e, bool *success) {
   }
   puts("");
   // XXX gubed
-  eval_t res = eval(g_rpn, ARRLEN(g_rpn));
+  eval_t res = eval(g_rpn, nr_rpn);
   switch (res.state) {
     case EV_SUC: break;
     case EV_DIVZERO: puts("Division by zero"); break;
