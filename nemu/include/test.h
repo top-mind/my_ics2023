@@ -9,7 +9,7 @@ extern word_t expr(char *e, bool *success);
 
 int test_main() {
   uint32_t ans;
-  while (scanf("%u%s", &ans, _s)) {
+  while (2 == scanf("%u%s", &ans, _s)) {
     bool suc = false;
     uint32_t out = expr(_s, &suc);
     if (!suc || ans != out) {
