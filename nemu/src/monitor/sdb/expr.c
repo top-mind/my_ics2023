@@ -90,7 +90,7 @@ typedef struct {
   };
 } rpn_t;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[600] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
 static rpn_t g_rpn[ARRLEN(tokens)];
 
