@@ -14,10 +14,15 @@
 ***************************************************************************************/
 
 #include <cpu/cpu.h>
+#include <test.h>
 
 void sdb_mainloop();
 
 void engine_start() {
+#ifdef CONFIG_TEST
+  test_main();
+  return;
+#endif
 #ifdef CONFIG_TARGET_AM
   cpu_exec(-1);
 #else

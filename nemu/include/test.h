@@ -7,7 +7,7 @@ static char _s[65536 + 5];
 
 extern word_t expr(char *e, bool *success);
 
-int test_main(int argc, char *argv[]) {
+int test_main() {
   uint32_t ans;
   while (scanf("%u%s", &ans, _s)) {
     bool suc = false;

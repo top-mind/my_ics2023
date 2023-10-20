@@ -20,13 +20,7 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-#ifdef CONFIG_TEST
-#include <test.h>
-#endif
 int main(int argc, char *argv[]) {
-#ifdef CONFIG_TEST
-  return test_main(argc, argv);
-#endif
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
