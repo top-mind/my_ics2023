@@ -126,6 +126,9 @@ endmenu
 
 menu "Testing and Debugging"
 
+config TEST
+  bool "test mode"
+  default n
 
 config TRACE
   bool "Enable tracer"

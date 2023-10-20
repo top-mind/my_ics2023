@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <readline/readline.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +23,8 @@
 
 // this should be enough
 static char buf[65536] = {};
-static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+#define ARRLEN(x) (sizeof(x) / sizeof(x[0]))
+static char code_buf[ARRLEN(buf) + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
@@ -31,8 +33,45 @@ static char *code_format =
 "  return 0; "
 "}";
 
-static void gen_rand_expr() {
-  buf[0] = '\0';
+uint32_t choose(uint32_t x) {
+  static int has_srand = 0;
+  if (!has_srand) {
+    srand(time(NULL));
+    has_srand = 1;
+  }
+  return rand() % x;
+}
+
+int nr_buf = 0;
+
+void gen_num() {
+  if (nr_buf > ARRLEN(buf) - 11)
+    return;
+  uint32_t num = (uint32_t) rand() | (rand() % 2 * (1u << 31));
+  nr_buf += sprintf(buf + nr_buf, "%uu", num);
+}
+
+void gen(char x) {
+  if (nr_buf >= ARRLEN(buf) - 1)
+    return;
+  buf[nr_buf++] = x;
+}
+
+void gen_rand_op() {
+  if (nr_buf >= ARRLEN(buf) - 2)
+    return;
+  static const char k_op[] = "+\0-\0*\0/\0==\0";
+  static const int k_op_idx[] = {0, 2, 4, 6, 8};
+  int tmp = choose(ARRLEN(k_op_idx));
+  nr_buf += sprintf(buf + nr_buf, "%s", k_op + k_op_idx[tmp]);
+}
+
+void gen_rand_expr() {
+  switch (choose(3)) {
+    case 0: gen_num(); break;
+    case 1: gen('('); gen_rand_expr(); gen(')'); break;
+    default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -44,7 +83,9 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    nr_buf = 0;
     gen_rand_expr();
+    buf[nr_buf] = '\0';
 
     sprintf(code_buf, code_format, buf);
 
@@ -53,7 +94,7 @@ int main(int argc, char *argv[]) {
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    int ret = system("gcc -Wall -Werror /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
@@ -63,7 +104,12 @@ int main(int argc, char *argv[]) {
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
 
-    printf("%u %s\n", result, buf);
+    printf("%u ", result);
+    for (int i = 0; i < nr_buf; i++) {
+      if (buf[i] != 'u')
+        putchar(buf[i]);
+    }
+    puts("");
   }
   return 0;
 }
