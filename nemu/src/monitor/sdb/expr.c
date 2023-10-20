@@ -185,7 +185,7 @@ static bool make_token(char *e) {
 // return: 表达式符号数
 static int compile_token(int l, int r) {
   if (l > r) {
-    printf("Unkown error near `%s'.\n", p_expr + (l >= 0 ? tokens[l].position : 0));
+    printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
     return 0;
   }
   if (nr_rpn >= nr_rpn_limit) {
@@ -215,9 +215,9 @@ static int compile_token(int l, int r) {
       printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
     }
-    int res1 = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1,
-        res2 = compile_token(op_idx + 1, r);
-    if (!res1 || !res2) return 0;
+    int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1,
+        rres = compile_token(op_idx + 1, r);
+    if (!lres || !rres) return 0;
     if (nr_rpn >= nr_rpn_limit) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
