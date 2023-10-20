@@ -247,30 +247,30 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
   word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);
   size_t i, nr_stk = 0;
   for (i = 0; i < nr_rpn; i++) {
-    word_t src1, src2, res;
-    if (ISOP(p_rpn[i])) src1 = stack[--nr_stk];
-    if (ISBOP(p_rpn[i])) src2 = stack[--nr_stk];
+    word_t lsrc, rsrc, res;
+    if (ISOP(p_rpn[i])) rsrc = stack[--nr_stk];
+    if (ISBOP(p_rpn[i])) lsrc = stack[--nr_stk];
     switch (p_rpn[i].type) {
-      case '+': res = src1 + src2; break;
-      case '-': res = src1 - src2; break;
-      case '*': res = src1 * src2; break;
+      case '+': res = lsrc + rsrc; break;
+      case '-': res = lsrc - rsrc; break;
+      case '*': res = lsrc * rsrc; break;
       case '/':
-        if (src1 == 0) {
+        if (rsrc == 0) {
           free(stack);
           return (eval_t){0, EV_DIVZERO};
         } else
-          res = src2 / src1;
+          res = lsrc / rsrc;
         break;
-      case TK_EQ: res = src1 == src2; break;
+      case TK_EQ: res = lsrc == rsrc; break;
       case TK_DEREF:
-        if (in_pmem(src1) && in_pmem(src1 + sizeof res - 1)) {
-          res = paddr_read(src1, sizeof res);
+        if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
+          res = paddr_read(rsrc, sizeof res);
         } else {
           free(stack);
-          return (eval_t){src1, EV_INVADDR};
+          return (eval_t){rsrc, EV_INVADDR};
         }
         break;
-      case TK_NEGTIVE: res = -src1; break;
+      case TK_NEGTIVE: res = -rsrc; break;
       case TK_DECIMAL: res = p_rpn[i].numconstant; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
