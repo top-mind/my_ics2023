@@ -185,8 +185,7 @@ static bool make_token(char *e) {
 // return: 表达式符号数
 static int compile_token(int l, int r) {
   if (l > r) {
-    printf("l=%d, r = %d\n", l, r);
-    printf("A syntax error in expression, near `%s'.", p_expr + tokens[l].position);
+    printf("Unkown error near `%s'.\n", p_expr + (l >= 0 ? tokens[l].position : 0));
     return 0;
   }
   if (nr_rpn >= nr_rpn_limit) {
