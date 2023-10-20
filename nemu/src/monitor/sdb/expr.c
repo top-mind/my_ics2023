@@ -217,7 +217,7 @@ static int compile_token(int l, int r) {
     }
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
-    if (res) return 0;
+    if (!res) return 0;
     if (nr_rpn >= nr_rpn_limit) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
