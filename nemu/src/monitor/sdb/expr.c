@@ -215,9 +215,9 @@ static int compile_token(int l, int r) {
       printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
       return 0;
     }
-    int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1,
-        rres = compile_token(op_idx + 1, r);
-    if (!lres || !rres) return 0;
+    int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
+    int res = lres ? compile_token(op_idx + 1, r) : 0;
+    if (res) return 0;
     if (nr_rpn >= nr_rpn_limit) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
