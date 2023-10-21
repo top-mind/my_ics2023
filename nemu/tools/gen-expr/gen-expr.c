@@ -45,8 +45,12 @@ uint32_t choose(uint32_t x) {
 int nr_buf = 0;
 
 void gen_num() {
-  if (nr_buf > ARRLEN(buf) - 11)
+  if (nr_buf > ARRLEN(buf) - 23)
     return;
+  int neg = choose(1);
+  for (int i = 0; i < neg; i++) {
+    nr_buf += sprintf(buf + nr_buf, "-");
+  }
   uint32_t num = (uint32_t) rand() | (rand() % 2 * (1u << 31));
   nr_buf += sprintf(buf + nr_buf, "%uu", num);
 }
@@ -61,14 +65,24 @@ void gen_rand_op() {
   if (nr_buf >= ARRLEN(buf) - 2)
     return;
   static const char k_op[] = "+\0-\0*\0/\0==\0";
-  static const int k_op_idx[] = {0, 2, 4, 6, 8};
+  static const int k_op_idx[] = {0, 2, 4, 6};
   int tmp = choose(ARRLEN(k_op_idx));
   nr_buf += sprintf(buf + nr_buf, "%s", k_op + k_op_idx[tmp]);
+}
+
+void gen_spaces() {
+  uint32_t num = choose(3);
+  if (nr_buf >= ARRLEN(buf) - num)
+    return;
+  nr_buf += sprintf(buf + nr_buf, "%*.s", num, "");
 }
 
 void gen_rand_expr() {
   switch (choose(3)) {
     case 0: gen_num(); break;
+//     case 1: gen_spaces(); gen('('); gen_spaces(); gen_rand_expr(); gen_spaces(); gen(')'); gen_spaces(); break;
+//     default: gen_spaces(); gen_rand_expr(); gen_spaces(); gen_rand_op(); gen_spaces(); gen_rand_expr(); gen_spaces(); break;
+//
     case 1: gen('('); gen_rand_expr(); gen(')'); break;
     default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
   }
