@@ -18,6 +18,7 @@ int test_main() {
   //     nemu_state.state = NEMU_ABORT;
   //   }
   // }
+  int nr_ok = 0;
   while (scanf("%u%s", &ans, _s) == 2) {
     size_t len = strlen(_s);
     uint32_t out;
@@ -27,9 +28,10 @@ int test_main() {
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
     } else {
-      puts("ok");
+      nr_ok ++;
     }
   }
+  printf("%d\n", nr_ok);
   return 0;
 }
 #endif
