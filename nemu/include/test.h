@@ -10,21 +10,24 @@ extern word_t expr(char *e, bool *success);
 int test_main() {
   uint32_t ans;
   nemu_state.state = NEMU_QUIT;
-  // while (2 == scanf("%u%s", &ans, _s)) {
-  //   bool suc = false;
-  //   uint32_t out = expr(_s, &suc);
-  //   if (!suc || ans != out) {
+  int nr_ok = 0;
+  // while (scanf("%u%s", &ans, _s) == 2) {
+  //   size_t len = strlen(_s);
+  //   uint32_t out;
+  //   sprintf(_s + len, "==%u", ans);
+  //   bool suc;
+  //   if ((out = expr(_s, &suc)) != 1) {
   //     printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
   //     nemu_state.state = NEMU_ABORT;
+  //   } else {
+  //     nr_ok ++;
   //   }
   // }
-  int nr_ok = 0;
-  while (scanf("%u%s", &ans, _s) == 2) {
-    size_t len = strlen(_s);
+  while (scanf("%u", &ans) == 1) {
+    if (!fgets(_s, ARRLEN(_s), stdin)) break;
     uint32_t out;
-    sprintf(_s + len, "==%u", ans);
     bool suc;
-    if ((out = expr(_s, &suc)) != 1) {
+    if ((out = expr(_s, &suc)) != ans) {
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
     } else {
