@@ -8,6 +8,7 @@ static char _s[65536 + 25];
 extern word_t expr(char *e, bool *success);
 
 int test_main() {
+  puts("Warning: TEST MODE!");
   uint32_t ans;
   nemu_state.state = NEMU_QUIT;
   int nr_ok = 0;
