@@ -25,6 +25,8 @@ int test_main() {
   // }
   while (scanf("%u", &ans) == 1) {
     if (!fgets(_s, ARRLEN(_s), stdin)) break;
+    if (_s[strlen(_s) - 1] != '\n') continue;
+    _s[strlen(_s) - 1] = '\0';
     uint32_t out;
     bool suc;
     if ((out = expr(_s, &suc)) != ans) {

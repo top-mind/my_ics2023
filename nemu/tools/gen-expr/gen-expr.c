@@ -47,7 +47,7 @@ int nr_buf = 0;
 void gen_num() {
   if (nr_buf > ARRLEN(buf) - 23)
     return;
-  int neg = choose(1);
+  int neg = choose(5);
   for (int i = 0; i < neg; i++) {
     nr_buf += sprintf(buf + nr_buf, "-");
   }
@@ -80,11 +80,8 @@ void gen_spaces() {
 void gen_rand_expr() {
   switch (choose(3)) {
     case 0: gen_num(); break;
-//     case 1: gen_spaces(); gen('('); gen_spaces(); gen_rand_expr(); gen_spaces(); gen(')'); gen_spaces(); break;
-//     default: gen_spaces(); gen_rand_expr(); gen_spaces(); gen_rand_op(); gen_spaces(); gen_rand_expr(); gen_spaces(); break;
-//
-    case 1: gen('('); gen_rand_expr(); gen(')'); break;
-    default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+     case 1: gen_spaces(); gen('('); gen_spaces(); gen_rand_expr(); gen_spaces(); gen(')'); gen_spaces(); break;
+     default: gen_spaces(); gen_rand_expr(); gen_spaces(); gen_rand_op(); gen_spaces(); gen_rand_expr(); gen_spaces(); break;
   }
 }
 
