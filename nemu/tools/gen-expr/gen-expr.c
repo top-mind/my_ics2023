@@ -49,7 +49,7 @@ void gen_num() {
     return;
   int neg = choose(5);
   for (int i = 0; i < neg; i++) {
-    nr_buf += sprintf(buf + nr_buf, "-");
+    nr_buf += sprintf(buf + nr_buf, " -");
   }
   uint32_t num = (uint32_t) rand() | (rand() % 2 * (1u << 31));
   nr_buf += sprintf(buf + nr_buf, "%uu", num);
