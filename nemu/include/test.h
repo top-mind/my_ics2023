@@ -24,11 +24,11 @@ int test_main() {
     sprintf(_s + len, "==%u", ans);
     bool suc;
     if ((out = expr(_s, &suc)) != 1) {
-
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
+    } else {
+      puts("ok");
     }
-
   }
   return 0;
 }
