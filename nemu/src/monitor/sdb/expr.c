@@ -21,20 +21,19 @@
  */
 #include <regex.h>
 
-// priority and associativity
-// base on ~/Downloads/priority.jpg
-// high to low
-// deref neg	10	right to left
-// * / %	9
-// + -		8
-// << >>	7
-// == !=	6
-// &		5
-// ^		4
-// |		3
-// &&		2
-// ||		1
-// atom		0
+/* priority and associativity base on ~/Downloads/priority.jpg
+deref neg	10	right to left
+* / %		9
++ -		8
+<< >>		7
+== !=		6
+&		5
+^		4
+|		3
+&&		2
+||		1
+atom		0
+*/
 
 // bit 7:0	ascii code
 // bit 12:9	priority
@@ -45,7 +44,6 @@
 #define ISBOP(x)    (ISOP(x) && !ISUOP(x))
 #define RTOL(x)     ISUOP(x)
 #define ISOP(x)     (PRIORITY(x) > 0)
-
 // clang-format off
 enum {
   TK_NOTYPE,
@@ -77,7 +75,7 @@ static struct rule {
   {"\\+", TK_PLUS},  // plus
   {"-", TK_MINUS},   // minus
   {"\\*", TK_TIMES}, // times
-  {"/", TK_PLUS},    // divide
+  {"/", TK_DIVIDE},  // divide
   {"==", TK_EQ},     // equal
   {"[0-9]", TK_NUM}, // num
   {"\\(", '('},      // lbrace
