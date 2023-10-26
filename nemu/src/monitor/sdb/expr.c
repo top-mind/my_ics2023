@@ -48,6 +48,7 @@ atom		0
 enum {
   TK_NOTYPE,
   TK_NUM,
+  TK_DOLLAR,
   TK_DEREF   = '*' | PRIO(15),
   TK_NEGTIVE = '-' | PRIO(15),
   TK_TIMES   = '*' | PRIO(9),
@@ -175,6 +176,8 @@ static bool make_token(char *e) {
             substr_len = endptr - substr_start;
             position = endptr - e;
           } break;
+          case TK_DOLLAR:
+                       break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
             last_lbrace = nr_token;
