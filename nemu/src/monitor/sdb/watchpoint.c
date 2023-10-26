@@ -20,9 +20,9 @@
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-
+  union {
+    rpn_t rpn;
+  };
 } WP;
 
 static WP wp_pool[NR_WP] = {};

@@ -32,7 +32,6 @@ void init_isa();
 extern CPU_state cpu;
 void isa_reg_display();
 word_t isa_reg_str2val(const char *name, bool *success);
-// TODO Can always return NULL if not support
 word_t *isa_reg_str2ptr(const char *name);
 
 // exec

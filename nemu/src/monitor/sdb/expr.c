@@ -14,6 +14,7 @@
 
 #include "cpu/decode.h"
 #include "memory/paddr.h"
+#include "sdb.h"
 #include <isa.h>
 #include <errno.h>
 
@@ -118,14 +119,6 @@ typedef struct token {
   };
   int position;
 } Token;
-
-typedef struct {
-  int type;
-  union {
-    word_t numconstant;
-    const word_t *preg;
-  };
-} rpn_t;
 
 static Token tokens[65536] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
@@ -287,13 +280,6 @@ size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
   nr_rpn_limit = _rpn_length;
   return compile_token(0, nr_token - 1);
 }
-
-typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
-
-typedef struct {
-  word_t value;
-  eval_state state;
-} eval_t;
 
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
   word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);

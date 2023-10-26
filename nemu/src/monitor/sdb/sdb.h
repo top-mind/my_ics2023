@@ -18,6 +18,21 @@
 
 #include <common.h>
 
+typedef struct {
+  int type;
+  union {
+    word_t numconstant;
+    const word_t *preg;
+  };
+} rpn_t;
+
+typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
+
+typedef struct {
+  word_t value;
+  eval_state state;
+} eval_t;
+
 word_t expr(char *e, bool *success);
 
 #endif
