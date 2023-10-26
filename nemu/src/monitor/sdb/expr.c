@@ -236,7 +236,6 @@ static int compile_token(int l, int r) {
   if (l == r) {
     p_rpn[nr_rpn].type = tokens[l].type;
     p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
-    Assert(0,);
     // switch (tokens[l].type) {
     //   case TK_NUM:
     //     p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
