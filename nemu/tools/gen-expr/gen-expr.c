@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <string.h>
 
+// #define TST_SPACES
+
 // this should be enough
 static char buf[65536] = {};
 #define ARRLEN(x) (sizeof(x) / sizeof(x[0]))
@@ -71,10 +73,12 @@ void gen_rand_op() {
 }
 
 void gen_spaces() {
+#ifdef TST_SPACES
   uint32_t num = choose(3);
   if (nr_buf >= ARRLEN(buf) - num)
     return;
   nr_buf += sprintf(buf + nr_buf, "%*.s", num, "");
+#endif
 }
 
 void gen_rand_expr() {
