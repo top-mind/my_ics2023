@@ -165,6 +165,7 @@ static bool make_token(char *e) {
           return false;
         }
         char *endptr;
+        char save;
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
@@ -177,7 +178,10 @@ static bool make_token(char *e) {
             }
             break;
           case TK_DOLLAR:
-            // isa_reg_str2ptr();
+            save = substr_start[substr_len];
+            substr_start[substr_len] = '\0';
+            tokens[nr_token].preg = isa_reg_str2ptr(substr_start + 1);
+            substr_start[substr_len] = save;
             break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
