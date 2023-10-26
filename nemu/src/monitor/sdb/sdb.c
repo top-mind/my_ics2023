@@ -65,6 +65,10 @@ static int cmd_info(char *);
 static int cmd_x(char *);
 
 static int cmd_p(char *args) {
+  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+    puts("Usage: p EXPR");
+    return 0;
+  }
   bool suc;
   word_t result = expr(args, &suc);
   if (suc) printf("%" PRIu32 "\n", result);
