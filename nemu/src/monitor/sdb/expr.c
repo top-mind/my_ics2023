@@ -12,6 +12,7 @@
  * * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
+#include "cpu/decode.h"
 #include "memory/paddr.h"
 #include <isa.h>
 #include <errno.h>
@@ -154,7 +155,7 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -233,14 +234,19 @@ static int compile_token(int l, int r) {
     return 0;
   }
   if (l == r) {
-    if (tokens[l].type == TK_NUM) {
-      p_rpn[nr_rpn].type = tokens[l].type;
-      p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
-      nr_rpn++;
-    } else {
-      printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
-      return 0;
+    p_rpn[nr_rpn].type = tokens[l].type;
+    switch (tokens[l].type) {
+      case TK_NUM:
+        p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
+        break;
+      case TK_DOLLAR:
+        p_rpn[nr_rpn].preg = tokens[l].preg;
+        break;
+      default:
+        printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
+        return 0;
     }
+    nr_rpn++;
   } else {
     if (tokens[r].type == ')' && tokens[r].lbmatch == l) return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
