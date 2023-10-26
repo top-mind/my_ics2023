@@ -329,7 +329,6 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
     }
     stack[nr_stk++] = res;
   }
-  // XXX debug
   Assert(nr_stk == 1, "Fatal error, bad implement compile expression");
   word_t _value = stack[0];
   free(stack);
