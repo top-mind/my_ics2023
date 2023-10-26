@@ -1,16 +1,16 @@
 /***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* * See the Mulan PSL v2 for more details.
-***************************************************************************************/
+ * Copyright (c) 2014-2022 Zihao Yu, Nanjing University
+ *
+ * NEMU is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * * See the Mulan PSL v2 for more details.
+ ***************************************************************************************/
 
 #include "memory/paddr.h"
 #include <isa.h>
@@ -22,18 +22,18 @@
 #include <regex.h>
 
 /* priority and associativity base on ~/Downloads/priority.jpg
-deref neg	10	right to left
-* / %		9
-+ -		8
-<< >>		7
-== !=		6
-&		5
-^		4
-|		3
-&&		2
-||		1
-atom		0
-*/
+   deref neg	10	right to left
+ * / %		9
+ + -		8
+ << >>		7
+ == !=		6
+ &		5
+ ^		4
+ |		3
+ &&		2
+ ||		1
+ atom		0
+ */
 
 // bit 7:0	ascii code
 // bit 12:9	priority
@@ -163,21 +163,20 @@ static bool make_token(char *e) {
           puts("Expression too long (non-space tokens).");
           return false;
         }
-
+        char *endptr;
         switch (tokens[nr_token].type = rules[i].token_type) {
-          case TK_NUM: {
-            char *endptr;
+          case TK_NUM:
             errno = 0;
             tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 10);
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
-            }
-            substr_len = endptr - substr_start;
-            position = endptr - e;
-          } break;
+              substr_len = endptr - substr_start;
+              position = endptr - e;
+            } break;
           case TK_DOLLAR:
-                       break;
+
+            break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
             last_lbrace = nr_token;
@@ -290,21 +289,21 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
       case TK_MINUS: res = lsrc - rsrc; break;
       case TK_TIMES: res = lsrc * rsrc; break;
       case TK_DIVIDE:
-        if (rsrc == 0) {
-          free(stack);
-          return (eval_t){0, EV_DIVZERO};
-        } else
-          res = lsrc / rsrc;
-        break;
+                     if (rsrc == 0) {
+                       free(stack);
+                       return (eval_t){0, EV_DIVZERO};
+                     } else
+                       res = lsrc / rsrc;
+                     break;
       case TK_EQ: res = lsrc == rsrc; break;
       case TK_DEREF:
-        if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
-          res = paddr_read(rsrc, sizeof res);
-        } else {
-          free(stack);
-          return (eval_t){rsrc, EV_INVADDR};
-        }
-        break;
+                  if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
+                    res = paddr_read(rsrc, sizeof res);
+                  } else {
+                    free(stack);
+                    return (eval_t){rsrc, EV_INVADDR};
+                  }
+                  break;
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
