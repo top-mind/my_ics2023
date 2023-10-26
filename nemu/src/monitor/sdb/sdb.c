@@ -71,6 +71,7 @@ static int cmd_p(char *args) {
   }
   if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR"\n", cpu.pc);
+    return 0;
   }
   bool suc;
   word_t result = expr(args, &suc);
