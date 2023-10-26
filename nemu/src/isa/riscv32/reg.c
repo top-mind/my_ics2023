@@ -103,6 +103,13 @@ word_t *isa_reg_str2ptr(const char *s) {
       return &cpu.gpr[i];
     }
   }
+  if (strcmp(s, "pc") == 0) {
+    return &cpu.pc;
+  } else if (strcmp(s, "ps") || strcmp(s, "mstatus")) {
+    return &cpu.gpr[0]; // not implemented yet
+  } else if (strcmp(s, "fp")) {
+    return &cpu.gpr[8];
+  }
   return NULL;
 }
 // vim: fenc=utf-8
