@@ -288,10 +288,10 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
     if (ISOP(p_rpn[i])) rsrc = stack[--nr_stk];
     if (ISBOP(p_rpn[i])) lsrc = stack[--nr_stk];
     switch (p_rpn[i].type) {
-      case '+': res = lsrc + rsrc; break;
-      case '-': res = lsrc - rsrc; break;
-      case '*': res = lsrc * rsrc; break;
-      case '/':
+      case TK_PLUS: res = lsrc + rsrc; break;
+      case TK_MINUS: res = lsrc - rsrc; break;
+      case TK_TIMES: res = lsrc * rsrc; break;
+      case TK_DIVIDE:
         if (rsrc == 0) {
           free(stack);
           return (eval_t){0, EV_DIVZERO};
