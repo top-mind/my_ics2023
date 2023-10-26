@@ -69,6 +69,9 @@ static int cmd_p(char *args) {
     puts("Usage: p EXPR");
     return 0;
   }
+  if (strcmp(args, "$pc") == 1) {
+    printf(FMT_PADDR"\n", cpu.pc);
+  }
   bool suc;
   word_t result = expr(args, &suc);
   if (suc) printf("%" PRIu32 "\n", result);
