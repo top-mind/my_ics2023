@@ -184,7 +184,7 @@ static bool make_token(char *e) {
             substr_start[substr_len] = '\0';
             preg = isa_reg_str2ptr(substr_start + 1);
             if (preg == NULL) {
-              printf("Invalid register name \"%s\"\n", substr_start + 1);
+              printf("Invalid register name '%s'\n", substr_start + 1);
               return false;
             }
             tokens[nr_token].preg = preg;
@@ -324,6 +324,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         break;
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
+      case TK_DOLLAR: res = *p_rpn[i].preg; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
