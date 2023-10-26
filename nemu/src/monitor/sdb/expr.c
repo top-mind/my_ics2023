@@ -167,6 +167,7 @@ static bool make_token(char *e) {
         }
         char *endptr;
         char save;
+        word_t *preg;
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
@@ -181,7 +182,12 @@ static bool make_token(char *e) {
           case TK_DOLLAR:
             save = substr_start[substr_len];
             substr_start[substr_len] = '\0';
-            tokens[nr_token].preg = isa_reg_str2ptr(substr_start + 1);
+            preg = isa_reg_str2ptr(substr_start + 1);
+            if (preg == NULL) {
+              printf("Invalid register name \"%s\"\n", substr_start + 1);
+              return false;
+            }
+            tokens[nr_token].preg = preg;
             substr_start[substr_len] = save;
             break;
           case '(':
