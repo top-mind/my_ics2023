@@ -244,7 +244,7 @@ static int compile_token(int l, int r) {
         break;
       default:
         printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
-        return 0;
+        // return 0;
     }
   } else {
     if (tokens[r].type == ')' && tokens[r].lbmatch == l) return compile_token(l + 1, r - 1);
