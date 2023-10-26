@@ -79,6 +79,7 @@ static struct rule {
   {"/", TK_DIVIDE},  // divide
   {"==", TK_EQ},     // equal
   {"[0-9]", TK_NUM}, // num
+  {"\\$[a-z0-9$]+", TK_DOLLAR},
   {"\\(", '('},      // lbrace
   {"\\)", ')'},      // rbrace
 };
@@ -173,9 +174,10 @@ static bool make_token(char *e) {
               return 0;
               substr_len = endptr - substr_start;
               position = endptr - e;
-            } break;
+            }
+            break;
           case TK_DOLLAR:
-
+            // isa_reg_str2ptr();
             break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
@@ -289,21 +291,21 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
       case TK_MINUS: res = lsrc - rsrc; break;
       case TK_TIMES: res = lsrc * rsrc; break;
       case TK_DIVIDE:
-                     if (rsrc == 0) {
-                       free(stack);
-                       return (eval_t){0, EV_DIVZERO};
-                     } else
-                       res = lsrc / rsrc;
-                     break;
+        if (rsrc == 0) {
+          free(stack);
+          return (eval_t){0, EV_DIVZERO};
+        } else
+          res = lsrc / rsrc;
+        break;
       case TK_EQ: res = lsrc == rsrc; break;
       case TK_DEREF:
-                  if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
-                    res = paddr_read(rsrc, sizeof res);
-                  } else {
-                    free(stack);
-                    return (eval_t){rsrc, EV_INVADDR};
-                  }
-                  break;
+        if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
+          res = paddr_read(rsrc, sizeof res);
+        } else {
+          free(stack);
+          return (eval_t){rsrc, EV_INVADDR};
+        }
+        break;
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
