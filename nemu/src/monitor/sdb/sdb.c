@@ -69,7 +69,7 @@ static int cmd_p(char *args) {
     puts("Usage: p EXPR");
     return 0;
   }
-  if (strcmp(args, "$pc") == 1) {
+  if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR"\n", cpu.pc);
   }
   bool suc;
