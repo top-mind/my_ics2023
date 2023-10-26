@@ -21,31 +21,65 @@
  */
 #include <regex.h>
 
-#define UNARY (1 << 9)
-#define PRIORITY(x) \
-  (x.type == TK_EQ ? 0 : (x.type == '+' || x.type == '-') ? 1 : (x.type & UNARY ? 3 : 2))
-#define ISBOP(x) \
-  (x.type == '+' || x.type == '-' || x.type == '*' || x.type == '/' || x.type == TK_EQ)
-#define RTOL(x)   ISUOP(x)
-#define ISUOP(x)  (x.type & UNARY)
-#define ISOP(x)   (ISUOP(x) || ISBOP(x))
-#define ISATOM(x) (x.type == TK_DECIMAL)
+// priority and associativity
+// base on ~/Downloads/priority.jpg
+// high to low
+// deref neg	10	right to left
+// * / %	9
+// + -		8
+// << >>	7
+// == !=	6
+// &		5
+// ^		4
+// |		3
+// &&		2
+// ||		1
+// atom		0
 
-enum { TK_NOTYPE = 256, TK_EQ, TK_DECIMAL, TK_NEGTIVE = '-' | UNARY, TK_DEREF = '*' | UNARY };
+// bit 7:0	ascii code
+// bit 12:9	priority
+#define PRIO(x)     ((x) << 9)
+#define PRIORITY(x) (((x.type) >> 9) & 0xf)
+#define ALTERNATIVE (1 << 8)
+#define UNARYPRIO   10
+#define ISUOP(x)    (PRIORITY(x) == UNARYPRIO)
+#define ISBOP(x)    (ISOP(x) && !ISUOP(x))
+#define RTOL(x)     ISUOP(x)
+#define ISOP(x)     (PRIORITY(x) > 0)
+
+enum {
+  TK_NOTYPE,
+  TK_NUM,
+  TK_DEREF = '*' | PRIO(10),
+  TK_NEGTIVE = '-' | PRIO(10),
+  TK_TIMES = '*' | PRIO(9),
+  TK_DIVIDE = '/' | PRIO(9),
+  TK_MOD = '%' | PRIO(9),
+  TK_PLUS = '+' | PRIO(8),
+  TK_MINUS = '-' | PRIO(8),
+  TK_LSHIFT = '<' | PRIO(7),
+  TK_RSHIFT = '>' | PRIO(7),
+  TK_EQ = '=' | PRIO(6),
+  TK_NEQ = '!' | PRIO(6),
+  TK_BITAND = '&' | PRIO(5),
+  TK_BITXOR = '^' | PRIO(4),
+  TK_BITOR = '|' | PRIO(3),
+  TK_AND = '&' | PRIO(2),
+  TK_OR = '|' | PRIO(1),
+};
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE}, // spaces
-  {"\\+", '+'},      // plus
-  {"-", '-'},        // minus
-  {"\\*", '*'},      // times
-  {"/", '/'},        // divide
-  {"==", TK_EQ},     // equal
-  {"[0-9]", TK_DECIMAL},
-  {"\\(", '('}, // lbrace
-  {"\\)", ')'}, // rbrace
+  {" +", TK_NOTYPE},               // spaces
+  {"\\+", '+'},                    // plus
+  {"-", '-'},                      // minus
+  {"\\*", '*'},                    // times
+  {"/", '/'},                      // divide
+  {"==", TK_EQ},                   // equal
+  {"[0-9]", TK_NUM}, {"\\(", '('}, // lbrace
+  {"\\)", ')'},                    // rbrace
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -130,17 +164,17 @@ static bool make_token(char *e) {
         }
 
         switch (tokens[nr_token].type = rules[i].token_type) {
-          case TK_DECIMAL: {
+          case TK_NUM: {
             char *endptr;
+            errno = 0;
             tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 10);
-
-            substr_len = endptr - substr_start;
-            position = endptr - e;
-
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
             }
+            substr_len = endptr - substr_start;
+            position = endptr - e;
+
           } break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
@@ -156,8 +190,10 @@ static bool make_token(char *e) {
             break;
           case '-':
           case '*':
-            if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(')
-              tokens[nr_token].type |= UNARY;
+            if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(') {
+              tokens[nr_token].type &= ~PRIO(0xf);
+              tokens[nr_token].type &= PRIO(UNARYPRIO);
+            }
             break;
           default:;
         }
@@ -192,7 +228,7 @@ static int compile_token(int l, int r) {
     return 0;
   }
   if (l == r) {
-    if (tokens[l].type == TK_DECIMAL) {
+    if (tokens[l].type == TK_NUM) {
       p_rpn[nr_rpn].type = tokens[l].type;
       p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
       nr_rpn++;
@@ -270,7 +306,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
         }
         break;
       case TK_NEGTIVE: res = -rsrc; break;
-      case TK_DECIMAL: res = p_rpn[i].numconstant; break;
+      case TK_NUM: res = p_rpn[i].numconstant; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
