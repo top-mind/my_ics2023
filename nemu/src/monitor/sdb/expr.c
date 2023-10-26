@@ -174,9 +174,9 @@ static bool make_token(char *e) {
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
-              substr_len = endptr - substr_start;
-              position = endptr - e;
             }
+            substr_len = endptr - substr_start;
+            position = endptr - e;
             break;
           case TK_DOLLAR:
             save = substr_start[substr_len];
