@@ -69,6 +69,7 @@ static int cmd_p(char *args) {
     puts("Usage: p EXPR");
     return 0;
   }
+  // trick to print pc in hex
   if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR"\n", cpu.pc);
   } else {
