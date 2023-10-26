@@ -41,8 +41,7 @@
 #define PRIO(x)     ((x) << 9)
 #define PRIORITY(x) (((x.type) >> 9) & 0xf)
 #define ALTERNATIVE (1 << 8)
-#define UNARYPRIO   10
-#define ISUOP(x)    (PRIORITY(x) == UNARYPRIO)
+#define ISUOP(x)    (PRIORITY(x) == 0xf)
 #define ISBOP(x)    (ISOP(x) && !ISUOP(x))
 #define RTOL(x)     ISUOP(x)
 #define ISOP(x)     (PRIORITY(x) > 0)
@@ -51,22 +50,22 @@
 enum {
   TK_NOTYPE,
   TK_NUM,
-  TK_DEREF   = '*' | PRIO(10),
-  TK_NEGTIVE = '-' | PRIO(10),
-  TK_TIMES   = '*' | PRIO( 9),
-  TK_DIVIDE  = '/' | PRIO( 9),
-  TK_MOD     = '%' | PRIO( 9),
-  TK_PLUS    = '+' | PRIO( 8),
-  TK_MINUS   = '-' | PRIO( 8),
-  TK_LSHIFT  = '<' | PRIO( 7),
-  TK_RSHIFT  = '>' | PRIO( 7),
-  TK_EQ      = '=' | PRIO( 6),
-  TK_NEQ     = '!' | PRIO( 6),
-  TK_BITAND  = '&' | PRIO( 5),
-  TK_BITXOR  = '^' | PRIO( 4),
-  TK_BITOR   = '|' | PRIO( 3),
-  TK_AND     = '&' | PRIO( 2),
-  TK_OR      = '|' | PRIO( 1),
+  TK_DEREF   = '*' | PRIO(15),
+  TK_NEGTIVE = '-' | PRIO(15),
+  TK_TIMES   = '*' | PRIO(9),
+  TK_DIVIDE  = '/' | PRIO(9),
+  TK_MOD     = '%' | PRIO(9),
+  TK_PLUS    = '+' | PRIO(8),
+  TK_MINUS   = '-' | PRIO(8),
+  TK_LSHIFT  = '<' | PRIO(7),
+  TK_RSHIFT  = '>' | PRIO(7),
+  TK_EQ      = '=' | PRIO(6),
+  TK_NEQ     = '!' | PRIO(6),
+  TK_BITAND  = '&' | PRIO(5),
+  TK_BITXOR  = '^' | PRIO(4),
+  TK_BITOR   = '|' | PRIO(3),
+  TK_AND     = '&' | PRIO(2),
+  TK_OR      = '|' | PRIO(1),
 };
 // clang-format on
 
@@ -190,12 +189,10 @@ static bool make_token(char *e) {
             tokens[nr_token].lbmatch = last_lbrace;
             last_lbrace = tokens[last_lbrace].save_last_lbrace;
             break;
-          case '-':
-          case '*':
-            if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(') {
-              tokens[nr_token].type &= ~PRIO(0xf);
-              tokens[nr_token].type &= PRIO(UNARYPRIO);
-            }
+          case TK_MINUS:
+          case TK_TIMES:
+            if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(')
+              tokens[nr_token].type |= PRIO(0xf);
             break;
           default:;
         }
