@@ -47,39 +47,42 @@
 #define RTOL(x)     ISUOP(x)
 #define ISOP(x)     (PRIORITY(x) > 0)
 
+// clang-format off
 enum {
   TK_NOTYPE,
   TK_NUM,
-  TK_DEREF = '*' | PRIO(10),
+  TK_DEREF   = '*' | PRIO(10),
   TK_NEGTIVE = '-' | PRIO(10),
-  TK_TIMES = '*' | PRIO(9),
-  TK_DIVIDE = '/' | PRIO(9),
-  TK_MOD = '%' | PRIO(9),
-  TK_PLUS = '+' | PRIO(8),
-  TK_MINUS = '-' | PRIO(8),
-  TK_LSHIFT = '<' | PRIO(7),
-  TK_RSHIFT = '>' | PRIO(7),
-  TK_EQ = '=' | PRIO(6),
-  TK_NEQ = '!' | PRIO(6),
-  TK_BITAND = '&' | PRIO(5),
-  TK_BITXOR = '^' | PRIO(4),
-  TK_BITOR = '|' | PRIO(3),
-  TK_AND = '&' | PRIO(2),
-  TK_OR = '|' | PRIO(1),
+  TK_TIMES   = '*' | PRIO( 9),
+  TK_DIVIDE  = '/' | PRIO( 9),
+  TK_MOD     = '%' | PRIO( 9),
+  TK_PLUS    = '+' | PRIO( 8),
+  TK_MINUS   = '-' | PRIO( 8),
+  TK_LSHIFT  = '<' | PRIO( 7),
+  TK_RSHIFT  = '>' | PRIO( 7),
+  TK_EQ      = '=' | PRIO( 6),
+  TK_NEQ     = '!' | PRIO( 6),
+  TK_BITAND  = '&' | PRIO( 5),
+  TK_BITXOR  = '^' | PRIO( 4),
+  TK_BITOR   = '|' | PRIO( 3),
+  TK_AND     = '&' | PRIO( 2),
+  TK_OR      = '|' | PRIO( 1),
 };
+// clang-format on
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE},               // spaces
-  {"\\+", '+'},                    // plus
-  {"-", '-'},                      // minus
-  {"\\*", '*'},                    // times
-  {"/", '/'},                      // divide
-  {"==", TK_EQ},                   // equal
-  {"[0-9]", TK_NUM}, {"\\(", '('}, // lbrace
-  {"\\)", ')'},                    // rbrace
+  {" +", TK_NOTYPE}, // spaces
+  {"\\+", TK_PLUS},  // plus
+  {"-", TK_MINUS},   // minus
+  {"\\*", TK_TIMES}, // times
+  {"/", TK_PLUS},    // divide
+  {"==", TK_EQ},     // equal
+  {"[0-9]", TK_NUM}, // num
+  {"\\(", '('},      // lbrace
+  {"\\)", ')'},      // rbrace
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -174,7 +177,6 @@ static bool make_token(char *e) {
             }
             substr_len = endptr - substr_start;
             position = endptr - e;
-
           } break;
           case '(':
             tokens[nr_token].save_last_lbrace = last_lbrace;
