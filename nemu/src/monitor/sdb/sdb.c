@@ -71,11 +71,11 @@ static int cmd_p(char *args) {
   }
   if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR"\n", cpu.pc);
-    return 0;
+  } else {
+    bool suc;
+    word_t result = expr(args, &suc);
+    if (suc) printf("%" PRIu32 "\n", result);
   }
-  bool suc;
-  word_t result = expr(args, &suc);
-  if (suc) printf("%" PRIu32 "\n", result);
   return 0;
 }
 
