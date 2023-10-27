@@ -80,6 +80,8 @@ static struct rule {
   {"\\*", TK_TIMES}, // times
   {"/", TK_DIVIDE},  // divide
   {"==", TK_EQ},     // equal
+  {"!=", TK_NEQ},    // not equal
+  {"&&", TK_AND},    // logical and
   {"[0-9]", TK_NUM}, // num
   {"\\$[a-z0-9$]+", TK_DOLLAR},
   {"\\(", '('},      // lbrace
@@ -300,6 +302,8 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
           res = lsrc / rsrc;
         break;
       case TK_EQ: res = lsrc == rsrc; break;
+      case TK_NEQ: res = lsrc != rsrc; break;
+      case TK_AND: res = lsrc && rsrc; break;
       case TK_DEREF:
         if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
           res = paddr_read(rsrc, sizeof res);
