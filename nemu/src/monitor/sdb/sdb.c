@@ -222,16 +222,16 @@ static int cmd_x(char *args) {
   }
 
   word_t addr;
-  for (addr = addr_begin; addr < addr_end; addr += 4) {
+  for (addr = addr_begin; addr < addr_end; addr += sizeof(word_t)) {
     if (0 == (15 & (addr - addr_begin))) {
       if (addr != addr_begin) putchar('\n');
       printf(FMT_WORD ":", addr);
     }
-    if (unlikely(!in_pmem(addr + 3) || !in_pmem(addr))) {
+    if (unlikely(!in_pmem(addr + sizeof(word_t) - 1) || !in_pmem(addr))) {
       printf("\tInvalid virtual address " FMT_PADDR, addr);
       break;
     }
-    printf("\t0x%08" PRIx32, (uint32_t)paddr_read(addr, 4));
+    printf("\t" FMT_WORD, paddr_read(addr, sizeof(word_t)));
   }
   putchar('\n');
   return 0;
