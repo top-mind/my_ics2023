@@ -373,7 +373,7 @@ void peval(eval_t ev) {
       printf("Division by zero");
       break;
     case EV_INVADDR:
-      printf("Cannot access " FMT_PADDR, ev.value);
+      printf("Cannot access address " FMT_PADDR, ev.value);
       break;
   }
 }
