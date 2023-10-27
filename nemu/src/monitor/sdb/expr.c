@@ -357,8 +357,12 @@ word_t expr(char *e, bool *success) {
   // XXX gubed
 
   eval_t res = eval(g_rpn, nr_rpn);
-  peval(res);
-  puts("");
+  switch (res.state) {
+    case EV_SUC: break;
+    case EV_DIVZERO: puts("Division by zero"); break;
+    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR "\n", res.value); break;
+    default: Assert(0, REPORTBUG);
+  }
   *success = res.state == EV_SUC;
   return res.value;
 }
