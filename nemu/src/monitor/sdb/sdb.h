@@ -37,6 +37,8 @@ word_t expr(char *e, bool *success);
 
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
 
-rpn_t *exprcomp_dynamic(char *e);
+rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn);
+
+rpn_t *exprcomp(char *e, size_t *p_nr_rpn);
 
 #endif

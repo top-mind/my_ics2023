@@ -270,17 +270,22 @@ static int compile_token(int l, int r) {
   return nr_rpn;
 }
 
-rpn_t *exprcomp(char *e) {
+rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
   p_expr = e;
-  if (!make_token(e) || nr_token == 0) return NULL;
+  if (!make_token(e) || nr_token == 0) {
+    if (p_nr_rpn != NULL) *p_nr_rpn = 0;
+    return NULL;
+  }
   nr_rpn = 0;
   compile_token(0, nr_token - 1);
+  if (p_nr_rpn != NULL) *p_nr_rpn = nr_rpn;
   return nr_rpn == 0 ? NULL : g_rpn;
 }
 
-rpn_t *exprcomp_dynamic(char *e) {
-  if (exprcomp(e) == NULL)
+rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn) {
+  if (exprcomp(e, p_nr_rpn) == NULL) {
     return NULL;
+  }
   rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_rpn);
   memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_rpn);
   return rpn;
@@ -330,7 +335,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
 
 word_t expr(char *e, bool *success) {
   Assert(e, REPORTBUG);
-  if (!exprcomp(e)) {
+  if (!exprcomp(e, NULL)) {
     *success = false;
     return 0;
   }

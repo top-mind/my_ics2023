@@ -21,6 +21,7 @@ typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
   rpn_t *rpn;
+  size_t nr_rpn;
   eval_t old_value;
   char *hint;
 } WP;
@@ -47,13 +48,14 @@ void wp_delete_all() {
   TODO();
 }
 
-WP *new_wp(rpn_t *rpn, size_t nr_rpn, char *hint) {
+WP *new_wp(char *hint) {
   WP *ret = free_;
   if (free_ != NULL) {
     ret = free_;
     ret->next = head;
-    ret->rpn = rpn;
-    ret->old_value = rpn ? eval(rpn, nr_rpn) : (eval_t){0, 0};
+    ret->rpn = exprcomp_dynamic(hint, &ret->nr_rpn);
+    ret->old_value = eval(ret->rpn, ret->nr_rpn);
+    ret->hint = (char *)malloc(strlen(hint) + 1);
     free_ = ret->next;
   }
   return ret;
