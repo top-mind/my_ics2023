@@ -39,6 +39,7 @@ typedef struct watchpoint {
   size_t nr_rpn;
   eval_t old_value;
   char *hint;
+  size_t hit;
 } WP;
 
 word_t expr(char *e, bool *success);

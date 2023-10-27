@@ -52,6 +52,7 @@ int new_wp(char *hint) {
       return -1;
     r->old_value = eval(r->rpn, r->nr_rpn);
     r->hint = (char *)malloc(strlen(hint) + 1);
+    r->hit = 0;
     strcpy(r->hint, hint);
     free_ = r->next;
     r->next = head;
@@ -91,5 +92,8 @@ void print_wp() {
   for (WP *wp = head; wp != NULL; wp = wp->next) {
     printf("%d\t%s\t" FMT_WORD "\t" FMT_WORD "\n", wp->NO, wp->hint, wp->old_value.value,
            eval(wp->rpn, wp->nr_rpn).value);
+    if (wp->hit) {
+      printf("\thit %zd times\n", wp->hit);
+    }
   }
 }
