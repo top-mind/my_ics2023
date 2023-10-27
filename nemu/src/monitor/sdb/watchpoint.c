@@ -55,6 +55,7 @@ int new_wp(char *hint) {
     strcpy(r->hint, hint);
     free_ = r->next;
     r->next = head;
+    head = r;
   }
   return r ? r->NO : -1;
 }
