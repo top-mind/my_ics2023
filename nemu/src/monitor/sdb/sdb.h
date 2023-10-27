@@ -35,6 +35,8 @@ typedef struct {
 
 word_t expr(char *e, bool *success);
 
+eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
+
 size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length);
 
 #endif

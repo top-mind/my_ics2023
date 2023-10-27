@@ -20,7 +20,8 @@
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
-  rpn_t rpn[32];
+  rpn_t *rpn;
+  eval_t old_value;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -42,10 +43,30 @@ bool wp_empty() {
 }
 
 void wp_delete_all() {
-  for (int i = 0; i < NR_WP; i++) {
-    wp_pool[i].NO = i;
-    wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
+  TODO();
+}
+
+WP *new_wp(rpn_t *rpn, size_t nr_rpn) {
+  WP *ret = free_;
+  if (free_ != NULL) {
+    ret = free_;
+    ret->next = head;
+    ret->rpn = rpn;
+    ret->old_value = eval(rpn, nr_rpn);
+    free_ = ret->next;
   }
-  head = NULL;
-  free_ = wp_pool;
+  return ret;
+}
+
+void free_wp(WP *wp) {
+  if (head == wp) {
+    head = wp->next;
+  } else {
+    WP *tmp = head;
+    while (tmp->next && tmp->next != wp)
+      tmp = tmp->next;
+    tmp->next = wp->next;
+  }
+  wp->next = free_;
+  free_ = wp;
 }
