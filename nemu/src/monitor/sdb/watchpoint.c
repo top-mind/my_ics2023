@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <stdio.h>
 
 #define NR_WP 32
 
@@ -111,7 +112,7 @@ bool is_wp_trigger() {
       puts("");
       printf("New value: ");
       peval(new_value);
-      puts("");
+      puts("\n");
       wp->old_value = new_value;
       stop = true;
     }
