@@ -97,7 +97,8 @@ static int cmd_w(char *args) {
 static int cmd_d(char *args) {
   if (args == NULL || '\0' == args[strspn(args, " ")]) {
     void wp_delete_all();
-    wp_delete_all();
+    if (readline("Delete all watchpoints? (y|[n]) ")[0] == 'y')
+      wp_delete_all();
     return 0;
   }
   int n = atoi(args);
