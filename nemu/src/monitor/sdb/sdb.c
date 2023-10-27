@@ -81,6 +81,10 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_w(char *args) {
+  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+    puts("Usage: watch EXPR");
+    return 0;
+  }
   return 0;
 }
 
