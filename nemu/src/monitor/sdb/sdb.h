@@ -49,4 +49,5 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
 
 int new_wp(char *hint);
 bool wp_delete(int n);
+void print_wp();
 #endif

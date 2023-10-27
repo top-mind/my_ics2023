@@ -86,3 +86,9 @@ bool wp_delete(int n) {
   free_wp(wp);
   return true;
 }
+
+void print_wp() {
+  for (WP *wp = head; wp != NULL; wp = wp->next) {
+    printf("%d\t%s\t" FMT_WORD "\t" FMT_WORD, wp->NO, wp->hint, wp->old_value.value, eval(wp->rpn, wp->nr_rpn).value);
+  }
+}

@@ -209,8 +209,9 @@ static int cmd_info(char *args) {
 #else
       printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
 #endif
-    } else if (strcmp(arg, "w") == 0)
-      panic("info w");
+    } else if (strcmp(arg, "w") == 0) {
+      print_wp();
+    }
     else
       printf("Unknown symbol %s, try help info.\n", arg);
   }
