@@ -75,7 +75,7 @@ static int cmd_p(char *args) {
   } else {
     bool suc;
     word_t result = expr(args, &suc);
-    if (suc) printf("%" PRIu32 "\n", result);
+    if (suc) printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32) "\n", result);
   }
   return 0;
 }
