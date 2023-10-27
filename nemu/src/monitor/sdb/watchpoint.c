@@ -50,11 +50,11 @@ int new_wp(char *hint) {
     r->rpn = exprcomp_dynamic(hint, &r->nr_rpn);
     if (r->rpn == NULL)
       return -1;
-    r->next = head;
     r->old_value = eval(r->rpn, r->nr_rpn);
     r->hint = (char *)malloc(strlen(hint) + 1);
     strcpy(r->hint, hint);
     free_ = r->next;
+    r->next = head;
   }
   return r ? r->NO : -1;
 }
