@@ -166,7 +166,7 @@ static bool make_token(char *e) {
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
-            tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 10);
+            tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 0);
             if (errno == ERANGE) {
               puts("Numeric constant too large.");
               return 0;
