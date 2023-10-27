@@ -94,7 +94,18 @@ static int cmd_w(char *args) {
   return 0;
 }
 
-static int cmd_d(char *args) { panic("cmd_d"); }
+static int cmd_d(char *args) {
+  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+    void wp_delete_all();
+    wp_delete_all();
+    return 0;
+  }
+  int n = atoi(args);
+  if (!wp_delete(n)) {
+    printf("No watchpoint %d.\n", n);
+  }
+  return 0;
+}
 
 static struct {
   const char *name;

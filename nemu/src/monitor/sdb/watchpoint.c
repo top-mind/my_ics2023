@@ -36,7 +36,8 @@ bool wp_empty() {
 }
 
 void wp_delete_all() {
-  TODO();
+  while (head != NULL)
+    wp_delete(head->NO);
 }
 
 /* assgin a watchpoint
