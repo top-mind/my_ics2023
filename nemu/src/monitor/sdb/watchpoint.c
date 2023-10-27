@@ -98,3 +98,20 @@ void print_wp() {
     }
   }
 }
+
+bool is_wp_trigger() {
+  bool stop = false;
+  for (WP *wp = head; wp != NULL; wp = wp->next) {
+    eval_t new_value = eval(wp->rpn, wp->nr_rpn);
+    if (0 != memcmp(&new_value, &wp->old_value, sizeof(eval_t))) {
+      wp->hit++;
+      wp->old_value = new_value;
+      printf("Old value: ");
+      peval(wp->old_value);
+      printf("New value: ");
+      peval(new_value);
+      stop = true;
+    }
+  }
+  return stop;
+}

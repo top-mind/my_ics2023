@@ -43,9 +43,10 @@ typedef struct watchpoint {
 } WP;
 
 word_t expr(char *e, bool *success);
-rpn_t *exprcomp(char *e, size_t *p_nr_rpn);
-rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn);
-eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
+rpn_t *exprcomp(char *e, size_t *);
+rpn_t *exprcomp_dynamic(char *e, size_t *);
+eval_t eval(rpn_t *, size_t);
+void peval(eval_t);
 
 
 int new_wp(char *hint);

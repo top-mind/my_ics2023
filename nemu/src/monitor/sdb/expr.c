@@ -357,12 +357,21 @@ word_t expr(char *e, bool *success) {
   // XXX gubed
 
   eval_t res = eval(g_rpn, nr_rpn);
-  switch (res.state) {
-    case EV_SUC: break;
-    case EV_DIVZERO: puts("Division by zero"); break;
-    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR "\n", res.value); break;
-    default: Assert(0, REPORTBUG);
-  }
+  peval(res);
   *success = res.state == EV_SUC;
   return res.value;
+}
+
+void peval(eval_t ev) {
+  switch(ev.state) {
+    case EV_SUC:
+      printf(FMT_WORD "\t%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), ev.value, ev.value);
+      break;
+    case EV_DIVZERO:
+      printf("Division by zero");
+      break;
+    case EV_INVADDR:
+      printf("Cannot access " FMT_PADDR, ev.value);
+      break;
+  }
 }
