@@ -270,16 +270,17 @@ static int compile_token(int l, int r) {
   return nr_rpn;
 }
 
-size_t exprcomp(char *e) {
+rpn_t *exprcomp(char *e) {
   p_expr = e;
-  if (!make_token(e) || nr_token == 0) return 0;
+  if (!make_token(e) || nr_token == 0) return NULL;
   nr_rpn = 0;
-  return compile_token(0, nr_token - 1);
+  compile_token(0, nr_token - 1);
+  return nr_rpn == 0 ? NULL : g_rpn;
 }
 
 rpn_t *exprcomp_dynamic(char *e) {
-  // call exprcomp
-  int nr_rpn = exprcomp(e);
+  if (exprcomp(e) == NULL)
+    return NULL;
   rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_rpn);
   memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_rpn);
   return rpn;
