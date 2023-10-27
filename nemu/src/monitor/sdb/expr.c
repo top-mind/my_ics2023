@@ -128,11 +128,7 @@ static rpn_t g_rpn[ARRLEN(tokens)];
 
 // Shared value for compile_token recurrence
 // reversed_polish_notation
-static rpn_t *p_rpn;
 static int nr_rpn;
-// rpn length limit
-static int nr_rpn_limit;
-// the user
 static char *p_expr;
 
 static bool make_token(char *e) {
@@ -230,18 +226,18 @@ static int compile_token(int l, int r) {
     printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
     return 0;
   }
-  if (nr_rpn >= nr_rpn_limit) {
+  if (nr_rpn >= ARRLEN(g_rpn)) {
     puts("Expression too long (atoms and operators in stack).");
     return 0;
   }
   if (l == r) {
-    p_rpn[nr_rpn].type = tokens[l].type;
+    g_rpn[nr_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
       case TK_NUM:
-        p_rpn[nr_rpn].numconstant = tokens[l].numconstant;
+        g_rpn[nr_rpn].numconstant = tokens[l].numconstant;
         break;
       case TK_DOLLAR:
-        p_rpn[nr_rpn].preg = tokens[l].preg;
+        g_rpn[nr_rpn].preg = tokens[l].preg;
         break;
       default:
         printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
@@ -265,22 +261,28 @@ static int compile_token(int l, int r) {
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
     if (!res) return 0;
-    if (nr_rpn >= nr_rpn_limit) {
+    if (nr_rpn >= ARRLEN(g_rpn)) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
     }
-    p_rpn[nr_rpn++].type = tokens[op_idx].type;
+    g_rpn[nr_rpn++].type = tokens[op_idx].type;
   }
   return nr_rpn;
 }
 
-size_t exprcomp(char *e, rpn_t *rpn, size_t _rpn_length) {
+size_t exprcomp(char *e) {
   p_expr = e;
   if (!make_token(e) || nr_token == 0) return 0;
-  p_rpn = rpn;
   nr_rpn = 0;
-  nr_rpn_limit = _rpn_length;
   return compile_token(0, nr_token - 1);
+}
+
+rpn_t *exprcomp_dynamic(char *e) {
+  // call exprcomp
+  int nr_rpn = exprcomp(e);
+  rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_rpn);
+  memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_rpn);
+  return rpn;
 }
 
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
@@ -327,7 +329,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
 
 word_t expr(char *e, bool *success) {
   Assert(e, REPORTBUG);
-  if (!exprcomp(e, g_rpn, ARRLEN(g_rpn))) {
+  if (!exprcomp(e)) {
     *success = false;
     return 0;
   }

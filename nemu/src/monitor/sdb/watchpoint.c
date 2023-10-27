@@ -22,6 +22,7 @@ typedef struct watchpoint {
   struct watchpoint *next;
   rpn_t *rpn;
   eval_t old_value;
+  char *hint;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -46,13 +47,13 @@ void wp_delete_all() {
   TODO();
 }
 
-WP *new_wp(rpn_t *rpn, size_t nr_rpn) {
+WP *new_wp(rpn_t *rpn, size_t nr_rpn, char *hint) {
   WP *ret = free_;
   if (free_ != NULL) {
     ret = free_;
     ret->next = head;
     ret->rpn = rpn;
-    ret->old_value = (rpn ? eval(rpn, nr_rpn) : (eval_t){0, 0});
+    ret->old_value = rpn ? eval(rpn, nr_rpn) : (eval_t){0, 0};
     free_ = ret->next;
   }
   return ret;
