@@ -305,7 +305,7 @@ eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
   word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);
   size_t i, nr_stk = 0;
   for (i = 0; i < nr_rpn; i++) {
-    word_t lsrc, rsrc, res;
+    word_t lsrc = 0, rsrc = 0, res;
     if (ISOP(p_rpn[i])) rsrc = stack[--nr_stk];
     if (ISBOP(p_rpn[i])) lsrc = stack[--nr_stk];
     switch (p_rpn[i].type) {
