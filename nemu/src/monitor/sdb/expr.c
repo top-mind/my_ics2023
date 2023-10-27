@@ -366,6 +366,7 @@ void peval(eval_t ev) {
   switch(ev.state) {
     case EV_SUC:
       printf(FMT_WORD "\t%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), ev.value, ev.value);
+      printf(FMT_WORD, ev.value);
       break;
     case EV_DIVZERO:
       printf("Division by zero");
