@@ -17,7 +17,6 @@
 #define __SDB_H__
 
 #include <common.h>
-
 typedef struct {
   int type;
   union {
@@ -48,4 +47,6 @@ rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn);
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
 
 
+int new_wp(char *hint);
+bool wp_delete(int n);
 #endif
