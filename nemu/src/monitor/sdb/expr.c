@@ -358,6 +358,7 @@ word_t expr(char *e, bool *success) {
 
   eval_t res = eval(g_rpn, nr_rpn);
   peval(res);
+  puts("");
   *success = res.state == EV_SUC;
   return res.value;
 }
