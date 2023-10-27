@@ -219,8 +219,10 @@ static bool make_token(char *e) {
   return true;
 }
 
-// 把tokens编译成逆波兰表达式 (reverse polish notation)
-// return: 表达式符号数
+/* Compile expression to reverse polish notation
+ * return: number of rpn_t
+ * If failed, or the expression is empty, return 0
+ */
 static int compile_token(int l, int r) {
   if (l > r) {
     printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
@@ -270,6 +272,10 @@ static int compile_token(int l, int r) {
   return nr_rpn;
 }
 
+/* Compile expression to reverse polish notation
+ * return: rpn_t array
+ * If failed, or the expression is empty, return NULL
+ */
 rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
   p_expr = e;
   if (!make_token(e) || nr_token == 0) {
@@ -282,6 +288,10 @@ rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
   return nr_rpn == 0 ? NULL : g_rpn;
 }
 
+/* Same as exprcomp, but return a copy of rpn_t array
+ * return: rpn_t array
+ * If failed, or the expression is empty, return NULL
+ */
 rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn) {
   if (exprcomp(e, p_nr_rpn) == NULL) {
     return NULL;

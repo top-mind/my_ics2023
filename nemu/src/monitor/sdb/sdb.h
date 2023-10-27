@@ -28,17 +28,24 @@ typedef struct {
 
 typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
 
-typedef struct {
+typedef struct eval_t {
   word_t value;
   eval_state state;
 } eval_t;
 
-word_t expr(char *e, bool *success);
+typedef struct watchpoint {
+  int NO;
+  struct watchpoint *next;
+  rpn_t *rpn;
+  size_t nr_rpn;
+  eval_t old_value;
+  char *hint;
+} WP;
 
+word_t expr(char *e, bool *success);
+rpn_t *exprcomp(char *e, size_t *p_nr_rpn);
+rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn);
 eval_t eval(rpn_t *p_rpn, size_t nr_rpn);
 
-rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn);
-
-rpn_t *exprcomp(char *e, size_t *p_nr_rpn);
 
 #endif

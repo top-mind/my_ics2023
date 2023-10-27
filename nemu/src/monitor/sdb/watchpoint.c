@@ -17,15 +17,6 @@
 
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-  rpn_t *rpn;
-  size_t nr_rpn;
-  eval_t old_value;
-  char *hint;
-} WP;
-
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
@@ -48,19 +39,23 @@ void wp_delete_all() {
   TODO();
 }
 
-WP *new_wp(char *hint) {
-  WP *ret = free_;
-  if (free_ != NULL) {
-    ret->rpn = exprcomp_dynamic(hint, &ret->nr_rpn);
-    if (ret->rpn == NULL)
-      return NULL;
-    ret->next = head;
-    ret->old_value = eval(ret->rpn, ret->nr_rpn);
-    ret->hint = (char *)malloc(strlen(hint) + 1);
-    strcpy(ret->hint, hint);
-    free_ = ret->next;
+/* assgin a watchpoint
+ * return the NO. of the assigned watchpoint
+ * if failed, return -1
+ */
+int new_wp(char *hint) {
+  WP *r = free_;
+  if (r != NULL) {
+    r->rpn = exprcomp_dynamic(hint, &r->nr_rpn);
+    if (r->rpn == NULL)
+      return -1;
+    r->next = head;
+    r->old_value = eval(r->rpn, r->nr_rpn);
+    r->hint = (char *)malloc(strlen(hint) + 1);
+    strcpy(r->hint, hint);
+    free_ = r->next;
   }
-  return ret;
+  return r ? r->NO : -1;
 }
 
 static void free_wp(WP *wp) {
