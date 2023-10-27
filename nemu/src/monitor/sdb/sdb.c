@@ -85,6 +85,12 @@ static int cmd_w(char *args) {
     puts("Usage: watch EXPR");
     return 0;
   }
+  int n = new_wp(args);
+  if (n < 0) {
+    puts("Failed to create watchpoint.");
+  } else {
+    printf("Watchpoint %d: %s\n", n, args);
+  }
   return 0;
 }
 
