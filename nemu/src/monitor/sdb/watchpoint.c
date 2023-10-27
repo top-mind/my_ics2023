@@ -51,11 +51,13 @@ void wp_delete_all() {
 WP *new_wp(char *hint) {
   WP *ret = free_;
   if (free_ != NULL) {
-    ret = free_;
-    ret->next = head;
     ret->rpn = exprcomp_dynamic(hint, &ret->nr_rpn);
+    if (ret->rpn == NULL)
+      return NULL;
+    ret->next = head;
     ret->old_value = eval(ret->rpn, ret->nr_rpn);
     ret->hint = (char *)malloc(strlen(hint) + 1);
+    strcpy(ret->hint, hint);
     free_ = ret->next;
   }
   return ret;
@@ -63,6 +65,7 @@ WP *new_wp(char *hint) {
 
 static void free_wp(WP *wp) {
   free(wp->rpn);
+  free(wp->hint);
   wp->next = free_;
   free_ = wp;
 }
