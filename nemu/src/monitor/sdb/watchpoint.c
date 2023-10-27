@@ -52,21 +52,34 @@ WP *new_wp(rpn_t *rpn, size_t nr_rpn) {
     ret = free_;
     ret->next = head;
     ret->rpn = rpn;
-    ret->old_value = eval(rpn, nr_rpn);
+    ret->old_value = (rpn ? eval(rpn, nr_rpn) : (eval_t){0, 0});
     free_ = ret->next;
   }
   return ret;
 }
 
-void free_wp(WP *wp) {
-  if (head == wp) {
-    head = wp->next;
-  } else {
-    WP *tmp = head;
-    while (tmp->next && tmp->next != wp)
-      tmp = tmp->next;
-    tmp->next = wp->next;
-  }
+static void free_wp(WP *wp) {
+  free(wp->rpn);
   wp->next = free_;
   free_ = wp;
+}
+
+bool wp_delete(int n) {
+  if (head == NULL)
+    return false;
+  WP *wp;
+  if (head->NO == n) {
+    wp = head;
+    head = head->next;
+  } else {
+    WP *tmp = head;
+    while (tmp->next && tmp->next->NO != n)
+      tmp = tmp->next;
+    wp = tmp->next;
+    if (wp == NULL)
+      return false;
+    tmp->next = wp->next;
+  }
+  free_wp(wp);
+  return true;
 }
