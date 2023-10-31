@@ -92,6 +92,7 @@
     } __x = {.n = x};  \
     (uint64_t) __x.n;  \
   })
+#define ZEXT(x, len) ((uint64_t)BITS(x, len - 1, 0))
 
 #define ROUNDUP(a, sz)   ((((uintptr_t)a) + (sz)-1) & ~((sz)-1))
 #define ROUNDDOWN(a, sz) ((((uintptr_t)a)) & ~((sz)-1))
