@@ -189,6 +189,9 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+// #ifdef CONFIG_ITRACE
+// #include <cpu/decode.h>
+// #endif
 static int cmd_info(char *args) {
   char *arg = strtok(NULL, " ");
   if (arg == NULL) {
@@ -197,18 +200,18 @@ static int cmd_info(char *args) {
   } else {
     if (strcmp(arg, "r") == 0) {
       isa_reg_display();
-#ifdef CONFIG_ITRACE
-      printf("%-15s" FMT_WORD, "pc", cpu.pc);
-      fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
-      Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
-      isa_fetch_decode(&s);
-      void disassemblePrint(uint64_t pc, uint8_t * code, int nbyte);
-      disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc), (uint8_t *)&s.isa.instr.val,
-                       s.snpc - s.pc);
-      putchar('\n');
-#else
+// #ifdef CONFIG_ITRACE
+//       printf("%-15s" FMT_WORD, "pc", cpu.pc);
+//       fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
+//       Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
+//       isa_fetch_decode(&s);
+//       void disassemblePrint(uint64_t pc, uint8_t * code, int nbyte);
+//       disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc), (uint8_t *)&s.isa.instr.val,
+//                        s.snpc - s.pc);
+//       putchar('\n');
+// #else
       printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
-#endif
+// #endif
     } else if (strcmp(arg, "w") == 0) {
       print_wp();
     }
