@@ -60,9 +60,12 @@ void isa_reg_display() {
 }
 
 // rv32 reg ABI name or sdb preserved name to value
+// ***deprecated***
+// use isa_reg_str2ptr
 word_t isa_reg_str2val(const char *s, bool *success) {
   // 这是为了 watchpoint 速度考虑的写法。
-  // 现在已经弃用 isa_reg_str2ptr 的实现。***deprecated***
+  // 现在已经弃用
+  // 应该用 isa_reg_str2ptr
   if (unlikely(s == NULL)) {
     *success = false;
     return 0;

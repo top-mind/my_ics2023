@@ -31,6 +31,7 @@ void init_isa();
 // reg
 extern CPU_state cpu;
 void isa_reg_display();
+// ***deprecated***
 word_t isa_reg_str2val(const char *name, bool *success);
 word_t *isa_reg_str2ptr(const char *name);
 
