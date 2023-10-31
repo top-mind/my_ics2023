@@ -46,6 +46,11 @@ static char *rl_gets() {
   return line_read;
 }
 
+static int cmd_gdb(char *args) {
+  asm volatile("int $3");
+  return 0;
+}
+
 static int cmd_c(char *args) {
   cpu_exec(-1);
   return 0;
@@ -116,6 +121,7 @@ static struct {
   int (*handler)(char *);
 } cmd_table[] = {
   {"help", "Display informations about all supported commands", cmd_help},
+  {"gdb", "Generate a int 3 trap for gdb to catch", cmd_gdb},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
   {"si",
