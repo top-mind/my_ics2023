@@ -29,5 +29,5 @@ SECTIONS {
   _stack_pointer = .;
   end = .;
   _end = .;
-  /* _heap_start = ALIGN(0x1000); */
+   _heap_start = ALIGN(0x1000);
 }
