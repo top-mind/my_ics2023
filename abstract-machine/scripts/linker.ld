@@ -13,8 +13,8 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
     . = ALIGN(0x4);
-    marg = .;
-    INCLUDE "marg.ld"
+    _nemu_margs = .;
+    INCLUDE "build/margs.ld"
   }
   .data : {
     *(.data)
