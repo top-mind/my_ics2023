@@ -13,7 +13,7 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
     marg = ALIGN(4);
-    QUAD(0xdeadbeefdeadbeef)
+    QUAD(0x123456789abcdef0)
   }
   .data : {
     *(.data)
