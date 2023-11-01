@@ -12,6 +12,8 @@ SECTIONS {
   _etext = .;
   .rodata : {
     *(.rodata*)
+    marg = .;
+    QUAD(0xdeadbeefdeadbeef)
   }
   .data : {
     *(.data)
