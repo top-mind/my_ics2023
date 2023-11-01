@@ -12,9 +12,11 @@ SECTIONS {
   _etext = .;
   .rodata : {
     *(.rodata*)
+    /* put in templete linker.script
     . = ALIGN(0x4);
-    _nemu_margs = .;
-    INCLUDE "build/margs.ld"
+    _nemu_mainargs = .;
+    INCLUDE "build/mainargs.ld"
+    */
   }
   .data : {
     *(.data)
