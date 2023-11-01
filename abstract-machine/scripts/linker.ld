@@ -14,7 +14,7 @@ SECTIONS {
     *(.rodata*)
     . = ALIGN(0x4);
     marg = .;
-    QUAD(0x123456789abcdef0)
+    INCLUDE "marg.ld"
   }
   .data : {
     *(.data)
