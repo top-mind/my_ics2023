@@ -12,7 +12,7 @@ SECTIONS {
   _etext = .;
   .rodata : {
     *(.rodata*)
-    marg = ALIGN(4);
+    marg = ALIGN(16);
     QUAD(0x123456789abcdef0)
   }
   .data : {
