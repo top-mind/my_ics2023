@@ -19,12 +19,13 @@ NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
-.PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c # TODO move MAINARGS to linker.ld
+# .PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c # TODO move MAINARGS to linker.ld
 
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
+	echo -n $(nemu_mainargs) | xxd -p | sed -r 's/$(LBRACE)..$(RBRACE)/BYTE$(LBRACE)0x\1$(RBRACE) /g;aBYTE(0)'
 
 run: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).bin
