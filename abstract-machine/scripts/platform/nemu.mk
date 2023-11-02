@@ -13,7 +13,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/linker.ld \
 LDFLAGS   += --gc-sections -e _start
 LBRACE=(
 RBRACE=)
-LDFLAGS += $(shell echo -n '$(nemu_margs)\0' | xxd -p | sed -r 's/$(LBRACE)..$(RBRACE)/BYTE$(LBRACE)0x\1$(RBRACE) /g'> build/mainargs.ld)
+LDFLAGS += $(shell echo -n '$(nemu_mainargs)\0' | xxd -p | sed -r 's/$(LBRACE)..$(RBRACE)/BYTE$(LBRACE)0x\1$(RBRACE) /g'> build/mainargs.ld)
 
 NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 
