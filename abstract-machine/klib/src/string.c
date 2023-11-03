@@ -15,7 +15,8 @@ size_t strlen(const char *s) {
 char *strcpy(char *dst, const char *src) {
   char *tmp = dst;
   while (*src != '\0') {
-    *tmp++ = *src++;
+    *tmp = *src;
+    tmp++, src++;
   }
   *tmp = '\0';
   return dst;
@@ -30,17 +31,24 @@ char *strcat(char *dst, const char *src) {
   while (*tmp != '\0')
     tmp++;
   while (*src != '\0') {
-    *dst++ = *src++;
+    *tmp++ = *src++;
   }
-  *dst = '\0';
+  *tmp = '\0';
   return dst;
 }
 
 int strcmp(const char *s1, const char *s2) {
-  while (*s1 != '\0' && *s2 != '\0') {
-    if (*s1 != *s2)
-      return (unsigned char) *s1 < (unsigned char) *s2 ? -1 : 1;
-    s1++, s2++;
+// linux/lib/string.c
+  unsigned char c1, c2;
+  while (1) {
+    c1 = *s1++;
+    c2 = *s2++;
+    if (c1 != c2) {
+      return c1 < c2 ? -1 : 1;
+    }
+    if (!c1) {
+      break;
+    }
   }
   return 0;
 }
@@ -50,7 +58,10 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-  panic("Not implemented");
+  for (size_t i = 0; i < n; i++) {
+    *((uint8_t*) s + i) = c;
+  }
+  return s;
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
@@ -62,7 +73,15 @@ void *memcpy(void *out, const void *in, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-  panic("Not implemented");
+  uint8_t v1, v2;
+  while (n--) {
+    v1 = *(uint8_t *) s1++;
+    v2 = *(uint8_t *) s2++;
+    if (v1 != v2) {
+      return v1 < v2 ? -1 : 1;
+    }
+  }
+  return 0;
 }
 
 #endif
