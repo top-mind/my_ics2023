@@ -31,6 +31,8 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 #ifdef CONFIG_IRING_NR
 char g_iring_buf[CONFIG_IRING_NR][sizeof ((Decode *)0)->logbuf] = {};
+int g_iring_end = 0;
+bool g_iring_wrap = 0;
 #endif
 
 void device_update();
@@ -38,6 +40,10 @@ void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+  strcpy(g_iring_buf[g_iring_end], _this->logbuf);
+  g_iring_end = (g_iring_end + 1) % CONFIG_IRING_NR;
+  if (g_iring_end == 0)
+    g_iring_wrap = 1;
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -89,6 +95,17 @@ static void execute(uint64_t n) {
   }
 }
 
+static void iring_print() {
+#ifdef CONFIG_ITRACE
+  int i;
+  if (g_iring_wrap)
+    for (i = g_iring_end; i < CONFIG_IRING_NR; i++)
+      printf("%s\n", g_iring_buf[i]);
+  for (i = 0; i < g_iring_end; i++)
+    printf("%s\n", g_iring_buf[i]);
+#endif
+}
+
 static void statistic() {
   IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
@@ -101,8 +118,9 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
-  // isa_reg_display();
-  // statistic();
+  isa_reg_display();
+  iring_print();
+  statistic();
 }
 
 /* Simulate how the CPU works. */
