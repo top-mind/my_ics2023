@@ -55,7 +55,7 @@ void isa_reg_display() {
     // ra sp gp tp - hex - hex <func>
     // t* s* a*    - hex - decimal
     // ps/mstatus  - hex - [flags]
-    printf("%-15s%#-8" PRIx32 "\t%" PRIu32 "\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
+    printf("%-15s0x%-8" PRIx32 "\t%" PRIu32 "\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 
