@@ -124,7 +124,7 @@ config CC_ASAN
   default n
 
 config CC_CFLAGS
-  string
+  string "CC extra flags"
   default ""
 endmenu
 
