@@ -137,7 +137,6 @@ void sputch(void *p, char ch) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  // panic("Not implemented");
   // Find the first '%'
   sputch(out, 0);
   int res = vprintf_internel(fmt, ap, sputch);

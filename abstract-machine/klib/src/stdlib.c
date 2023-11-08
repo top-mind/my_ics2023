@@ -35,6 +35,13 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
   panic("Not implemented");
+#else
+  static int mlcnt = 0;
+  size_t write(int fd, const void *buf, size_t count);
+  mlcnt++;
+  if (mlcnt > 2) {
+    panic("Not implemented");
+  }
 #endif
   return NULL;
 }
