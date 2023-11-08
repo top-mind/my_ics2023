@@ -13,9 +13,11 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
     /* put in templete linker.script */
+    /*
     . = ALIGN(0x4);
     _nemu_mainargs = .;
     INCLUDE "build/mainargs.ld"
+    */
   }
   .data : {
     *(.data)
