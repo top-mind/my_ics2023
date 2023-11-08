@@ -13,6 +13,8 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "cpu/ifetch.h"
+#include "memory/paddr.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -55,12 +57,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   }
 }
 
-static void exec_once(Decode *s, vaddr_t pc) {
-  s->pc = pc;
-  s->snpc = pc;
-  isa_exec_once(s);
-  cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
+static void itrace_log(Decode *s) {
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
@@ -81,6 +79,16 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
+}
+#endif
+
+static void exec_once(Decode *s, vaddr_t pc) {
+  s->pc = pc;
+  s->snpc = pc;
+  isa_exec_once(s);
+  cpu.pc = s->dnpc;
+#ifdef CONFIG_ITRACE
+  itrace_log(s);
 #endif
 }
 
@@ -103,6 +111,8 @@ static void iring_print() {
       printf("%s\n", g_iring_buf[i]);
   for (i = 0; i < g_iring_end; i++)
     printf("%s\n", g_iring_buf[i]);
+  if (in_pmem(cpu.pc)) {
+  }
 #endif
 }
 
