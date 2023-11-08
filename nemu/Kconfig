@@ -124,7 +124,11 @@ config CC_ASAN
   default n
 
 config CC_CFLAGS
-  string "CC extra flags"
+  string "CC extra flags (do not work)"
+  default ""
+
+config CCX_CFLAGS
+  string "CXX extra flags (do not work)"
   default ""
 endmenu
 
