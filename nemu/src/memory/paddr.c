@@ -41,6 +41,9 @@ static void out_of_bound(paddr_t addr) {
   nemu_state.halt_pc = cpu.pc;
   nemu_state.halt_ret = ABORT_MEMIO;
   nemu_state.state = NEMU_ABORT;
+  printf(ANSI_FMT("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR
+        "] at pc = " FMT_WORD, ANSI_FG_RED),
+        addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
 }
 
 void init_mem() {

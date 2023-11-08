@@ -159,6 +159,8 @@ void cpu_exec(uint64_t n) {
     case NEMU_ABORT:
       switch (nemu_state.halt_ret) {
         case ABORT_INV:
+          // err msg shown in isa_exec_once -> invalid_inst
+          // nothing to do here
           break;
         case ABORT_MEMIO:
           isa_reg_display();
