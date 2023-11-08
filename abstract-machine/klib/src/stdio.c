@@ -1,6 +1,6 @@
 #include <am.h>
-#include <klib.h>
 #include <klib-macros.h>
+#include <klib.h>
 #include <stdarg.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
@@ -13,6 +13,7 @@ int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
   int data = 0;
   while (*fmt != '\0') {
     if (*fmt == '%') {
+parse_loop:
       fmt++;
       switch (*fmt) {
       case 'd': {
@@ -51,7 +52,7 @@ int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
       case 'p': {
         putc(NULL, '0');
         putc(NULL, 'x');
-        data+=2;
+        data += 2;
         unsigned int num = va_arg(ap, unsigned int);
         int len = 0;
         unsigned int tmp = num;
@@ -66,7 +67,7 @@ int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
             putc(NULL, buf[i] - 10 + 'a');
           }
         }
-        data+=len;
+        data += len;
         break;
       }
       case 'x': {
@@ -86,19 +87,17 @@ int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
         }
         break;
       }
-      case '0': {
-        int num = va_arg(ap, int);
-        int len = 0;
-        int tmp = num;
-        do {
-          buf[len++] = tmp % 10;
-          tmp /= 10;
-        } while (tmp);
-        for (int i = len - 1; i >= 0; i--) {
-          putc(NULL, buf[i] + '0');
-        }
-        break;
-      }
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        goto parse_loop;
       default: {
         putch('`');
         putstr(fmt);
@@ -115,9 +114,7 @@ int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
   return data;
 }
 
-void pputch(void *p, char ch) {
-  putch(ch);
-}
+void pputch(void *p, char ch) { putch(ch); }
 
 int printf(const char *fmt, ...) {
   va_list ap;
