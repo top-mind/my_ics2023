@@ -14,7 +14,9 @@
 ***************************************************************************************/
 
 #include "cpu/ifetch.h"
+#include "isa.h"
 #include "memory/paddr.h"
+#include "utils.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -154,8 +156,16 @@ void cpu_exec(uint64_t n) {
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
-    case NEMU_END:
     case NEMU_ABORT:
+      switch (nemu_state.halt_ret) {
+        case ABORT_INV:
+          break;
+        case ABORT_MEMIO:
+          isa_reg_display();
+          iring_print();
+          break;
+      }
+    case NEMU_END:
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT
              ? ANSI_FMT("ABORT", ANSI_FG_RED)

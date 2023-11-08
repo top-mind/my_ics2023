@@ -51,5 +51,5 @@ __attribute__((noinline)) void invalid_inst(vaddr_t thispc) {
                   ANSI_FG_RED),
          isa_logo);
 
-  set_nemu_state(NEMU_ABORT, thispc, -1);
+  set_nemu_state(NEMU_ABORT, thispc, ABORT_INV);
 }
