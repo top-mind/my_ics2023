@@ -123,13 +123,13 @@ config CC_ASAN
   bool "Enable address sanitizer"
   default n
 
-config CC_CFLAGS
+config CFLAGSEX
   string "CC extra flags (do not work)"
   default ""
 
-config CCX_CFLAGS
+config CXXFLAGSEX
   string "CXX extra flags (do not work)"
-  default ""
+  default "-std=c++17"
 endmenu
 
 menu "Testing and Debugging"
