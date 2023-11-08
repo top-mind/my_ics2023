@@ -15,7 +15,7 @@ LBRACE=(
 RBRACE=)
 LDFLAGS += $(shell echo -n '$(nemu_mainargs)\0' | xxd -p | sed -r 's/$(LBRACE)..$(RBRACE)/BYTE$(LBRACE)0x\1$(RBRACE) /g'> build/mainargs.ld)
 
-NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
+NEMUFLAGS += $(if $(batch),-b,) -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
