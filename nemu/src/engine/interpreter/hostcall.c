@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "memory/paddr.h"
 #include <utils.h>
 #include <cpu/ifetch.h>
 #include <isa.h>
@@ -28,8 +29,9 @@ void set_nemu_state(int state, vaddr_t pc, int halt_ret) {
 __attribute__((noinline)) void invalid_inst(vaddr_t thispc) {
   uint32_t temp[2];
   vaddr_t pc = thispc;
-  temp[0] = inst_fetch(&pc, 4);
-  temp[1] = inst_fetch(&pc, 4);
+  temp[0] = paddr_read(pc, 4);
+  pc += 4;
+  temp[1] = paddr_read(pc, 4);
 
   uint8_t *p = (uint8_t *)temp;
   printf("invalid opcode(PC = " FMT_WORD "):\n"
