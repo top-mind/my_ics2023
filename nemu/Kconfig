@@ -167,11 +167,20 @@ config IRING_NR
   int "Instruction trace ring buffer size (unit: number of instructions)"
   default 20
 
-config MTRACE_COND
+config MTRACE
   depends on TRACE
-  string "Only trace memory i/o when the condition is true"
-  default "true"
+  bool "Trace memory i/o"
+  default y
 
+config MTRACE_START
+  depends on MTRACE
+  hex "Lowest address to enable mtrace"
+  default MBASE
+
+config MTRACE_END
+  depends on MTRACE
+  hex "Size of continuous area to trace"
+  default 0
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
