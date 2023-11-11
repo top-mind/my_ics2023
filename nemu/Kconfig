@@ -177,10 +177,10 @@ config MTRACE_START
   hex "Lowest address to enable mtrace"
   default MBASE
 
-config MTRACE_SIZE
+config MTRACE_END
   depends on MTRACE
-  hex "Size of continuous area to trace"
-  default 0
+  hex "Lowest address to disable mtrace"
+  default 0xa3000080
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
