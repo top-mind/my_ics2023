@@ -75,7 +75,7 @@ word_t paddr_read(paddr_t addr, int len) {
 void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
   if (addr >= CONFIG_MTRACE_START && addr < CONFIG_MTRACE_END) {
-    log_write("@ [" FMT_PADDR "] w " FMT_PADDR " %d %#*" PRIx32 "\n", cpu.pc, addr, len, len * 2,
+    log_write("@ [" FMT_PADDR "] w " FMT_PADDR " %d %#.*" PRIx32 "\n", cpu.pc, addr, len, len * 2,
               data);
   }
 #endif
