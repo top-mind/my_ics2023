@@ -63,7 +63,7 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
 #ifdef CONFIG_MTRACE
   if (addr >= CONFIG_MTRACE_START && addr < CONFIG_MTRACE_END) {
-    log_write("@ [" FMT_PADDR "] r " FMT_PADDR " %d", cpu.pc, addr, len);
+    log_write("@ [" FMT_PADDR "] r " FMT_PADDR " %d\n", cpu.pc, addr, len);
   }
 #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
