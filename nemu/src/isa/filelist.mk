@@ -14,5 +14,4 @@
 #**************************************************************************************/
 
 INC_PATH += $(NEMU_HOME)/src/isa/$(GUEST_ISA)/include
-$(info $(GUEST_ISA))
 DIRS-y += src/isa/$(GUEST_ISA)
