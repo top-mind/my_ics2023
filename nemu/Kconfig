@@ -169,8 +169,8 @@ config IRING_NR
 
 config MTRACE
   depends on TRACE
-  bool "Trace memory i/o"
-  default y
+  bool "Enable memory i/o tracer"
+  default n
 
 config MTRACE_START
   depends on MTRACE
@@ -181,6 +181,11 @@ config MTRACE_END
   depends on MTRACE
   hex "Lowest address to disable mtrace"
   default 0xa3000080
+
+config FTRACE
+  depends on TRACE
+  bool "Enable function call tracer"
+  default n
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
