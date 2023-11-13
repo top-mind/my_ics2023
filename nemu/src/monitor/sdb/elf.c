@@ -66,7 +66,7 @@ void init_addelf(char *filename) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
         if (ELF_ST_TYPE(sym.st_info) == STT_FUNC) {
-          printf("name='%s', %#lx, %#lx\n", &strtab[sym.st_name],
+          printf("name='%s', %#lx, %ld\n", &strtab[sym.st_name],
                  (long)sym.st_value, (long)sym.st_size);
         }
       }
