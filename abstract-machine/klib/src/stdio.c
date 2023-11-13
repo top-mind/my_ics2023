@@ -7,9 +7,18 @@
 
 static int buf[4096];
 
-typedef void (*putc_t)(void *, char ch);
+typedef struct {
+  char *str;
+} outtype;
 
-int vprintf_internel(const char *fmt, va_list ap, putc_t putc) {
+void io_putc(outtype *io, char ch) {
+  if (io->str == NULL)
+    putch(ch);
+  else
+    *io->str++ = ch;
+}
+
+int vioprintf_internel(const char *fmt, va_list ap, outtype *io) {
   int data = 0;
   while (*fmt != '\0') {
     if (*fmt == '%') {
@@ -19,7 +28,7 @@ parse_loop:
       case 'd': {
         int num = va_arg(ap, int);
         if (num < 0) {
-          putc(NULL, '-');
+         io_putc(io, '-');
           num = -num;
           data++;
         }
@@ -30,7 +39,7 @@ parse_loop:
           tmp /= 10;
         } while (tmp);
         for (int i = len - 1; i >= 0; i--) {
-          putc(NULL, buf[i] + '0');
+          io_putc(io, buf[i] + '0');
         }
         data += len;
         break;
@@ -38,20 +47,20 @@ parse_loop:
       case 's': {
         char *str = va_arg(ap, char *);
         while (*str != '\0') {
-          putc(NULL, *str++);
+          io_putc(io, *str++);
           data++;
         }
         break;
       }
       case 'c': {
         char ch = va_arg(ap, int);
-        putc(NULL, ch);
+        io_putc(io, ch);
         data++;
         break;
       }
       case 'p': {
-        putc(NULL, '0');
-        putc(NULL, 'x');
+        io_putc(io, '0');
+        io_putc(io, 'x');
         data += 2;
         unsigned int num = va_arg(ap, unsigned int);
         int len = 0;
@@ -62,9 +71,9 @@ parse_loop:
         } while (tmp);
         for (int i = len - 1; i >= 0; i--) {
           if (buf[i] < 10) {
-            putc(NULL, buf[i] + '0');
+            io_putc(io, buf[i] + '0');
           } else {
-            putc(NULL, buf[i] - 10 + 'a');
+            io_putc(io, buf[i] - 10 + 'a');
           }
         }
         data += len;
@@ -80,9 +89,9 @@ parse_loop:
         } while (tmp);
         for (int i = len - 1; i >= 0; i--) {
           if (buf[i] < 10) {
-            putc(NULL, buf[i] + '0');
+            io_putc(io, buf[i] + '0');
           } else {
-            putc(NULL, buf[i] - 10 + 'a');
+            io_putc(io, buf[i] - 10 + 'a');
           }
         }
         break;
@@ -107,19 +116,18 @@ parse_loop:
       }
       }
     } else {
-      putc(NULL, *fmt);
+      io_putc(io, *fmt);
     }
     fmt++;
   }
   return data;
 }
 
-void pputch(void *p, char ch) { putch(ch); }
-
 int printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  int res = vprintf_internel(fmt, ap, pputch);
+  outtype io = {.str = NULL};
+  int res = vioprintf_internel(fmt, ap, &io);
   va_end(ap);
   return res;
 }
@@ -134,9 +142,9 @@ void sputch(void *p, char ch) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  // Find the first '%'
   sputch(out, 0);
-  int res = vprintf_internel(fmt, ap, sputch);
+  outtype io = {.str = out};
+  int res = vioprintf_internel(fmt, ap, &io);
   sputch(NULL, '\0');
   return res;
 }
