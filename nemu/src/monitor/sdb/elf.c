@@ -57,13 +57,16 @@ void init_addelf(char *filename) {
               sh_size = shdr.sh_size,
               str_size;
       section_fseek(shdr.sh_link);
+      R(shdr);
       char *strtab = malloc(str_size = shdr.sh_size);
+      fseek(f, shdr.sh_offset, SEEK_SET);
+      Assert(1 == fread(strtab, str_size, 1, f), "Bad elf");
       Elf_Sym sym;
       for (uintN_t _off = 0; _off < sh_size; _off += sizeof(sym)) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
         if (ELF_ST_TYPE(sym.st_info) == STT_FUNC) {
-          printf("name='%s', %lx, %lx\n", &strtab[sym.st_name],
+          printf("name='%s', %#lx, %#lx\n", &strtab[sym.st_name],
                  (long)sym.st_value, (long)sym.st_size);
         }
       }
