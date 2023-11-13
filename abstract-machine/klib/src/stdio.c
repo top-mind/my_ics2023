@@ -132,20 +132,10 @@ int printf(const char *fmt, ...) {
   return res;
 }
 
-void sputch(void *p, char ch) {
-  static char *buf = NULL;
-  if (p == NULL) {
-    *buf++ = ch;
-  } else {
-    buf = p;
-  }
-}
-
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  sputch(out, 0);
   outtype io = {.str = out};
   int res = vioprintf_internel(fmt, ap, &io);
-  sputch(NULL, '\0');
+  io_putc(&io, '\0');
   return res;
 }
 
