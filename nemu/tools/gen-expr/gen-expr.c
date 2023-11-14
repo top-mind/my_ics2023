@@ -66,8 +66,14 @@ void gen(char x) {
 void gen_rand_op() {
   if (nr_buf >= ARRLEN(buf) - 2)
     return;
-  static const char k_op[] = "+\0-\0*\0/\0==\0";
-  static const int k_op_idx[] = {0, 2, 4, 6};
+  static const char k_op[] = "+\0"
+                             "-\0"
+                             "*\0"
+                             "&\0"
+                             "^\0"
+                             "&\0"
+                             "|\0";
+  static const int k_op_idx[] = {0, 2, 4, 6, 8, 10, 12};
   int tmp = choose(ARRLEN(k_op_idx));
   nr_buf += sprintf(buf + nr_buf, "%s", k_op + k_op_idx[tmp]);
 }
@@ -109,7 +115,7 @@ int main(int argc, char *argv[]) {
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc -Wall -Werror /tmp/.code.c -o /tmp/.expr");
+    int ret = system("gcc -Wall -Werror -Wno-parentheses /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
