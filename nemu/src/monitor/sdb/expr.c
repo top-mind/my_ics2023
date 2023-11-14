@@ -227,7 +227,7 @@ static bool make_token(char *e) {
  */
 static int compile_token(int l, int r) {
   if (l > r) {
-    printf("Syntax error near `%s' %d\n", p_expr + (l >= 0 ? tokens[l].position : 0), l);
+    printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
     return 0;
   }
   if (nr_g_rpn >= ARRLEN(g_rpn)) {
