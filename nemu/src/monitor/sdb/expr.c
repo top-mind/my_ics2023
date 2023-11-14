@@ -222,12 +222,12 @@ static bool make_token(char *e) {
  */
 #define ESYNTAX(pos)                                                                         \
   do {                                                                                       \
-    printf("Syntax error near `%s'\n", pos < nr_token ? p_expr + tokens[pos].position : ""); \
+    printf("Syntax error near `%s'", pos < nr_token ? p_expr + tokens[pos].position : ""); \
     return 0;                                                                                \
   } while (0)
 #define ETOOLONG                                                 \
   do {                                                           \
-    puts("Expression too long (atoms and operators in stack)."); \
+    printf("Expression too long (atoms and operators in stack)."); \
     return 0;                                                    \
   } while (0)
 static int compile_token(int l, int r) {
