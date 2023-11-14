@@ -5,7 +5,7 @@
 
 static char _s[65536 + 25];
 
-extern word_t expr(char *e, bool *success);
+extern struct {word_t a; int b; } expr(char *e, bool *success);
 
 int test_main() {
   puts("Warning: TEST MODE!");
@@ -30,7 +30,7 @@ int test_main() {
     _s[strlen(_s) - 1] = '\0';
     uint32_t out;
     bool suc;
-    if ((out = expr(_s, &suc)) != ans) {
+    if ((out = expr(_s, &suc).a) != ans) {
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
     } else {
