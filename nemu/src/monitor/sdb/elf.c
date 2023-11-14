@@ -88,7 +88,7 @@ void init_addelf(char *filename) {
       free(strtab);
     }
   }
-  qsort(funcs, sizeof(func), nr_func, compfunc);
+  qsort(funcs, nr_func, sizeof(func), compfunc);
   printf("%zu\n", nr_func);
   for (int i = 0; i < nr_func; i++)
     printf("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
