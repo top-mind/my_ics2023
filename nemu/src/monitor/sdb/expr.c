@@ -24,17 +24,17 @@
 #include <regex.h>
 
 /* priority and associativity base on ~/Downloads/priority.jpg
-   deref neg	10	right to left
+ deref neg	10	right to left
  * / %		9
- + -		8
+ + -		8	ok
  << >>		7
- == !=		6
+ == !=		6	ok
  &		5
  ^		4
  |		3
- &&		2
+ &&		2	ok
  ||		1
- atom		0
+ atom		0	ok
  */
 
 // bit 7:0	ascii code
@@ -109,8 +109,6 @@ void init_regex() {
   }
 }
 
-// static int verbose = 0;
-
 typedef struct token {
   int type;
   union {
@@ -124,11 +122,10 @@ typedef struct token {
 
 static Token tokens[65536] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
-static rpn_t g_rpn[ARRLEN(tokens)];
 
-// Shared value for compile_token recurrence
-// reversed_polish_notation
-static int nr_rpn;
+// rpn is reversed polish notation
+static rpn_t g_rpn[ARRLEN(tokens)];
+static int nr_g_rpn;
 static char *p_expr;
 
 static bool make_token(char *e) {
@@ -220,7 +217,7 @@ static bool make_token(char *e) {
 }
 
 /* Compile expression to reverse polish notation
- * return: number of rpn_t
+ * return: array length
  * If failed, or the expression is empty, return 0
  */
 static int compile_token(int l, int r) {
@@ -228,24 +225,24 @@ static int compile_token(int l, int r) {
     printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
     return 0;
   }
-  if (nr_rpn >= ARRLEN(g_rpn)) {
+  if (nr_g_rpn >= ARRLEN(g_rpn)) {
     puts("Expression too long (atoms and operators in stack).");
     return 0;
   }
   if (l == r) {
-    g_rpn[nr_rpn].type = tokens[l].type;
+    g_rpn[nr_g_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
       case TK_NUM:
-        g_rpn[nr_rpn].numconstant = tokens[l].numconstant;
+        g_rpn[nr_g_rpn].numconstant = tokens[l].numconstant;
         break;
       case TK_DOLLAR:
-        g_rpn[nr_rpn].preg = tokens[l].preg;
+        g_rpn[nr_g_rpn].preg = tokens[l].preg;
         break;
       default:
         printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
         return 0;
     }
-    nr_rpn++;
+    nr_g_rpn++;
   } else {
     if (tokens[r].type == ')' && tokens[r].lbmatch == l) return compile_token(l + 1, r - 1);
     // find the operator with lowest priority
@@ -263,13 +260,13 @@ static int compile_token(int l, int r) {
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
     if (!res) return 0;
-    if (nr_rpn >= ARRLEN(g_rpn)) {
+    if (nr_g_rpn >= ARRLEN(g_rpn)) {
       puts("Expression too long (atoms and operators in stack).");
       return 0;
     }
-    g_rpn[nr_rpn++].type = tokens[op_idx].type;
+    g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
   }
-  return nr_rpn;
+  return nr_g_rpn;
 }
 
 /* Compile expression to reverse polish notation
@@ -277,31 +274,44 @@ static int compile_token(int l, int r) {
  * If failed, or the expression is empty, return NULL
  */
 rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
+  size_t null;
+  if (p_nr_rpn == NULL) p_nr_rpn = &null;
   p_expr = e;
   if (!make_token(e) || nr_token == 0) {
-    if (p_nr_rpn != NULL) *p_nr_rpn = 0;
+    *p_nr_rpn = 0;
     return NULL;
   }
-  nr_rpn = 0;
-  compile_token(0, nr_token - 1);
-  if (p_nr_rpn != NULL) *p_nr_rpn = nr_rpn;
-  return nr_rpn == 0 ? NULL : g_rpn;
+  nr_g_rpn = 0;
+  *p_nr_rpn = compile_token(0, nr_token - 1);
+  return *p_nr_rpn == 0 ? NULL : g_rpn;
 }
 
 /* Same as exprcomp, but return a copy of rpn_t array
  * return: rpn_t array
  * If failed, or the expression is empty, return NULL
  */
-rpn_t *exprcomp_dynamic(char *e, size_t *p_nr_rpn) {
+rpn_t *exprcomp_r(char *e, size_t *p_nr_rpn) {
+  size_t null;
+  if (p_nr_rpn == NULL) p_nr_rpn = &null;
   if (exprcomp(e, p_nr_rpn) == NULL) {
     return NULL;
   }
-  rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_rpn);
-  memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_rpn);
+  rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * *p_nr_rpn);
+  memcpy(rpn, g_rpn, sizeof(rpn_t) * *p_nr_rpn);
   return rpn;
 }
 
-eval_t eval(rpn_t *p_rpn, size_t nr_rpn) {
+/* eval(const rpn_t *p_rpn, size_t nr_rpn)
+ * p_rpn      array of reverse polish notation with length
+ * nr_rpn
+ *   This function will use a stack to evaluate the compiled expression.
+ * If any syntactically error occurs, nemu PANIC.
+ * Return value
+ *  A struct eval_t, to indicate the result of evaluation, or 0 if
+ *  runtime error occurs. The error type is indicated by .state.
+ * This function has no side effect.
+ */
+eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
   word_t *stack = (word_t *)malloc(sizeof(word_t) * nr_rpn);
   size_t i, nr_stk = 0;
   for (i = 0; i < nr_rpn; i++) {
@@ -349,14 +359,7 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
-  // XXX debug
-  // for (int i = 0; i < nr_rpn; i++) {
-  //   printf("%d %" PRIu32 "\n", g_rpn[i].type, g_rpn[i].numconstant);
-  // }
-  // XXX gubed
-
-  eval_t res = eval(g_rpn, nr_rpn);
+  eval_t res = eval(g_rpn, nr_g_rpn);
   switch (res.state) {
     case EV_SUC: break;
     case EV_DIVZERO: puts("Division by zero"); break;
