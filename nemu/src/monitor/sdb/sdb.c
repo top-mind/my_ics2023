@@ -80,7 +80,8 @@ static int cmd_p(char *args) {
     elf_getname_and_offset(cpu.pc, &f_name, &f_off);
     if (~f_off)
       printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
-    else printf("[%s]", f_name);
+    else
+      printf("[%s]", f_name);
     printf("\n");
   } else {
     eval_t result = expr(args);
@@ -91,8 +92,7 @@ static int cmd_p(char *args) {
       char *f_name;
       uintN_t f_off;
       elf_getname_and_offset(result.value, &f_name, &f_off);
-      if (~f_off)
-        printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32)"]", f_name, f_off);
+      if (~f_off) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
       printf("\n");
     } else {
       peval(result);
@@ -119,15 +119,12 @@ static int cmd_d(char *args) {
   if (args == NULL || '\0' == args[strspn(args, " ")]) {
     void wp_delete_all();
     char *str = readline("Delete all watchpoints? (y|N) ");
-    if (str[0] == 'y')
-      wp_delete_all();
+    if (str[0] == 'y') wp_delete_all();
     free(str);
     return 0;
   }
   int n = atoi(args);
-  if (!wp_delete(n)) {
-    printf("No watchpoint %d.\n", n);
-  }
+  if (!wp_delete(n)) { printf("No watchpoint %d.\n", n); }
   return 0;
 }
 
@@ -222,22 +219,21 @@ static int cmd_info(char *args) {
   } else {
     if (strcmp(arg, "r") == 0) {
       isa_reg_display();
-// #ifdef CONFIG_ITRACE
-//       printf("%-15s" FMT_WORD, "pc", cpu.pc);
-//       fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
-//       Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
-//       isa_fetch_decode(&s);
-//       void disassemblePrint(uint64_t pc, uint8_t * code, int nbyte);
-//       disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc), (uint8_t *)&s.isa.instr.val,
-//                        s.snpc - s.pc);
-//       putchar('\n');
-// #else
+      // #ifdef CONFIG_ITRACE
+      //       printf("%-15s" FMT_WORD, "pc", cpu.pc);
+      //       fflush(stdout); // llvm::outs() aka raw_string write doesn't sync stdout
+      //       Decode s = {.pc = cpu.pc, .snpc = cpu.pc};
+      //       isa_fetch_decode(&s);
+      //       void disassemblePrint(uint64_t pc, uint8_t * code, int nbyte);
+      //       disassemblePrint(MUXDEF(CONFIG_ISA_x86, s.snpc, s.pc), (uint8_t *)&s.isa.instr.val,
+      //                        s.snpc - s.pc);
+      //       putchar('\n');
+      // #else
       printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
-// #endif
+      // #endif
     } else if (strcmp(arg, "w") == 0) {
       print_wp();
-    }
-    else
+    } else
       printf("Unknown symbol %s, try help info.\n", arg);
   }
 
@@ -258,9 +254,7 @@ static int cmd_x(char *args) {
     printf("Invalid character '%c', require octal/decimal/hexadecimal.\n", *endptr);
     return 0;
   }
-  if (errno == ERANGE) {
-    puts("Numeric constant too large.");
-  }
+  if (errno == ERANGE) { puts("Numeric constant too large."); }
 
   eval_t res = expr(endptr + 1);
   if (res.state != EV_SUC) {
