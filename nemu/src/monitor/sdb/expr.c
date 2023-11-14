@@ -38,10 +38,11 @@
  */
 
 // bit 7:0	ascii code
+// bit 8	alternative code
 // bit 12:9	priority
 #define PRIO(x)     ((x) << 9)
 #define PRIORITY(x) (((x.type) >> 9) & 0xf)
-#define ALTERNATIVE (1 << 8)
+#define ALT (1 << 8)
 #define ISUOP(x)    (PRIORITY(x) == 0xf)
 #define ISBOP(x)    (ISOP(x) && !ISUOP(x))
 #define RTOL(x)     ISUOP(x)
@@ -53,13 +54,19 @@ enum {
   TK_DOLLAR,
   TK_DEREF   = '*' | PRIO(15),
   TK_NEGTIVE = '-' | PRIO(15),
-  TK_TIMES   = '*' | PRIO(9),
-  TK_DIVIDE  = '/' | PRIO(9),
-  TK_MOD     = '%' | PRIO(9),
-  TK_PLUS    = '+' | PRIO(8),
-  TK_MINUS   = '-' | PRIO(8),
-  TK_LSHIFT  = '<' | PRIO(7),
-  TK_RSHIFT  = '>' | PRIO(7),
+  TK_BITNOT  = '~' | PRIO(15),
+  TK_NOT     = '!' | PRIO(15),
+  TK_TIMES   = '*' | PRIO(10),
+  TK_DIVIDE  = '/' | PRIO(10),
+  TK_MOD     = '%' | PRIO(10),
+  TK_PLUS    = '+' | PRIO(9),
+  TK_MINUS   = '-' | PRIO(9),
+  TK_LSHIFT  = '<' | PRIO(8),
+  TK_RSHIFT  = '>' | PRIO(8),
+  TK_LU      = '<' | PRIO(7),
+  TK_GU      = '>' | PRIO(7),
+  TK_LEQ     = '<' | PRIO(7) | ALT,
+  TK_GEQ     = '>' | PRIO(7) | ALT,
   TK_EQ      = '=' | PRIO(6),
   TK_NEQ     = '!' | PRIO(6),
   TK_BITAND  = '&' | PRIO(5),
@@ -74,26 +81,31 @@ static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE}, // spaces
-  {"\\*", TK_TIMES}, // times
-  {"/", TK_DIVIDE},  // divide
-  {"%", TK_MOD},     // modulos
-  {"\\+", TK_PLUS},  // plus
-  {"-", TK_MINUS},   // minus
-  {"<<", TK_LSHIFT}, // left shift
-  {">>", TK_RSHIFT}, // right shift
-  // {"!", '!'},        // not
-  // {"~", '~'},        // bit not
-  {"&", TK_BITAND},  // bit and
-  {"\\^", TK_BITXOR},// bit xor
-  {"\\|", TK_BITOR}, // bit or
-  {"==", TK_EQ},     // equal
-  {"!=", TK_NEQ},    // not equal
-  {"&&", TK_AND},    // logical and
-  {"[0-9]", TK_NUM}, // num
+  {" +", TK_NOTYPE},  // spaces
+  {"\\*", TK_TIMES},  // times
+  {"/", TK_DIVIDE},   // divide
+  {"%", TK_MOD},      // modulos
+  {"\\+", TK_PLUS},   // plus
+  {"-", TK_MINUS},    // minus
+  {"<<", TK_LSHIFT},  // left shift
+  {"<=", TK_LEQ},     // less or equal
+  {"<", TK_LU},       // less than
+  {">>", TK_RSHIFT},  // right shift
+  {">=", TK_GEQ},     // greater or equal
+  {">", TK_GU},       // greater than
+  {"~", TK_BITNOT},   // bit not
+  {"\\^", TK_BITXOR}, // bit xor
+  {"==", TK_EQ},      // equal
+  {"!=", TK_NEQ},     // not equal
+  {"!", TK_NOT},      // not
+  {"&&", TK_AND},     // logical and
+  {"&", TK_BITAND},   // bit and
+  {"\\|\\|", TK_OR},  // logical or
+  {"\\|", TK_BITOR},  // bit or
+  {"[0-9]", TK_NUM},  // num
+  {"\\(", '('},       // lbrace
+  {"\\)", ')'},       // rbrace
   {"\\$[a-z0-9$]+", TK_DOLLAR},
-  {"\\(", '('},      // lbrace
-  {"\\)", ')'},      // rbrace
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -345,6 +357,12 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
         } else
           res = lsrc % rsrc;
         break;
+      case TK_LU: res = lsrc < rsrc; break;
+      case TK_LEQ: res = lsrc <= rsrc; break;
+      case TK_GU: res = lsrc > rsrc; break;
+      case TK_GEQ: res = lsrc >= rsrc; break;
+      case TK_BITNOT: res = ~rsrc; break;
+      case TK_NOT: res = !rsrc; break;
       case TK_BITAND: res = lsrc & rsrc; break;
       case TK_BITOR: res = lsrc | rsrc; break;
       case TK_BITXOR: res = lsrc ^ rsrc; break;
@@ -353,6 +371,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
       case TK_EQ: res = lsrc == rsrc; break;
       case TK_NEQ: res = lsrc != rsrc; break;
       case TK_AND: res = lsrc && rsrc; break;
+      case TK_OR: res = lsrc || rsrc; break;
       case TK_DEREF:
         if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
           res = paddr_read(rsrc, sizeof res);
