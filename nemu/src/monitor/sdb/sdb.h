@@ -25,7 +25,7 @@ typedef struct {
   };
 } rpn_t;
 
-typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR } eval_state;
+typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR, EV_SYNTAX } eval_state;
 
 typedef struct eval_t {
   word_t value;
@@ -42,7 +42,7 @@ typedef struct watchpoint {
   size_t hit;
 } WP;
 
-word_t expr(char *e, bool *success);
+eval_t expr(char *e);
 rpn_t *exprcomp(char *e, size_t *);
 rpn_t *exprcomp_r(char *e, size_t *);
 eval_t eval(const rpn_t *, size_t);

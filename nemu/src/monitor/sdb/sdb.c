@@ -78,13 +78,14 @@ static int cmd_p(char *args) {
   if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR"\n", cpu.pc);
   } else {
-    bool suc;
-    word_t result = expr(args, &suc);
-    if (suc) {
-      printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result);
+    eval_t result = expr(args);
+    peval(result);
+    puts("");
+    if (result.state == EV_SUC) {
+      printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
       char *f_name;
       uintN_t f_off;
-      elf_getname_and_offset(result, &f_name, &f_off);
+      elf_getname_and_offset(result.value, &f_name, &f_off);
       if (~f_off)
         printf(" %s+%" MUXDEF(ELF64, PRIx64, PRIx32), f_name, f_off);
       else printf(" not a func");
@@ -255,9 +256,12 @@ static int cmd_x(char *args) {
     puts("Numeric constant too large.");
   }
 
-  bool success;
-  word_t addr_begin = expr(endptr + 1, &success);
-  if (!success) return 0;
+  eval_t res = expr(endptr + 1);
+  if (res.state != EV_SUC) {
+    peval(res);
+    return 0;
+  }
+  word_t addr_begin = res.value;
   word_t addr_end = addr_begin + ((word_t)bytes << 2);
 
   if (addr_end < addr_begin) {

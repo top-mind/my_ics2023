@@ -351,27 +351,16 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
   return (eval_t){_value, EV_SUC};
 }
 
-word_t expr(char *e, bool *success) {
+eval_t expr(char *e) {
   Assert(e, REPORTBUG);
-  if (!exprcomp(e, NULL)) {
-    *success = false;
-    return 0;
-  }
-  eval_t res = eval(g_rpn, nr_g_rpn);
-  switch (res.state) {
-    case EV_SUC: break;
-    case EV_DIVZERO: puts("Division by zero"); break;
-    case EV_INVADDR: printf("Cannot access memory at address " FMT_PADDR "\n", res.value); break;
-    default: Assert(0, REPORTBUG);
-  }
-  *success = res.state == EV_SUC;
-  return res.value;
+  if (!exprcomp(e, NULL))
+    return (eval_t){0, EV_SYNTAX};
+  return eval(g_rpn, nr_g_rpn);
 }
 
 void peval(eval_t ev) {
   switch(ev.state) {
     case EV_SUC:
-      // printf(FMT_WORD "\t%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), ev.value, ev.value);
       printf(FMT_WORD, ev.value);
       break;
     case EV_DIVZERO:
@@ -379,6 +368,8 @@ void peval(eval_t ev) {
       break;
     case EV_INVADDR:
       printf("Cannot access address " FMT_PADDR, ev.value);
+      break;
+    case EV_SYNTAX:
       break;
   }
 }
