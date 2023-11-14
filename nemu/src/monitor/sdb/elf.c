@@ -89,6 +89,8 @@ void init_addelf(char *filename) {
     }
   }
   qsort(funcs, sizeof(func), nr_func, compfunc);
+  for (int i = 0; i < nr_func; i++)
+    printf("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
   fclose(f);
 }
 
