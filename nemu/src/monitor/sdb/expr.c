@@ -271,6 +271,9 @@ static int compile_token(int l, int r) {
     }
     g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
   }
+  for (int i = 0; i < nr_g_rpn; i++) {
+    printf("%d %d %d\n", i, g_rpn[i].type, g_rpn[i].numconstant);
+  }
   return nr_g_rpn;
 }
 
