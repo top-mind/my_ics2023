@@ -12,7 +12,6 @@
  * * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
-#include "cpu/decode.h"
 #include "memory/paddr.h"
 #include "sdb.h"
 #include <isa.h>
