@@ -79,9 +79,9 @@ static int cmd_p(char *args) {
     printf(FMT_PADDR"\n", cpu.pc);
   } else {
     eval_t result = expr(args);
-    peval(result);
-    puts("");
     if (result.state == EV_SUC) {
+      peval(result);
+      printf(" ");
       printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
       char *f_name;
       uintN_t f_off;
@@ -89,6 +89,9 @@ static int cmd_p(char *args) {
       if (~f_off)
         printf(" %s+%" MUXDEF(ELF64, PRIu64, PRIu32), f_name, f_off);
       else printf(" not a func");
+      printf("\n");
+    } else {
+      peval(result);
       printf("\n");
     }
   }
