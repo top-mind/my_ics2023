@@ -3,11 +3,7 @@
 #include <macro.h>
 #include <common.h>
 #include <stdlib.h>
-
-// elf format, by default, is hard coded to the same as ISA
-#ifdef CONFIG_ISA64
-#define ELF64
-#endif
+#include "sdb.h"
 
 #define EM_AVAILABLE EM_RISCV
 
@@ -15,10 +11,8 @@
 
 #ifdef ELF64
 #define DEF_ELF_TYPES(type) _DEF_ELF_TYPES(type, 64)
-typedef uint64_t uintN_t;
 #else
 #define DEF_ELF_TYPES(type) _DEF_ELF_TYPES(type, 32)
-typedef uint32_t uintN_t;
 #endif
 
 #define ELF_TYPES(_) _(Ehdr) _(Shdr) _(Sym)

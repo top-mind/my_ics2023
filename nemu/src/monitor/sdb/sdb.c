@@ -80,7 +80,15 @@ static int cmd_p(char *args) {
   } else {
     bool suc;
     word_t result = expr(args, &suc);
-    if (suc) printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32) "\n", result);
+    if (suc) {
+      printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result);
+      char * f_name;
+      uintN_t f_off;
+      elf_getname_and_offset(result, &f_name, &f_off);
+      if (~f_off)
+        printf(" %s+%" MUXDEF(ELF64, PRIx64, PRIx32), f_name, f_off);
+      printf("\n");
+    }
   }
   return 0;
 }
