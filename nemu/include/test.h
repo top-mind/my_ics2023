@@ -5,7 +5,7 @@
 
 static char _s[65536 + 25];
 
-extern struct {word_t value; enum {FOO, BAR} st; } expr(char *e);
+extern struct {word_t value; enum {FOO} st; } expr(char *e);
 
 int test_main() {
   puts("Warning: TEST MODE!");
