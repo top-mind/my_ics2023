@@ -150,7 +150,7 @@ static bool make_token(char *e) {
         if (rules[i].token_type == TK_NOTYPE) break;
 
         if (nr_token >= ARRLEN(tokens)) {
-          puts("Expression too long (non-space tokens).");
+          printf("Expression too long (non-space tokens).");
           return false;
         }
         char *endptr;
@@ -161,8 +161,8 @@ static bool make_token(char *e) {
             errno = 0;
             tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 0);
             if (errno == ERANGE) {
-              puts("Numeric constant too large.");
-              return 0;
+              printf("Numeric constant too large.");
+              return false;
             }
             substr_len = endptr - substr_start;
             position = endptr - e;
@@ -172,7 +172,7 @@ static bool make_token(char *e) {
             substr_start[substr_len] = '\0';
             preg = isa_reg_str2ptr(substr_start + 1);
             if (preg == NULL) {
-              printf("Invalid register name '%s'\n", substr_start + 1);
+              printf("Invalid register name '%s'", substr_start + 1);
               return false;
             }
             tokens[nr_token].preg = preg;
@@ -184,7 +184,7 @@ static bool make_token(char *e) {
             break;
           case ')':
             if (last_lbrace == -1) {
-              printf("Unbalanced right brace\n%s\n%*s^\n", e, position - substr_len, "");
+              printf("Unbalanced right brace\n%s\n%*s^", e, position - substr_len, "");
               return false;
             }
             tokens[nr_token].lbmatch = last_lbrace;
@@ -205,12 +205,12 @@ static bool make_token(char *e) {
     }
 
     if (i == NR_REGEX) {
-      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      printf("no match at position %d\n%s\n%*.s^", position, e, position, "");
       return false;
     }
   }
   if (last_lbrace != -1) {
-    printf("Unbalanced left brace\n%s\n%*s^\n", e, tokens[last_lbrace].position, "");
+    printf("Unbalanced left brace\n%s\n%*s^", e, tokens[last_lbrace].position, "");
     return false;
   }
   return true;
