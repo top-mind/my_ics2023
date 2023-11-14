@@ -5,14 +5,7 @@
 
 static char _s[65536 + 25];
 
-typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR, EV_SYNTAX } eval_state;
-
-typedef struct eval_t {
-  word_t value;
-  eval_state state;
-} eval_t;
-
-extern eval_t expr(char *e);
+extern struct {word_t value; int st; } expr(char *e);
 
 int test_main() {
   puts("Warning: TEST MODE!");
@@ -36,7 +29,7 @@ int test_main() {
     if (_s[strlen(_s) - 1] != '\n') continue;
     _s[strlen(_s) - 1] = '\0';
     uint32_t out;
-    if ((out = expr(_s).state) != ans) {
+    if ((out = expr(_s).value) != ans) {
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
     } else {
