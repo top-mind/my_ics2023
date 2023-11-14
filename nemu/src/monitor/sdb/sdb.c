@@ -76,7 +76,14 @@ static int cmd_p(char *args) {
   }
   // trick to print pc in hex
   if (strcmp(args, "$pc") == 0) {
-    printf(FMT_PADDR"\n", cpu.pc);
+    printf(FMT_PADDR, cpu.pc);
+    char *f_name;
+    uintN_t f_off;
+    elf_getname_and_offset(cpu.pc, &f_name, &f_off);
+    if (~f_off)
+      printf(" %s+%" MUXDEF(ELF64, PRIu64, PRIu32), f_name, f_off);
+    else printf(" %s", f_name);
+    printf("\n");
   } else {
     eval_t result = expr(args);
     if (result.state == EV_SUC) {
