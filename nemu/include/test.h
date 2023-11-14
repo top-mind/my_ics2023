@@ -1,6 +1,7 @@
 // TEST onlu
 #ifndef TEST_H_
 #define TEST_H_
+#ifdef CONFIG_TEST
 #include <common.h>
 
 static char _s[65536 + 25];
@@ -39,4 +40,5 @@ int test_main() {
   printf("%d\n", nr_ok);
   return 0;
 }
+#endif
 #endif
