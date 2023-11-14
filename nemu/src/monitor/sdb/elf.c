@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <macro.h>
 #include <common.h>
+#include <stdlib.h>
 
 // elf format, by default, is hard coded to the same as ISA
 #ifdef CONFIG_ISA64
@@ -21,13 +22,29 @@ typedef uint32_t uintN_t;
 #endif
 
 #define ELF_TYPES(_) _(Ehdr) _(Shdr) _(Sym)
-#define ELFCLASS MUXDEF(ELF64, ELFCLASS64, ELFCLASS32)
-#define ELF_ST_TYPE ELF32_ST_TYPE
+#define ELFCLASS     MUXDEF(ELF64, ELFCLASS64, ELFCLASS32)
+#define ELF_ST_TYPE  ELF32_ST_TYPE
 
 #define section_fseek(i) fseek(f, ehdr.e_shoff + sizeof(shdr) * (i), SEEK_SET)
-#define R(x) assert(1 == fread(&x, sizeof(x), 1, f))
+#define R(x)             assert(1 == fread(&x, sizeof(x), 1, f))
 
 MAP(ELF_TYPES, DEF_ELF_TYPES)
+
+typedef struct {
+  uintN_t addr;
+  uintN_t size;
+  char *name;
+} func;
+
+static func funcs[100];
+static size_t nr_func;
+static char *unknown_func = "??";
+
+static int compfunc(const void *a, const void *b) {
+  uintN_t addra = ((func *)a)->addr;
+  uintN_t addrb = ((func *)b)->addr;
+  return addra == addrb ? 0 : addra < addrb ? -1 : 1;
+}
 
 void init_addelf(char *filename) {
   FILE *f = fopen(filename, "r");
@@ -53,9 +70,7 @@ void init_addelf(char *filename) {
       //   name, value, size
       // for STN_ABS
       //   file
-      uintN_t sh_off = shdr.sh_offset,
-              sh_size = shdr.sh_size,
-              str_size;
+      uintN_t sh_off = shdr.sh_offset, sh_size = shdr.sh_size, str_size;
       section_fseek(shdr.sh_link);
       R(shdr);
       char *strtab = malloc(str_size = shdr.sh_size);
@@ -66,12 +81,35 @@ void init_addelf(char *filename) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
         if (ELF_ST_TYPE(sym.st_info) == STT_FUNC) {
-          printf("name='%s', %#lx, %ld\n", &strtab[sym.st_name],
-                 (long)sym.st_value, (long)sym.st_size);
+          // printf("name='%s', %#lx, %ld\n", &strtab[sym.st_name],
+          //        (long)sym.st_value, (long)sym.st_size);
+          if (nr_func == ARRLEN(funcs)) break;
+          funcs[nr_func++] = (func){
+            .addr = sym.st_value,
+            .size = sym.st_size,
+            .name = savestring(&strtab[sym.st_name]),
+          };
         }
       }
       free(strtab);
     }
   }
+  qsort(funcs, sizeof(func), nr_func, compfunc);
   fclose(f);
+}
+
+void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset) {
+  uintN_t uhole;
+  char *nhole;
+  if (name == NULL) name = &nhole;
+  if (offset == NULL) offset = &uhole;
+  for (int i = 0; i < nr_func; i++) {
+    if (funcs[i].addr <= addr && addr <= funcs[i].addr + funcs[i].size) {
+      *name = funcs[i].name;
+      *offset = addr - funcs[i].addr;
+      break;
+    }
+  }
+  *name = unknown_func;
+  *offset = -1;
 }

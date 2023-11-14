@@ -28,6 +28,9 @@
 // calculate the length of an array
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
+// make copy of a null-terminated string
+#define savestring(x) strcpy ((char *)malloc (1 + strlen (x)), (x))
+
 // macro concatenation
 #define concat_temp(x, y)      x##y
 #define concat(x, y)           concat_temp(x, y)
