@@ -101,7 +101,7 @@ void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset) {
   if (name == NULL) name = &nhole;
   if (offset == NULL) offset = &uhole;
   for (int i = 0; i < nr_func; i++) {
-    if (funcs[i].addr <= addr && addr <= funcs[i].addr + funcs[i].size) {
+    if (funcs[i].addr <= addr && addr < funcs[i].addr + funcs[i].size) {
       *name = funcs[i].name;
       *offset = addr - funcs[i].addr;
       return;
