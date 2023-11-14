@@ -11,7 +11,8 @@ typedef struct eval_t {
   word_t value;
   eval_state state;
 } eval_t;
-extern eval_t expr(char *e, bool *success);
+
+extern eval_t expr(char *e);
 
 int test_main() {
   puts("Warning: TEST MODE!");
@@ -35,8 +36,7 @@ int test_main() {
     if (_s[strlen(_s) - 1] != '\n') continue;
     _s[strlen(_s) - 1] = '\0';
     uint32_t out;
-    bool suc;
-    if ((out = expr(_s, &suc).state) != ans) {
+    if ((out = expr(_s).state) != ans) {
       printf("ans=%u,out=%u,expr=`%s'\n", ans, out, _s);
       nemu_state.state = NEMU_ABORT;
     } else {
