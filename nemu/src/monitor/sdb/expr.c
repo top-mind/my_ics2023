@@ -227,7 +227,7 @@ static bool make_token(char *e) {
  */
 static int compile_token(int l, int r) {
   if (l > r) {
-    printf("Syntax error near `%s'\n", p_expr + (l >= 0 ? tokens[l].position : 0));
+    printf("Syntax error near `%s' %d\n", p_expr + (l >= 0 ? tokens[l].position : 0), l);
     return 0;
   }
   if (nr_g_rpn >= ARRLEN(g_rpn)) {
@@ -270,9 +270,6 @@ static int compile_token(int l, int r) {
       return 0;
     }
     g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
-  }
-  for (int i = 0; i < nr_g_rpn; i++) {
-    printf("%d %d %d\n", i, g_rpn[i].type, g_rpn[i].numconstant);
   }
   return nr_g_rpn;
 }
