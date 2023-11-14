@@ -42,7 +42,7 @@
 // bit 12:9	priority
 #define PRIO(x)     ((x) << 9)
 #define PRIORITY(x) (((x.type) >> 9) & 0xf)
-#define ALT (1 << 8)
+#define ALT         (1 << 8)
 #define ISUOP(x)    (PRIORITY(x) == 0xf)
 #define ISBOP(x)    (ISOP(x) && !ISUOP(x))
 #define RTOL(x)     ISUOP(x)
@@ -240,32 +240,25 @@ static bool make_token(char *e) {
  * return: array length
  * If failed, or the expression is empty, return 0
  */
-#define ESYNTAX(pos)                                                                         \
-  do {                                                                                       \
+#define ESYNTAX(pos)                                                                       \
+  do {                                                                                     \
     printf("Syntax error near `%s'", pos < nr_token ? p_expr + tokens[pos].position : ""); \
-    return 0;                                                                                \
+    return 0;                                                                              \
   } while (0)
-#define ETOOLONG                                                 \
-  do {                                                           \
+#define ETOOLONG                                                   \
+  do {                                                             \
     printf("Expression too long (atoms and operators in stack)."); \
-    return 0;                                                    \
+    return 0;                                                      \
   } while (0)
 static int compile_token(int l, int r) {
-  if (l > r)
-    ESYNTAX(l);
-  if (nr_g_rpn >= ARRLEN(g_rpn))
-    ETOOLONG;
+  if (l > r) ESYNTAX(l);
+  if (nr_g_rpn >= ARRLEN(g_rpn)) ETOOLONG;
   if (l == r) {
     g_rpn[nr_g_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
-      case TK_NUM:
-        g_rpn[nr_g_rpn].numconstant = tokens[l].numconstant;
-        break;
-      case TK_DOLLAR:
-        g_rpn[nr_g_rpn].preg = tokens[l].preg;
-        break;
-      default:
-        ESYNTAX(l + 1);
+      case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].numconstant; break;
+      case TK_DOLLAR: g_rpn[nr_g_rpn].preg = tokens[l].preg; break;
+      default: ESYNTAX(l + 1);
     }
     nr_g_rpn++;
   } else {
@@ -278,13 +271,11 @@ static int compile_token(int l, int r) {
           (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && RTOL(tokens[i])))
         op_idx = i;
     }
-    if (op_idx == -1)
-      ESYNTAX(l + 1);
+    if (op_idx == -1) ESYNTAX(l + 1);
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
     if (!res) return 0;
-    if (nr_g_rpn >= ARRLEN(g_rpn))
-      ETOOLONG;
+    if (nr_g_rpn >= ARRLEN(g_rpn)) ETOOLONG;
     g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
   }
   return nr_g_rpn;
@@ -314,9 +305,7 @@ rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
  * If failed, or the expression is empty, return NULL
  */
 rpn_t *exprcomp_r(char *e, size_t *p_nr_rpn) {
-  if (exprcomp(e, p_nr_rpn) == NULL) {
-    return NULL;
-  }
+  if (exprcomp(e, p_nr_rpn) == NULL) return NULL;
   rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_g_rpn);
   memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_g_rpn);
   return rpn;
@@ -395,23 +384,15 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
 
 eval_t expr(char *e) {
   Assert(e, REPORTBUG);
-  if (!exprcomp(e, NULL))
-    return (eval_t){0, EV_SYNTAX};
+  if (!exprcomp(e, NULL)) return (eval_t){0, EV_SYNTAX};
   return eval(g_rpn, nr_g_rpn);
 }
 
 void peval(eval_t ev) {
-  switch(ev.state) {
-    case EV_SUC:
-      printf(FMT_WORD, ev.value);
-      break;
-    case EV_DIVZERO:
-      printf("Division by zero");
-      break;
-    case EV_INVADDR:
-      printf("Cannot access address " FMT_PADDR, ev.value);
-      break;
-    case EV_SYNTAX:
-      break;
+  switch (ev.state) {
+    case EV_SUC: printf(FMT_WORD, ev.value); break;
+    case EV_DIVZERO: printf("Division by zero"); break;
+    case EV_INVADDR: printf("Cannot access address " FMT_PADDR, ev.value); break;
+    case EV_SYNTAX: break;
   }
 }
