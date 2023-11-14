@@ -87,6 +87,7 @@ static int cmd_p(char *args) {
       elf_getname_and_offset(result, &f_name, &f_off);
       if (~f_off)
         printf(" %s+%" MUXDEF(ELF64, PRIx64, PRIx32), f_name, f_off);
+      else printf(" not a func");
       printf("\n");
     }
   }
