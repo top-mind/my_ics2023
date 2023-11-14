@@ -49,12 +49,13 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef FTRACE
   
 #endif
-
+#ifndef CONFIG_TARGET_AM
   bool is_watchpoint_hit();
   if (is_watchpoint_hit()) {
     if (nemu_state.state == NEMU_RUNNING)
       nemu_state.state = NEMU_STOP;
   }
+#endif
 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
