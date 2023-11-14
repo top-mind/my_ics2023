@@ -225,15 +225,21 @@ static bool make_token(char *e) {
  * return: array length
  * If failed, or the expression is empty, return 0
  */
+#define ESYNTAX(pos)                                                                         \
+  do {                                                                                       \
+    printf("Syntax error near `%s'\n", pos < nr_token ? p_expr + tokens[pos].position : ""); \
+    return 0;                                                                                \
+  } while (0)
+#define ETOOLONG                                                 \
+  do {                                                           \
+    puts("Expression too long (atoms and operators in stack)."); \
+    return 0;                                                    \
+  } while (0)
 static int compile_token(int l, int r) {
-  if (l > r) {
-    printf("Syntax error near `%s' %d\n", p_expr + (l >= 0 ? tokens[l].position : 0), l);
-    return 0;
-  }
-  if (nr_g_rpn >= ARRLEN(g_rpn)) {
-    puts("Expression too long (atoms and operators in stack).");
-    return 0;
-  }
+  if (l > r)
+    ESYNTAX(l);
+  if (nr_g_rpn >= ARRLEN(g_rpn))
+    ETOOLONG;
   if (l == r) {
     g_rpn[nr_g_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
@@ -244,8 +250,7 @@ static int compile_token(int l, int r) {
         g_rpn[nr_g_rpn].preg = tokens[l].preg;
         break;
       default:
-        printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
-        return 0;
+        ESYNTAX(l + 1);
     }
     nr_g_rpn++;
   } else {
@@ -258,21 +263,19 @@ static int compile_token(int l, int r) {
           (PRIORITY(tokens[i]) == PRIORITY(tokens[op_idx]) && RTOL(tokens[i])))
         op_idx = i;
     }
-    if (op_idx == -1) {
-      printf("Syntax error near `%s'\n", l + 1 < nr_token ? p_expr + tokens[l + 1].position : "");
-      return 0;
-    }
+    if (op_idx == -1)
+      ESYNTAX(l + 1);
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
     if (!res) return 0;
-    if (nr_g_rpn >= ARRLEN(g_rpn)) {
-      puts("Expression too long (atoms and operators in stack).");
-      return 0;
-    }
+    if (nr_g_rpn >= ARRLEN(g_rpn))
+      ETOOLONG;
     g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
   }
   return nr_g_rpn;
 }
+#undef ESYNTAX
+#undef ETOOLONG
 
 /* Compile expression to reverse polish notation
  * return: rpn_t array
