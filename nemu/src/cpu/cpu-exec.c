@@ -14,7 +14,6 @@
 ***************************************************************************************/
 
 #include "isa.h"
-#include "memory/paddr.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
