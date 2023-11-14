@@ -213,6 +213,7 @@ static bool make_token(char *e) {
     printf("Unbalanced left brace\n%s\n%*s^\n", e, tokens[last_lbrace].position, "");
     return false;
   }
+  // XXX debug
   return true;
 }
 
