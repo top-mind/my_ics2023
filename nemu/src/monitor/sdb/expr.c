@@ -75,10 +75,18 @@ static struct rule {
   int token_type;
 } rules[] = {
   {" +", TK_NOTYPE}, // spaces
-  {"\\+", TK_PLUS},  // plus
-  {"-", TK_MINUS},   // minus
   {"\\*", TK_TIMES}, // times
   {"/", TK_DIVIDE},  // divide
+  {"%", TK_MOD},     // modulos
+  {"\\+", TK_PLUS},  // plus
+  {"-", TK_MINUS},   // minus
+  {"<<", TK_LSHIFT}, // left shift
+  {">>", TK_RSHIFT}, // right shift
+  // {"!", '!'},        // not
+  // {"~", '~'},        // bit not
+  {"&", TK_BITAND},  // bit and
+  {"\\^", TK_BITXOR},// bit xor
+  {"\\|", TK_BITOR}, // bit or
   {"==", TK_EQ},     // equal
   {"!=", TK_NEQ},    // not equal
   {"&&", TK_AND},    // logical and
@@ -330,6 +338,18 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
         } else
           res = lsrc / rsrc;
         break;
+      case TK_MOD:
+        if (rsrc == 0) {
+          free(stack);
+          return (eval_t){0, EV_DIVZERO};
+        } else
+          res = lsrc % rsrc;
+        break;
+      case TK_BITAND: res = lsrc & rsrc; break;
+      case TK_BITOR: res = lsrc | rsrc; break;
+      case TK_BITXOR: res = lsrc ^ rsrc; break;
+      case TK_LSHIFT: res = lsrc << (rsrc & (sizeof res * 8 - 1)); break;
+      case TK_RSHIFT: res = lsrc >> (rsrc & (sizeof res * 8 - 1)); break;
       case TK_EQ: res = lsrc == rsrc; break;
       case TK_NEQ: res = lsrc != rsrc; break;
       case TK_AND: res = lsrc && rsrc; break;
