@@ -104,7 +104,7 @@ void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset) {
     if (funcs[i].addr <= addr && addr <= funcs[i].addr + funcs[i].size) {
       *name = funcs[i].name;
       *offset = addr - funcs[i].addr;
-      break;
+      return;
     }
   }
   *name = unknown_func;
