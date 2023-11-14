@@ -282,8 +282,8 @@ rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
     return NULL;
   }
   nr_g_rpn = 0;
-  *p_nr_rpn = compile_token(0, nr_token - 1);
-  return *p_nr_rpn == 0 ? NULL : g_rpn;
+  *p_nr_rpn = nr_g_rpn = compile_token(0, nr_token - 1);
+  return nr_g_rpn == 0 ? NULL : g_rpn;
 }
 
 /* Same as exprcomp, but return a copy of rpn_t array
@@ -291,13 +291,11 @@ rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
  * If failed, or the expression is empty, return NULL
  */
 rpn_t *exprcomp_r(char *e, size_t *p_nr_rpn) {
-  size_t null;
-  if (p_nr_rpn == NULL) p_nr_rpn = &null;
   if (exprcomp(e, p_nr_rpn) == NULL) {
     return NULL;
   }
-  rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * *p_nr_rpn);
-  memcpy(rpn, g_rpn, sizeof(rpn_t) * *p_nr_rpn);
+  rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_g_rpn);
+  memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_g_rpn);
   return rpn;
 }
 
