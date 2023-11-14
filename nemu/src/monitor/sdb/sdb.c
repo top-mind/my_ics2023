@@ -18,12 +18,10 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "common.h"
+#include <memory/paddr.h>
 #include "sdb.h"
 #include <sys/types.h>
 #include <utils.h>
-#include "memory/paddr.h"
-#include "memory/host.h"
 
 static int is_batch_mode = false;
 
