@@ -214,6 +214,10 @@ static bool make_token(char *e) {
     return false;
   }
   // XXX debug
+  for (int i = 0; i < nr_token; i++) {
+    printf("%d %d\n", i, tokens[i].position);
+  }
+  // gubed
   return true;
 }
 
