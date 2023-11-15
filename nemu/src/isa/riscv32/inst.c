@@ -207,8 +207,10 @@ static void ras_push(vaddr_t pc, vaddr_t dnpc) {
   uintN_t f_off;
   elf_getname_and_offset(dnpc, &f_name, &f_off);
   printf("%s", f_name);
-  if (f_off != 0 || ELF_OFFSET_VALID(f_off))
+  if (f_off != 0 && ELF_OFFSET_VALID(f_off))
     printf("+0x%lu", (unsigned long) f_off);
+  if (!ELF_OFFSET_VALID(f_off))
+    printf(" " FMT_PADDR, dnpc);
   printf("\n");
 }
 
