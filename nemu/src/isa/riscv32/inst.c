@@ -206,12 +206,12 @@ static void ras_push(vaddr_t pc, vaddr_t dnpc) {
   char *f_name;
   uintN_t f_off;
   elf_getname_and_offset(dnpc, &f_name, &f_off);
-  printf("%s", f_name);
+  printf("%s() {", f_name);
   if (f_off != 0 && ELF_OFFSET_VALID(f_off))
-    printf("+0x%lu", (unsigned long) f_off);
+    printf(" // +0x%lu", (unsigned long) f_off);
   if (!ELF_OFFSET_VALID(f_off))
-    printf(" " FMT_PADDR, dnpc);
-  printf(" {\n");
+    printf(" //" FMT_PADDR, dnpc);
+  printf("\n");
 }
 
 static void ras_pop(vaddr_t pc, vaddr_t dnpc) {
@@ -219,7 +219,7 @@ static void ras_pop(vaddr_t pc, vaddr_t dnpc) {
     printf("pop?");
   else
     printf("%*.s", (--ras_depth) * 2, "");
-  printf("} /* ret");
+  printf("} /*");
   char *f_name;
   uintN_t f_off;
   elf_getname_and_offset(pc, &f_name, &f_off);
