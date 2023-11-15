@@ -208,7 +208,7 @@ static void ras_pop() {
   if (ras_depth == 0)
     printf("pop?");
   else
-    printf("%*.spop\n", (ras_depth--) * 2, "");
+    printf("%*.spop\n", (--ras_depth) * 2, "");
 }
 
 void isa_ras_update(Decode *s) {
