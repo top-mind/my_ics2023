@@ -57,8 +57,8 @@ word_t isa_query_intr();
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
 void isa_difftest_attach();
 
-#ifdef FTRACE
-void isa_ras_update(Decode *s);
+#ifdef CONFIG_FTRACE
+void isa_ras_update(struct Decode *s);
 #endif
 
 #endif

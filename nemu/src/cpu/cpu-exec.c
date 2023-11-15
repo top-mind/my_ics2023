@@ -46,9 +46,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     g_iring_wrap = 1;
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-#ifdef FTRACE
-  Assert(0);
-  isa_ras_update(&_this);
+#ifdef CONFIG_FTRACE
+  isa_ras_update(_this);
 #endif
 
 #ifndef CONFIG_TARGET_AM
