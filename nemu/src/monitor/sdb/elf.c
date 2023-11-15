@@ -1,4 +1,5 @@
 #include <elf.h>
+#include <errno.h>
 #include <stdio.h>
 #include <macro.h>
 #include <common.h>
@@ -42,6 +43,10 @@ static int compfunc(const void *a, const void *b) {
 
 void init_addelf(char *filename) {
   FILE *f = fopen(filename, "r");
+  if (f == NULL) {
+    printf("%s\n", strerror(errno));
+    return;
+  }
   Elf_Ehdr ehdr;
   R(ehdr);
   Assert(ehdr.e_ident[EI_CLASS] == ELFCLASS, "Bad elf");
