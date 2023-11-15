@@ -201,14 +201,15 @@ int isa_exec_once(Decode *s) {
 #ifdef CONFIG_FTRACE
 static int ras_depth = 0;
 static void ras_push() {
-  printf("%*.spush\n", (ras_depth++) * 2, "");
+  printf("%*.s", (ras_depth++) * 2, "");
+
 }
 
 static void ras_pop() {
   if (ras_depth == 0)
     printf("pop?");
   else
-    printf("%*.spop\n", (--ras_depth) * 2, "");
+    printf("%*.s", (--ras_depth) * 2, "");
 }
 
 void isa_ras_update(Decode *s) {
