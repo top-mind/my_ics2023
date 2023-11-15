@@ -17,6 +17,7 @@
 #define __SDB_H__
 
 #include <common.h>
+#include <elf-def.h>
 typedef struct {
   int type;
   union {
@@ -53,16 +54,4 @@ int new_wp(char *hint);
 bool wp_delete(int n);
 void print_wp();
 
-// elf
-// elf format, by default, is hard coded to the same as ISA
-#ifdef CONFIG_ISA64
-#define ELF64
-#endif
-
-#ifdef ELF64
-typedef uint64_t uintN_t;
-#else
-typedef uint32_t uintN_t;
-#endif
-void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset);
 #endif

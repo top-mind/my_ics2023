@@ -78,7 +78,7 @@ static int cmd_p(char *args) {
     char *f_name;
     uintN_t f_off;
     elf_getname_and_offset(cpu.pc, &f_name, &f_off);
-    if (~f_off)
+    if (ELF_OFFSET_VALID(f_off))
       printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
     else
       printf("[%s]", f_name);
@@ -92,7 +92,7 @@ static int cmd_p(char *args) {
       char *f_name;
       uintN_t f_off;
       elf_getname_and_offset(result.value, &f_name, &f_off);
-      if (~f_off) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
+      if (ELF_OFFSET_VALID(f_off)) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
       printf("\n");
     } else {
       peval(result);
