@@ -220,6 +220,7 @@ static void ras_push(vaddr_t pc, vaddr_t dnpc) {
 static void ras_pop(vaddr_t pc, vaddr_t dnpc) {
   if (ras_depth == 0) return;
   if (ras_nocall) {
+    --ras_depth;
     ras_nocall = false;
     printf(";\n");
   } else {
