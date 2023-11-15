@@ -201,31 +201,36 @@ int isa_exec_once(Decode *s) {
 #ifdef CONFIG_FTRACE
 #include <elf-def.h>
 static int ras_depth = 0;
+static bool ras_nocall = false;
 static void ras_push(vaddr_t pc, vaddr_t dnpc) {
+  if (ras_nocall) printf(" {\n");
+  ras_nocall = true;
   printf("%*.s", (ras_depth++) * 2, "");
   char *f_name;
   uintN_t f_off;
   elf_getname_and_offset(dnpc, &f_name, &f_off);
-  printf("%s() {", f_name);
+  printf("%s", f_name);
   if (f_off != 0 && ELF_OFFSET_VALID(f_off))
-    printf(" // +0x%lu", (unsigned long) f_off);
+    printf("+0x%lx", (unsigned long) f_off);
   if (!ELF_OFFSET_VALID(f_off))
-    printf(" //" FMT_PADDR, dnpc);
-  printf("\n");
+    printf("[" FMT_PADDR "]", dnpc);
+  printf("()");
 }
 
 static void ras_pop(vaddr_t pc, vaddr_t dnpc) {
-  if (ras_depth == 0)
-    printf("pop?");
-  else
+  if (ras_depth == 0) return;
+  if (ras_nocall) {
+    ras_nocall = false;
+    printf(";\n");
+  } else {
     printf("%*.s", (--ras_depth) * 2, "");
-  printf("} /*");
+    printf("} /*");
   char *f_name;
   uintN_t f_off;
   elf_getname_and_offset(pc, &f_name, &f_off);
   printf(" %s", f_name);
   printf(" */\n");
-
+  }
 }
 
 void isa_ras_update(Decode *s) {
