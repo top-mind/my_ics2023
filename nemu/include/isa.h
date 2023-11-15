@@ -31,9 +31,9 @@ void init_isa();
 // reg
 extern CPU_state cpu;
 void isa_reg_display();
+word_t *isa_reg_str2ptr(const char *name);
 // ***deprecated***
 word_t isa_reg_str2val(const char *name, bool *success);
-word_t *isa_reg_str2ptr(const char *name);
 
 // exec
 struct Decode;
@@ -56,5 +56,9 @@ word_t isa_query_intr();
 // difftest
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
 void isa_difftest_attach();
+
+#ifdef FTRACE
+void isa_ras_update(Decode *s);
+#endif
 
 #endif
