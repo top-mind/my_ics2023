@@ -44,7 +44,7 @@ static int compfunc(const void *a, const void *b) {
 void init_addelf(char *filename) {
   FILE *f = fopen(filename, "r");
   if (f == NULL) {
-    printf(ANSI_FMT("Unable to open `%s':\n%s\n", ANSI_FG_RED), filename, strerror(errno));
+    fprintf(stderr, ANSI_FMT("Unable to open `%s':\n%s\n", ANSI_FG_RED), filename, strerror(errno));
     return;
   }
   Elf_Ehdr ehdr;
