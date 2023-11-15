@@ -62,6 +62,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 #ifdef CONFIG_ITRACE
+#include <memory/paddr.h> // in_pmem
 static void itrace_log(Decode *s) {
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
