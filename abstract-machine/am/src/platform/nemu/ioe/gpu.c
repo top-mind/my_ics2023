@@ -1,5 +1,6 @@
 #include <am.h>
 #include <nemu.h>
+#include <klib.h>
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
@@ -28,8 +29,12 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (W == 0)
     panic("Please call `AM_GPUU_CONFIG` first!");
   for (int i = x; i < x + w; i++)
-    for (int j = y; j < y + h; j++)
+    for (int j = y; j < y + h; j++) {
+      if ((i * W + j) * 4 >= 0x753000) {
+        printf("%d %d\n", i, j);
+      }
       outl(FB_ADDR + (i * W + j) * 4, p[i * w + j]);
+    }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }
