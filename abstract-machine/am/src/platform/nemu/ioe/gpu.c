@@ -27,6 +27,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (W == 0)
     panic("Please call `AM_GPUU_CONFIG` first!");
+  assert(ctl->pixels != 0);
   uint32_t c = *(uint32_t *)ctl->pixels;
   for (int i = x; i < x + w; i++) {
     for (int j = y; j < y + h; j++) {
