@@ -40,7 +40,7 @@ static uint32_t keymap[256] = {};
 
 static void init_keymap() { MAP(NEMU_KEYS, SDL_KEYMAP) }
 
-#define KEY_QUEUE_LEN 10
+#define KEY_QUEUE_LEN 1024
 static int key_queue[KEY_QUEUE_LEN] = {};
 static int key_f = 0, key_r = 0;
 
@@ -78,6 +78,7 @@ static uint32_t key_dequeue() {
 static uint32_t *i8042_data_port_base = NULL;
 
 static void i8042_data_io_handler(uint32_t offset, int len, bool is_write) {
+  Log("load keyboard");
   assert(!is_write);
   assert(offset == 0);
   i8042_data_port_base[0] = key_dequeue();
