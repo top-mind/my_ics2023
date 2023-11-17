@@ -65,11 +65,24 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+  uintptr_t d = (uintptr_t) dst;
+  uintptr_t s = (uintptr_t) src;
+  if (d < s) {
+    while (n--)
+      *(uint8_t *)dst++ = *(uint8_t *)src++;
+  } else if (d > s) {
+    while (n--)
+      *((uint8_t *)dst + n) = *((uint8_t *)src + n);
+  }
+  return (void *) d;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
-  panic("Not implemented");
+  void *ret = out;
+  while (n--) {
+    *(uint8_t *) out++ = *(uint8_t *) in++;
+  }
+  return ret;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
