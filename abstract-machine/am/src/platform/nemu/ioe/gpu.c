@@ -25,13 +25,12 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   // AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
   uint32_t *p = ctl->pixels;
-  uint32_t c = *p;
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (W == 0)
     panic("Please call `AM_GPUU_CONFIG` first!");
   for (int i = x; i < x + w; i++)
     for (int j = y; j < y + h; j++) {
-      outl(FB_ADDR + (i + j * W) * 4, c);
+      outl(FB_ADDR + (i + j * W) * 4, *p);
     }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
