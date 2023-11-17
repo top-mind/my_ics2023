@@ -51,4 +51,4 @@ clean:
 all: $(BINARY)
 .DEFAULT_GOAL = all
 
-.PHONY: all clean $(SPIKE)
+.PHONY: all clean
