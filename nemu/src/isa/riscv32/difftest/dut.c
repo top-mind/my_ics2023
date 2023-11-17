@@ -22,8 +22,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     if (ref_r->gpr[i] != cpu.gpr[i])
       return false;
   }
-  // return ref_r->pc == cpu.pc;
-  return false;
+  return ref_r->pc == cpu.pc;
 }
 
 void isa_difftest_attach() {}
