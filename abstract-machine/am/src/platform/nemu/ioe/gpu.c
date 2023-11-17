@@ -31,7 +31,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   for (int i = x; i < x + w; i++)
     for (int j = y; j < y + h; j++) {
       if ((i * W + j) * 4 >= 0x75300) {
-        printf("%d %d\n", i, j);
+        printf("%d %d %d %d %d %d\n", i, j, x, y, w, h);
       }
       outl(FB_ADDR + (i * W + j) * 4, p[i * w + j]);
     }
