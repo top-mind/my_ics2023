@@ -27,9 +27,9 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (W == 0)
     panic("Please call `AM_GPUU_CONFIG` first!");
+  uint32_t c = *(uint32_t *)ctl->pixels;
   for (int i = x; i < x + w; i++) {
-    // printf("%p %d\n", ctl->pixels, c);
-    uint32_t c = *(uint32_t *)ctl->pixels;
+    printf("%p %d\n", ctl->pixels, c);
     for (int j = y; j < y + h; j++) {
       outl(FB_ADDR + (i + j * W) * 4, c);
     }
