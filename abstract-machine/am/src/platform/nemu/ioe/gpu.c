@@ -33,7 +33,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
       if ((i * W + j) * 4 >= 0x75300) {
         printf("%d %d %d %d %d %d\n", i, j, x, y, w, h);
       }
-      outl(FB_ADDR + (i * W + j) * 4, p[i * w + j]);
+      outl(FB_ADDR + (i + j * W) * 4, p[i + j * w]);
     }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
