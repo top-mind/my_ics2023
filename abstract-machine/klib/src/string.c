@@ -14,25 +14,22 @@ size_t strlen(const char *s) {
 
 char *strcpy(char *dst, const char *src) {
   char *tmp = dst;
-  while (*src != '\0') {
-    *tmp = *src;
-    tmp++, src++;
-  }
+  while (*src != '\0') *tmp++ = *src++;
   *tmp = '\0';
   return dst;
 }
 
 char *strncpy(char *dst, const char *src, size_t n) {
-  panic("Not implemented");
+  char *tmp = dst;
+  while (n-- && *src != '\0') *tmp++ = *src++;
+  while (n--) *tmp++ = '\0';
+  return dst;
 }
 
 char *strcat(char *dst, const char *src) {
   char *tmp = dst;
-  while (*tmp != '\0')
-    tmp++;
-  while (*src != '\0') {
-    *tmp++ = *src++;
-  }
+  while (*tmp != '\0') tmp++;
+  while (*src != '\0') *tmp++ = *src++;
   *tmp = '\0';
   return dst;
 }
@@ -54,7 +51,18 @@ int strcmp(const char *s1, const char *s2) {
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
-  panic("Not implemented");
+  unsigned char c1, c2;
+  while (n--) {
+    c1 = *s1++;
+    c2 = *s2++;
+    if (c1 != c2) {
+      return c1 < c2 ? -1 : 1;
+    }
+    if (!c1) {
+      break;
+    }
+  }
+  return 0;
 }
 
 void *memset(void *s, int c, size_t n) {
