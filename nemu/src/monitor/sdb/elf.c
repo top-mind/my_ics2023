@@ -1,7 +1,6 @@
 #include <elf.h>
 #include <errno.h>
 #include <stdio.h>
-#include <macro.h>
 #include <common.h>
 #include <stdlib.h>
 #include "sdb.h"
@@ -94,9 +93,9 @@ void init_addelf(char *filename) {
     }
   }
   qsort(funcs, nr_func, sizeof(func), compfunc);
-  printf("%zu\n", nr_func);
+  log_write("%zu\n", nr_func);
   for (int i = 0; i < nr_func; i++)
-    printf("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
+    log_write("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
   fclose(f);
 }
 
