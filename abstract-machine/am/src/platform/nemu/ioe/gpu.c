@@ -30,9 +30,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     panic("Please call `AM_GPUU_CONFIG` first!");
   for (int i = x; i < x + w; i++)
     for (int j = y; j < y + h; j++) {
-      if ((i * W + j) * 4 >= 0x75300) {
-        printf("%d %d %d %d %d %d\n", i, j, x, y, w, h);
-      }
       outl(FB_ADDR + (i + j * W) * 4, p[i + j * w]);
     }
   if (ctl->sync) {
