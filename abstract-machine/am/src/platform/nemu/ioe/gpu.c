@@ -30,7 +30,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     panic("Please call `AM_GPUU_CONFIG` first!");
   for (int i = x; i < x + w; i++)
     for (int j = y; j < y + h; j++) {
-      if ((i * W + j) * 4 >= 0x753000) {
+      if ((i * W + j) * 4 >= 0x75300) {
         printf("%d %d\n", i, j);
       }
       outl(FB_ADDR + (i * W + j) * 4, p[i * w + j]);
