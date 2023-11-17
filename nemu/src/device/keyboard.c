@@ -84,6 +84,7 @@ static void i8042_data_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 void init_i8042() {
+  printf("NEMU_KEY_PAGEDOWN is %d\n", NEMU_KEY_PAGEDOWN);
   i8042_data_port_base = (uint32_t *)new_space(4);
   i8042_data_port_base[0] = NEMU_KEY_NONE;
 #ifdef CONFIG_HAS_PORT_IO
