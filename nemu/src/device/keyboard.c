@@ -40,7 +40,7 @@ static uint32_t keymap[256] = {};
 
 static void init_keymap() { MAP(NEMU_KEYS, SDL_KEYMAP) }
 
-#define KEY_QUEUE_LEN 10
+#define KEY_QUEUE_LEN 11
 static int key_queue[KEY_QUEUE_LEN] = {};
 static int key_f = 0, key_r = 0;
 
