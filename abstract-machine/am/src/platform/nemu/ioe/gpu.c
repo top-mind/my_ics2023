@@ -25,7 +25,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (W == 0)
-    panic("Please call `AM_GPUU_CONFIG` first!");
+    W = 400;
   for (int i = x; i < x + w; i++) {
     for (int j = y; j < y + h; j++) {
       outl(FB_ADDR + (i + j * W) * 4, ((uint32_t *)ctl->pixels)[(i - x) + (j - y) * w]);
