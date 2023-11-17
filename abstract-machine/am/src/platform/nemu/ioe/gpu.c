@@ -29,7 +29,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     panic("Please call `AM_GPUU_CONFIG` first!");
   uint32_t *pixels = ctl->pixels;
   if (pixels == NULL) {
-    printf("%p\n", ctl);
+    printf("%p %d %d %d %d %p\n", ctl, x, y, w, h, ctl->pixels);
     panic("Fatal error");
   }
   for (int i = x; i < x + w; i++) {
