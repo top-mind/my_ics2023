@@ -97,9 +97,9 @@ void init_addelf(char *filename) {
   }
   _break:
   qsort(funcs, nr_func, sizeof(func), compfunc);
-  Log("Readed %zu symbols from %s", nr_func, filename);
+  printf("Readed %zu symbols from %s", nr_func, filename);
   for (int i = 0; i < nr_func; i++)
-    Log("name='%s', %#lx, %ld", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
+    printf("name='%s', %#lx, %ld", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
   fclose(f);
 }
 
