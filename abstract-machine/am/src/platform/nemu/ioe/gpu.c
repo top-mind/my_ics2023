@@ -27,14 +27,9 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (W == 0)
     panic("Please call `AM_GPUU_CONFIG` first!");
-  uint32_t *pixels = ctl->pixels;
-  if (pixels == NULL) {
-    printf("%p %d %d %d %d %p\n", ctl, x, y, w, h, ctl->pixels);
-    panic("Fatal error");
-  }
   for (int i = x; i < x + w; i++) {
     for (int j = y; j < y + h; j++) {
-      outl(FB_ADDR + (i + j * W) * 4, 10);
+      outl(FB_ADDR + (i + j * W) * 4, *(uint32_t *)ctl->pixels);
     }
   }
   if (ctl->sync) {
