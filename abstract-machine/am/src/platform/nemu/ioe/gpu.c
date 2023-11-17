@@ -30,7 +30,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     panic("Please call `AM_GPUU_CONFIG` first!");
   for (int i = x; i < x + w; i++)
     for (int j = y; j < y + h; j++) {
-      outl(FB_ADDR + (i + j * W) * 4, p[i + j * w]);
+      outl(FB_ADDR + (i + j * W) * 4, p[i + j]);
     }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
