@@ -29,7 +29,6 @@ static uint32_t count_old;
 static int upd_delay;
 
 #define CONFIG_DELAY 5
-#define CONFIG_SLOW_RATE 4
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / sizeof(uint32_t)) {
@@ -53,7 +52,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           .samples = audio_base[reg_samples],
           .userdata = NULL,
         };
-        want.freq /= CONFIG_SLOW_RATE;
         if (SDL_OpenAudio(&want, NULL)) {
           printf("SDL audio: %s\n", SDL_GetError());
           assert(0);
@@ -77,7 +75,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           upd_delay++;
         }
       }
-      audio_base[reg_count] = used * CONFIG_SLOW_RATE;
+      audio_base[reg_count] = used;
       break;
     default:
       printf("%d\n", offset);
@@ -86,18 +84,10 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
-  static int slow_cnt;
   assert(is_write);
   if (offset == 0) {
     is_audio_sbuf_idle = true;
-    if (slow_cnt == CONFIG_SLOW_RATE - 1) {
-      slow_cnt = 0;
-      if (CONFIG_SLOW_RATE * (4 + SDL_GetQueuedAudioSize(1)) > 2820)
-        return;
-      if (0 != SDL_QueueAudio(1, sbuf, block_size ?: len)) printf("SDL: %s\n", SDL_GetError());
-    } else {
-      slow_cnt++;
-    }
+    if (0 != SDL_QueueAudio(1, sbuf, block_size ?: len)) printf("SDL: %s\n", SDL_GetError());
     block_size = 0;
   } else {
     if (is_audio_sbuf_idle) {
