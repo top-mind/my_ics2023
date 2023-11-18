@@ -56,6 +56,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       }
       break;
     case reg_count:
+      audio_base[reg_count] = 1;
       break;
       assert(!is_write);
       assert(is_audio_sbuf_idle);
