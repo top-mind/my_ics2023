@@ -88,7 +88,9 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   if (start == 0) {
     start = *(uint32_t *)sbuf;
   } else {
-    if (0 != SDL_QueueAudio(1, (void *)guest_to_host(start), *(uint32_t *)sbuf - start)) {
+    uint32_t end = *(uint32_t *)sbuf;
+    printf("%d %d\n", start, end);
+    if (0 != SDL_QueueAudio(1, (void *)guest_to_host(start), end - start)) {
       printf("SDL: %s\n", SDL_GetError());
       assert(0);
     }
