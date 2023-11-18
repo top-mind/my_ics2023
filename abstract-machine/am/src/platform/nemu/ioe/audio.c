@@ -28,13 +28,12 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 }
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-  return;
   uintptr_t start = (uintptr_t)ctl->buf.start;
   uintptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
   for (uintptr_t i = start; i <= (uintptr_t)ctl->buf.end; i += 4) {
     outl(AUDIO_SBUF_ADDR, *(uint32_t *)i);
   }
-
+  return;
   // aligned write
   if (len & 1) {
     len = len - 1;
