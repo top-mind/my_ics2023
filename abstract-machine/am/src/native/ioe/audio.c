@@ -67,6 +67,6 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
 }
 
 void __am_audio_config(AM_AUDIO_CONFIG_T *cfg) {
-  cfg->present = true;
+  cfg->present = false;
   cfg->bufsize = fcntl(rfd, F_GETPIPE_SZ);
 }
