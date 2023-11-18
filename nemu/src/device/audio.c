@@ -29,7 +29,7 @@ static uint8_t sdl_silence = 0;
 static uint32_t sdl_size = 0;
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
-  switch(offset) {
+  switch(offset / sizeof(uint32_t)) {
     case reg_freq:
       break;
     case reg_channels:
@@ -63,6 +63,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       audio_base[reg_count] = CONFIG_SB_SIZE - used - 1;
       break;
     default:
+      printf("%d\n", offset);
       assert(0);
   }
 }
