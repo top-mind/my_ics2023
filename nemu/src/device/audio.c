@@ -78,6 +78,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         }
       }
       audio_base[reg_count] = used * CONFIG_SLOW_RATE;
+      printf("%d\n", used * CONFIG_SLOW_RATE);
       break;
     default:
       printf("%d\n", offset);
