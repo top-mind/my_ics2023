@@ -48,7 +48,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           .userdata = NULL,
         };
         printf("SDL audio: freq = %d, channels = %d, samples = %d\n", want.freq, want.channels, want.samples);
-        want.samples = 1024;
+        want.samples = 2048;
         if (SDL_OpenAudio(&want, NULL)) {
           printf("SDL audio: %s\n", SDL_GetError());
           assert(0);
