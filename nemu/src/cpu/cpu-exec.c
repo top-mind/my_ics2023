@@ -110,7 +110,6 @@ static void execute(uint64_t n) {
 
 static void iring_print() {
 #ifdef CONFIG_ITRACE
-  while (1);
   int i;
   if (g_iring_wrap)
     for (i = g_iring_end; i < CONFIG_IRING_NR; i++)
