@@ -78,6 +78,7 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   } else {
     if (is_audio_sbuf_idle) {
       block_size = offset + len;
+      printf("nemu: %d\n", block_size);
       is_audio_sbuf_idle = false;
     }
   }
