@@ -1,5 +1,6 @@
 #include <am.h>
 #include <nemu.h>
+#include <klib.h>
 
 #define AUDIO_FREQ_ADDR      (AUDIO_ADDR + 0x00)
 #define AUDIO_CHANNELS_ADDR  (AUDIO_ADDR + 0x04)
@@ -29,6 +30,8 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uintptr_t start = (uintptr_t)ctl->buf.start;
   uintptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.end;
+
+  printf("audio play: start = %p, len = %d\n", start, len);
   // aligned write
   if (len & 1) {
     len = len - 1;
