@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <SDL2/SDL_audio.h>
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
@@ -58,7 +59,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_count:
       assert(!is_write);
       assert(is_audio_sbuf_idle);
-      printf("%d\n", SDL_GetQueuedAudioSize(1));
       uint32_t used = SDL_GetQueuedAudioSize(1);
       audio_base[reg_count] = used;
       break;
