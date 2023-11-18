@@ -47,7 +47,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           .samples = audio_base[reg_samples],
           .userdata = NULL,
         };
-        printf("SDL audio: freq = %d, channels = %d, samples = %d\n", want.freq, want.channels, want.samples);
         if (SDL_OpenAudio(&want, NULL)) {
           printf("SDL audio: %s\n", SDL_GetError());
           assert(0);
@@ -59,9 +58,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_count:
       assert(!is_write);
       assert(is_audio_sbuf_idle);
-      // uint32_t used = SDL_GetQueuedAudioSize(1);
-      // printf("%d\n", used);
-      audio_base[reg_count] = 2820 - 20;
+      uint32_t used = SDL_GetQueuedAudioSize(1);
+      audio_base[reg_count] = used;
       break;
     default:
       printf("%d\n", offset);
@@ -70,8 +68,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
-  SDL_QueueAudio(1, sbuf, 4);
-  return;
   assert(is_write);
   if (offset == 0) {
     is_audio_sbuf_idle = true;
