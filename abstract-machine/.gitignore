@@ -17,3 +17,5 @@ _*
 build/
 !.gitignore
 .vscode
+!.clangd
+!**/compile_commands.json

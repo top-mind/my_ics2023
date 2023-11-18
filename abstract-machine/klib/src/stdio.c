@@ -6,6 +6,52 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 static int buf[4096];
+/* basic printf format
+ * This is a brief description. For more information, see the manual page.
+ * 格式串format的格式
+ * %[#0- +]*[:NUM:]?\(.[:NUM:]\)?
+ * NUM=[:Decimal:]|\*
+ * 说明 格式分割符 '%' 紧跟0或多个标志字符，包括
+ *   #  替代格式
+ *     o         0开头的八进制格式
+ *     x/X       0x/0X开头的十六进制
+ *     aAeEfFgG  不会省略小数点
+ *     gG        不会省略小数部分末尾的0
+ *   0  0填充, 如果格式中出现了精度, 0标志会被忽略(仅整数) 或行为未定义. diouxX
+ *   -  左对齐 覆盖0标志
+ *   ' ' 正数前加空格
+ *   +  正数前加+ 覆盖' '标志
+ * 宽度标志
+ *   NUM  最小字段宽度
+ *   *    NUM的值由下一个参数指定
+ * 精度标志 指示小数部分最小宽度(aAeEfF)或最大精度(gG)或整数部分最小宽度(diouxX)
+ *          或字符串最大宽度(sS)
+ *   .     当作 .0 处理
+ *   .NUM  为负数时当作没有指定精度
+ *   .*    NUM的值由下一个参数指定
+ * 长度标志
+ *   hh char
+ *   h  short
+ *   l  long
+ *   ll long long
+ *   j  intmax_t
+ *   z  size_t
+ *   t  ptrdiff_t
+ * Conversions specifiers
+ *   d,i
+ *   o,u,x,X
+ *   f,F
+ *   e,E
+ *   g,G
+ *   a,A
+ *   c
+ *   s
+ *   p
+ *   n
+ * 返回值
+ *   成功 - 格式串扩充之后的长度
+ *   失败 - 负数
+ */
 
 typedef struct {
   char *str;
@@ -156,3 +202,4 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
 }
 
 #endif
+// vim: encoding=utf-8

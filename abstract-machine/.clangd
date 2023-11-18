@@ -1,0 +1,5 @@
+CompileFlags:
+  Remove: -march=rv32im_zicsr
+  Add: -march=rv32im
+Diagnostics:
+  Suppress: "main_arg_wrong"

@@ -10,3 +10,6 @@
 !Kconfig
 include/config
 include/generated
+!.clangd
+!.clang-format
+!**/compile_commands.json

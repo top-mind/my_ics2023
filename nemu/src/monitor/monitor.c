@@ -76,6 +76,29 @@ static int parse_args(int argc, char *argv[]) {
     {0, 0, NULL, 0},
   };
   int o;
+  /*
+   * GETOPT(3)
+   * translate zh_cn zh_CN
+   *
+   * int getopt(int, char *const[], char *optstring);
+   *
+   * extern char *optarg;
+   * extern int optind, opterr, optopt;
+   *
+   * getopt() 处理命令行参数，- 开头，但不是 - 或 -- 的参数(element of
+   * argv)是选项参数 (option element), 除了开头的 - 剩下的字符是选项(option
+   * characters).  如果反复调用. 则依次返回每个选项.
+   *
+   * optind 变量指示下一个被处理的参数在 argv 中的下标, 初始为 1.
+   *
+   * 若有，getopt 返回下一个选项，更新 optind 和静态链接变量 nextchar。下一次调用
+   * 可以恢复扫描后续的选项或argv参数。(译者注：当 optind 在两次调用之间被改变时，
+   * nextchar 失去作用)
+   *
+   * 若无，返回 -1. optind 指示第一个非选项参数。
+   *
+   * optstring
+   */
   while ((o = getopt_long(argc, argv, "-bhl:d:p:e:", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
@@ -171,3 +194,4 @@ void am_init_monitor() {
   welcome();
 }
 #endif
+// vim: encoding=utf-8
