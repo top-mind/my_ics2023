@@ -58,7 +58,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_count:
       assert(!is_write);
       assert(is_audio_sbuf_idle);
+      SDL_PauseAudioDevice(1, 1);
       uint32_t used = SDL_GetQueuedAudioSize(1);
+      SDL_PauseAudioDevice(1, 0);
       audio_base[reg_count] = used;
       break;
     default:
