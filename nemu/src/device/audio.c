@@ -60,7 +60,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       assert(!is_write);
       assert(valid_count);
       int used = (queue_tail + CONFIG_SB_SIZE - queue_head) % CONFIG_SB_SIZE;
-      audio_base[reg_count] = CONFIG_SB_SIZE - used - 1;
+      audio_base[reg_count] = used + 1;
       break;
     default:
       printf("%d\n", offset);
