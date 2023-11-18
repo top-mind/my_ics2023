@@ -44,6 +44,7 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   if (len == 0)
     return;
   for (int i = len - 1; i >= 0; i -= 4) {
+    printf("wirte dest=%p src = %p", AUDIO_SBUF_SIZE_ADDR + i, start + i);
     outl(AUDIO_SBUF_SIZE_ADDR + i, *(uint32_t *)(start + i));
   }
 }
