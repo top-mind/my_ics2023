@@ -25,6 +25,8 @@ static uint32_t *audio_base = NULL;
 
 static bool is_audio_sbuf_idle = false;
 static int block_size;
+static uint32_t count_old;
+static int upd_delay;
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / sizeof(uint32_t)) {
@@ -59,8 +61,19 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_count:
       assert(!is_write);
       assert(is_audio_sbuf_idle);
-      // uint32_t used = SDL_GetQueuedAudioSize(1);
-      audio_base[reg_count] = 2500;
+      uint32_t used = SDL_GetQueuedAudioSize(1);
+      if (used > count_old)
+        count_old = used;
+      else {
+        if (upd_delay == 10) {
+          count_old = used;
+          upd_delay = 0;
+        } else {
+          used = count_old;
+          upd_delay++;
+        }
+      }
+      audio_base[reg_count] = used;
       break;
     default:
       printf("%d\n", offset);
