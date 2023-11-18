@@ -58,7 +58,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       break;
     case reg_count:
       assert(!is_write);
-      Assert(valid_count,);
+      assert(valid_count);
       int used = (queue_tail + CONFIG_SB_SIZE - queue_head) % CONFIG_SB_SIZE;
       audio_base[reg_count] = used + 1;
       break;
@@ -71,7 +71,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
   if (offset == 0) {
-    printf("audio: write to offset 0\n");
     valid_count = true;
     SDL_QueueAudio(1, sbuf, queue_tail ? queue_tail : len);
     queue_tail = 0;
