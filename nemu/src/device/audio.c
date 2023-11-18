@@ -50,12 +50,16 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           .samples = audio_base[reg_samples],
           .userdata = NULL,
         };
-        SDL_OpenAudio(&want, NULL);
+        if (SDL_OpenAudio(&want, NULL)) {
+          printf("SDL: %s\n", SDL_GetError());
+          assert(0);
+        }
         sdl_silence = want.silence;
         sdl_size = want.size;
         printf("nemu: audio init channels = %d, freq = %d, samples = %d, size = %d, "
                "silence = %d\n",
                want.channels, want.freq, want.samples, want.size, want.silence);
+      SDL_PauseAudioDevice(1, 0);
         valid_count = true;
       }
       break;
