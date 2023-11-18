@@ -65,7 +65,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       if (used > count_old)
         count_old = used;
       else {
-        if (upd_delay == 1) {
+        if (upd_delay == 2) {
           count_old = used;
           upd_delay = 0;
         } else {
