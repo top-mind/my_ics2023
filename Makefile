@@ -19,5 +19,8 @@ _default:
 submit:
 	git gc
 	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://why.ink:8080/static/submit.sh)"
+clean-all:
+	@find . -name Makefile -not -path ./Makefile -execdir make clean \;
+	@find . -name Makefile -not -path ./Makefile -execdir make clean-all \;
 
 .PHONY: default submit
