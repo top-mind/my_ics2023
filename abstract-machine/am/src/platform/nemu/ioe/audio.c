@@ -1,5 +1,6 @@
 #include <am.h>
 #include <nemu.h>
+#include <klib.h>
 
 #define AUDIO_FREQ_ADDR      (AUDIO_ADDR + 0x00)
 #define AUDIO_CHANNELS_ADDR  (AUDIO_ADDR + 0x04)
@@ -27,6 +28,7 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
   stat->count = inl(AUDIO_COUNT_ADDR);
 }
 
+/*
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uintptr_t start = (uintptr_t)ctl->buf.start;
   uintptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
@@ -46,20 +48,20 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
     outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
   }
 }
-/*
- *
+*/
+
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uintptr_t start = (uintptr_t)ctl->buf.start;
   intptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
-  // if (len < 0)
-  //   return;
-  // else {
-  //   printf("%p %p\n", start, start + len);
-  // }
-  // for (int i = 0; i < len; i += 4) {
-  //   outl(AUDIO_SBUF_ADDR, *(uint32_t *)(start + i));
-  // }
-  // return;
+  if (len < 0)
+    return;
+  else {
+    printf("%p %p\n", start, start + len);
+  }
+  for (int i = 0; i < len; i += 4) {
+    outl(AUDIO_SBUF_ADDR, *(uint32_t *)(start + i));
+  }
+  return;
   // aligned write
   if (len & 1) {
     len = len - 1;
@@ -75,4 +77,3 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
     outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
   }
 }
-*/
