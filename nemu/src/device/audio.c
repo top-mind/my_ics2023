@@ -13,7 +13,6 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <SDL2/SDL_audio.h>
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
@@ -23,10 +22,8 @@ enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, 
 static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 
-static int queue_head = 0, queue_tail = 0;
-static bool valid_count = false;
-static uint8_t sdl_silence = 0;
-static uint32_t sdl_size = 0;
+static bool is_audio_sbuf_idle = false;
+static int block_size;
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / sizeof(uint32_t)) {
@@ -51,23 +48,21 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           .userdata = NULL,
         };
         if (SDL_OpenAudio(&want, NULL)) {
-          printf("SDL: %s\n", SDL_GetError());
+          printf("SDL audio: %s\n", SDL_GetError());
           assert(0);
         }
-        sdl_silence = want.silence;
-        sdl_size = want.size;
         printf("nemu: audio init channels = %d, freq = %d, samples = %d, size = %d, "
                "silence = %d\n",
                want.channels, want.freq, want.samples, want.size, want.silence);
-      SDL_PauseAudioDevice(1, 0);
-        valid_count = true;
+        SDL_PauseAudioDevice(1, 0);
+        is_audio_sbuf_idle = true;
       }
       break;
     case reg_count:
       assert(!is_write);
-      assert(valid_count);
-      int used = (queue_tail + CONFIG_SB_SIZE - queue_head) % CONFIG_SB_SIZE;
-      audio_base[reg_count] = used + 1;
+      assert(is_audio_sbuf_idle);
+      uint32_t used = SDL_GetQueuedAudioSize(1);
+      audio_base[reg_count] = used;
       break;
     default:
       printf("%d\n", offset);
@@ -78,18 +73,18 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
   if (offset == 0) {
-    valid_count = true;
+    is_audio_sbuf_idle = true;
     printf("nemu:There are %d bytes in queue\n", SDL_GetQueuedAudioSize(1));
-    if (0 != SDL_QueueAudio(1, sbuf, queue_tail ?:len)) {
+    if (0 != SDL_QueueAudio(1, sbuf, block_size ?:len)) {
       printf("SDL: %s\n", SDL_GetError());
     }
     printf("nemu:There are %d bytes in queue\n", SDL_GetQueuedAudioSize(1));
-    printf("nemu: audio queue push %d:%d %d...\n", queue_tail ?: len, sbuf[0], sbuf[1]);
-    queue_tail = 0;
+    printf("nemu: audio queue push %d:%d %d...\n", block_size ?: len, sbuf[0], sbuf[1]);
+    block_size = 0;
   } else {
-    if (valid_count) {
-      queue_tail = offset + len;
-      valid_count = false;
+    if (is_audio_sbuf_idle) {
+      block_size = offset + len;
+      is_audio_sbuf_idle = false;
     }
   }
 }
