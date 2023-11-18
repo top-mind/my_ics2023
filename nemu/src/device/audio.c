@@ -13,7 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <SDL2/SDL_audio.h>
+#include "memory/paddr.h"
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
@@ -84,6 +84,16 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
+  static uint32_t start = 0;
+  if (start == 0) {
+    start = *(uint32_t *)sbuf;
+  } else {
+    if (0 != SDL_QueueAudio(1, (void *)guest_to_host(start), *(uint32_t *)sbuf - start)) {
+      printf("SDL: %s\n", SDL_GetError());
+      assert(0);
+    }
+  }
+  return;
   assert(is_write);
   if (offset == 0) {
     is_audio_sbuf_idle = true;
