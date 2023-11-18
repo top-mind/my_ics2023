@@ -28,7 +28,7 @@ static int block_size;
 static uint32_t count_old;
 static int upd_delay;
 
-#define CONFIG_DELAY 0
+#define CONFIG_DELAY 10
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / sizeof(uint32_t)) {
