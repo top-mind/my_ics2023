@@ -56,6 +56,10 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   if (len >= 0) {
     printf("%p %p\n", start, start + len);
   }
+  for (int i = 0; i <= len - 4; i += 4) {
+    outl(AUDIO_SBUF_ADDR, *(uint32_t *)(start + i));
+  }
+  return;
   // aligned write
   if (len & 1) {
     len = len - 1;
