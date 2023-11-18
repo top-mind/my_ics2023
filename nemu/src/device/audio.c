@@ -77,7 +77,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           upd_delay++;
         }
       }
-      audio_base[reg_count] = used * CONFIG_SLOW_RATE;
+      audio_base[reg_count] = used * CONFIG_SLOW_RATE - 12;
       printf("%d\n", used * CONFIG_SLOW_RATE);
       break;
     default:
