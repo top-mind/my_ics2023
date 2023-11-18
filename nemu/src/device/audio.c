@@ -92,6 +92,7 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
       printf("SDL: %s\n", SDL_GetError());
       assert(0);
     }
+    start = 0;
   }
   return;
   assert(is_write);
