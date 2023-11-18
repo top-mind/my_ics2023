@@ -68,7 +68,10 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
-  assert(is_write);
+  // assert(is_write);
+  // assert(offset == 0);
+  SDL_QueueAudio(1, sbuf, 4);
+  return;
   if (offset == 0) {
     is_audio_sbuf_idle = true;
     if (0 != SDL_QueueAudio(1, sbuf, block_size ?:len)) {
@@ -78,7 +81,6 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   } else {
     if (is_audio_sbuf_idle) {
       block_size = offset + len;
-      printf("nemu: %d\n", block_size);
       is_audio_sbuf_idle = false;
     }
   }
