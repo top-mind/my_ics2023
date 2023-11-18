@@ -96,7 +96,7 @@ void init_audio() {
   add_mmio_map("audio", CONFIG_AUDIO_CTL_MMIO, audio_base, space_size, audio_io_handler);
 #endif
   memset(audio_base, 0, space_size);
-  audio_base[reg_sbuf_size] = 4;
+  audio_base[reg_sbuf_size] = 368;
   sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);
   add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, audio_sbuf_handler);
   memset(sbuf, 0, CONFIG_SB_SIZE);
