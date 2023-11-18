@@ -75,7 +75,7 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
   if (offset == 0) {
     valid_count = true;
-    if (0 != SDL_QueueAudio(1, sbuf, 2048)) {
+    if (0 != SDL_QueueAudio(1, sbuf, queue_tail ?:len)) {
       printf("SDL: %s\n", SDL_GetError());
     }
     printf("nemu: audio queue push %d %x %x...\n", queue_tail ? queue_tail : len, sbuf[0], sbuf[1]);
