@@ -59,7 +59,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_count:
       assert(!is_write);
       assert(is_audio_sbuf_idle);
-      uint32_t used = 2452;
+      uint32_t used = 2456;
       // printf("%d\n", used);
       audio_base[reg_count] = used;
       break;
