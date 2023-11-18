@@ -70,6 +70,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
+  printf("offset = %d, len = %d\n", offset, len);
+  assert(0);
   if (offset == 0) {
     valid_count = true;
     SDL_QueueAudio(1, sbuf, queue_tail ? queue_tail : len);
