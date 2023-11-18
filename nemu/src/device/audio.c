@@ -60,8 +60,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       assert(!is_write);
       assert(is_audio_sbuf_idle);
       // uint32_t used = 2652;
-      // printf("%d\n", used);
-      audio_base[reg_count] = SDL_GetQueuedAudioSize(1);;
+      int used = SDL_GetQueuedAudioSize(1);
+      printf("%d\n", used);
+      audio_base[reg_count] = used;
       break;
     default:
       printf("%d\n", offset);
@@ -96,7 +97,7 @@ void init_audio() {
   add_mmio_map("audio", CONFIG_AUDIO_CTL_MMIO, audio_base, space_size, audio_io_handler);
 #endif
   memset(audio_base, 0, space_size);
-  audio_base[reg_sbuf_size] = 368;
+  audio_base[reg_sbuf_size] = 736;
   sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);
   add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, audio_sbuf_handler);
   memset(sbuf, 0, CONFIG_SB_SIZE);
