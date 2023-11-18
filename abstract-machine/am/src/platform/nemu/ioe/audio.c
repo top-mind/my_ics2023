@@ -35,16 +35,16 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   // aligned write
   if (len & 1) {
     len = len - 1;
-    outb(AUDIO_SBUF_SIZE_ADDR + len, *(uint8_t *)(start + len));
+    outb(AUDIO_SBUF_ADDR + len, *(uint8_t *)(start + len));
   }
   if (len & 3) {
     len = len - 2;
-    outw(AUDIO_SBUF_SIZE_ADDR + len, *(uint16_t *)(start + len));
+    outw(AUDIO_SBUF_ADDR + len, *(uint16_t *)(start + len));
   }
   if (len == 0)
     return;
   for (int i = len - 1; i >= 0; i -= 4) {
     printf("wirte dest=%p src = %p", AUDIO_SBUF_SIZE_ADDR + i, start + i);
-    outl(AUDIO_SBUF_SIZE_ADDR + i, *(uint32_t *)(start + i));
+    outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
   }
 }
