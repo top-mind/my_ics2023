@@ -46,3 +46,33 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
     outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
   }
 }
+/*
+ *
+void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
+  uintptr_t start = (uintptr_t)ctl->buf.start;
+  intptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
+  // if (len < 0)
+  //   return;
+  // else {
+  //   printf("%p %p\n", start, start + len);
+  // }
+  // for (int i = 0; i < len; i += 4) {
+  //   outl(AUDIO_SBUF_ADDR, *(uint32_t *)(start + i));
+  // }
+  // return;
+  // aligned write
+  if (len & 1) {
+    len = len - 1;
+    outb(AUDIO_SBUF_ADDR + len, *(uint8_t *)(start + len));
+  }
+  if (len & 3) {
+    len = len - 2;
+    outw(AUDIO_SBUF_ADDR + len, *(uint16_t *)(start + len));
+  }
+  if (len == 0)
+    return;
+  for (int i = len - 4; i >= 0; i -= 4) {
+    outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
+  }
+}
+*/
