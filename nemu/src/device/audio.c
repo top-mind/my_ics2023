@@ -59,6 +59,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       assert(!is_write);
       assert(is_audio_sbuf_idle);
       uint32_t used = SDL_GetQueuedAudioSize(1);
+      // printf("used: %d\n", used);
       audio_base[reg_count] = used;
       break;
     default:
@@ -68,6 +69,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
+  SDL_QueueAudio(1, sbuf, 4);
+  return;
   assert(is_write);
   if (offset == 0) {
     is_audio_sbuf_idle = true;
