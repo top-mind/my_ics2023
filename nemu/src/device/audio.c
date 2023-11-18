@@ -51,9 +51,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           printf("SDL audio: %s\n", SDL_GetError());
           assert(0);
         }
-        printf("nemu: audio init channels = %d, freq = %d, samples = %d, size = %d, "
-               "silence = %d\n",
-               want.channels, want.freq, want.samples, want.size, want.silence);
         SDL_PauseAudioDevice(1, 0);
         is_audio_sbuf_idle = true;
       }
@@ -74,12 +71,9 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
   if (offset == 0) {
     is_audio_sbuf_idle = true;
-    printf("nemu:There are %d bytes in queue\n", SDL_GetQueuedAudioSize(1));
     if (0 != SDL_QueueAudio(1, sbuf, block_size ?:len)) {
       printf("SDL: %s\n", SDL_GetError());
     }
-    printf("nemu:There are %d bytes in queue\n", SDL_GetQueuedAudioSize(1));
-    printf("nemu: audio queue push %d:%d %d...\n", block_size ?: len, sbuf[0], sbuf[1]);
     block_size = 0;
   } else {
     if (is_audio_sbuf_idle) {
