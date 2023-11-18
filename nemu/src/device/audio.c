@@ -61,7 +61,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       assert(is_audio_sbuf_idle);
       // uint32_t used = SDL_GetQueuedAudioSize(1);
       // printf("%d\n", used);
-      audio_base[reg_count] = 2820 - 100;
+      audio_base[reg_count] = 2820 - 20;
       break;
     default:
       printf("%d\n", offset);
