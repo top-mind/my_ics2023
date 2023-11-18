@@ -51,8 +51,8 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
 */
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-  outb(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.start));
-  outb(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.end));
+  outl(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.start));
+  outl(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.end));
   // uintptr_t start = (uintptr_t)ctl->buf.start;
   // intptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
   // if (len & 1) {
