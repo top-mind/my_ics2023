@@ -53,6 +53,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         SDL_OpenAudio(&want, NULL);
         sdl_silence = want.silence;
         sdl_size = want.size;
+        printf("nemu: audio init channels = %d, freq = %d, samples = %d, size = %d, "
+               "silence = %d\n",
+               want.channels, want.freq, want.samples, want.size, want.silence);
         valid_count = true;
       }
       break;
