@@ -93,6 +93,8 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
     is_audio_sbuf_idle = true;
     if (slow_cnt == CONFIG_SLOW_RATE - 1) {
       slow_cnt = 0;
+      if (CONFIG_SLOW_RATE * SDL_GetQueuedAudioSize(1) > 2820)
+        return;
       if (0 != SDL_QueueAudio(1, sbuf, block_size ?: len)) printf("SDL: %s\n", SDL_GetError());
     } else {
       slow_cnt++;
