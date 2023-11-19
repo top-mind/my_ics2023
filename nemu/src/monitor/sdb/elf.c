@@ -94,7 +94,7 @@ void init_addelf(char *filename) {
     }
   }
   size_t nr_func_read = nr_func < ARRLEN(funcs) ? nr_func : ARRLEN(funcs);
-  printf("Readed %zu/%zu symbols from %s\n", nr_func_read, nr_func, filename);
+  printf("Read %zu/%zu symbols from %s\n", nr_func_read, nr_func, filename);
   nr_func = nr_func_read;
   qsort(funcs, nr_func, sizeof(func), compfunc);
   for (int i = 0; i < nr_func; i++)
