@@ -49,23 +49,28 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   }
 }
 */
-
+#define SBUF_WORK_AS_FIFO
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
+  // solution 1, abandon sbuf
+#ifndef SBUF_WORK_AS_FIFO
   outl(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.start));
   outl(AUDIO_SBUF_ADDR, (uintptr_t)(ctl->buf.end));
-  // uintptr_t start = (uintptr_t)ctl->buf.start;
-  // intptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
-  // if (len & 1) {
-  //   len = len - 1;
-  //   outb(AUDIO_SBUF_ADDR + len, *(uint8_t *)(start + len));
-  // }
-  // if (len & 3) {
-  //   len = len - 2;
-  //   outw(AUDIO_SBUF_ADDR + len, *(uint16_t *)(start + len));
-  // }
-  // if (len == 0)
-  //   return;
-  // for (int i = len - 4; i >= 0; i -= 4) {
-  //   outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
-  // }
+#else
+  // solution 2, use sbuf
+  uintptr_t start = (uintptr_t)ctl->buf.start;
+  intptr_t len = (uintptr_t)ctl->buf.end - (uintptr_t)ctl->buf.start;
+  if (len & 1) {
+    len = len - 1;
+    outb(AUDIO_SBUF_ADDR + len, *(uint8_t *)(start + len));
+  }
+  if (len & 3) {
+    len = len - 2;
+    outw(AUDIO_SBUF_ADDR + len, *(uint16_t *)(start + len));
+  }
+  if (len == 0)
+    return;
+  for (int i = len - 4; i >= 0; i -= 4) {
+    outl(AUDIO_SBUF_ADDR + i, *(uint32_t *)(start + i));
+  }
+#endif
 }

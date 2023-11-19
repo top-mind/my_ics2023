@@ -29,6 +29,7 @@ static uint32_t count_old;
 static int upd_delay;
 
 #define CONFIG_DELAY 10
+#define SBUF_WORK_AS_FIFO
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / sizeof(uint32_t)) {
@@ -85,6 +86,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
+  assert(is_write);
+#ifndef SBUF_WORK_AS_FIFO
   static uint32_t start = 0;
   if (start == 0) {
     start = *(uint32_t *)sbuf;
@@ -96,8 +99,7 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
     }
     start = 0;
   }
-  return;
-  assert(is_write);
+#else
   if (offset == 0) {
     is_audio_sbuf_idle = true;
     if (0 != SDL_QueueAudio(1, sbuf, block_size ?: len)) printf("SDL: %s\n", SDL_GetError());
@@ -108,6 +110,7 @@ static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
       is_audio_sbuf_idle = false;
     }
   }
+#endif
 }
 
 void init_audio() {
