@@ -79,9 +79,9 @@ void init_addelf(char *filename) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
         if (ELF_ST_TYPE(sym.st_info) == STT_FUNC) {
-          if (nr_func == ARRLEN(funcs)) {
-            printf("Too many functions\n");
-            goto _break;
+          if (nr_func >= ARRLEN(funcs)) {
+            nr_func++;
+            continue;
           }
           funcs[nr_func++] = (func){
             .addr = sym.st_value,
@@ -93,9 +93,10 @@ void init_addelf(char *filename) {
       free(strtab);
     }
   }
-  _break:
+  size_t nr_func_read = nr_func < ARRLEN(funcs) ? nr_func : ARRLEN(funcs);
+  printf("Readed %zu/%zu symbols from %s\n", nr_func_read, nr_func, filename);
+  nr_func = nr_func_read;
   qsort(funcs, nr_func, sizeof(func), compfunc);
-  printf("Readed %zu symbols from %s\n", nr_func, filename);
   for (int i = 0; i < nr_func; i++)
     printf("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
   fclose(f);
