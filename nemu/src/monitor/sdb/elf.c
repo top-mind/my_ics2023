@@ -30,7 +30,7 @@ typedef struct {
   char *name;
 } func;
 
-static func funcs[100];
+static func funcs[32767];
 static size_t nr_func;
 static char *unknown_func = "??";
 
@@ -78,7 +78,8 @@ void init_addelf(char *filename) {
       for (uintN_t _off = 0; _off < sh_size; _off += sizeof(sym)) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
-        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC) {
+        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC
+            || ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
           if (nr_func >= ARRLEN(funcs)) {
             nr_func++;
             continue;
