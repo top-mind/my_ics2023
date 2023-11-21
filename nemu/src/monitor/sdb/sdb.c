@@ -237,7 +237,7 @@ static int cmd_info(char *args) {
       void iring_print();
       iring_print();
     } else {
-      printf("Unknown symbol %s, try help info.\n", arg);
+      printf("Unknown subcommand %s, try help info.\n", arg);
     }
   }
 
