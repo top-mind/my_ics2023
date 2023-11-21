@@ -28,15 +28,15 @@ typedef struct {
   uintN_t addr;
   uintN_t size;
   char *name;
-} func;
+} Symbol;
 
-static func funcs[32767];
-static size_t nr_func;
-static char *unknown_func = "??";
+static Symbol syms[32767];
+static size_t nr_sym;
+static char *name_unk = "??";
 
-static int compfunc(const void *a, const void *b) {
-  uintN_t addra = ((func *)a)->addr;
-  uintN_t addrb = ((func *)b)->addr;
+static int cmp(const void *a, const void *b) {
+  uintN_t addra = ((Symbol *)a)->addr;
+  uintN_t addrb = ((Symbol *)b)->addr;
   return addra == addrb ? 0 : addra < addrb ? -1 : 1;
 }
 
@@ -78,13 +78,13 @@ void init_addelf(char *filename) {
       for (uintN_t _off = 0; _off < sh_size; _off += sizeof(sym)) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
-        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC
-            || ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
-          if (nr_func >= ARRLEN(funcs)) {
-            nr_func++;
+        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC ||
+            ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
+          if (nr_sym >= ARRLEN(syms)) {
+            nr_sym++;
             continue;
           }
-          funcs[nr_func++] = (func){
+          syms[nr_sym++] = (Symbol) {
             .addr = sym.st_value,
             .size = sym.st_size,
             .name = savestring(&strtab[sym.st_name]),
@@ -94,12 +94,12 @@ void init_addelf(char *filename) {
       free(strtab);
     }
   }
-  size_t nr_func_read = nr_func < ARRLEN(funcs) ? nr_func : ARRLEN(funcs);
-  printf("Read %zu/%zu symbols from %s\n", nr_func_read, nr_func, filename);
-  nr_func = nr_func_read;
-  qsort(funcs, nr_func, sizeof(func), compfunc);
-  for (int i = 0; i < nr_func; i++)
-    printf("name='%s', %#lx, %ld\n", funcs[i].name, (long)funcs[i].addr, (long)funcs[i].size);
+  size_t nr_sym_read = nr_sym < ARRLEN(syms) ? nr_sym : ARRLEN(syms);
+  printf("Read %zu/%zu symbols from %s\n", nr_sym_read, nr_sym, filename);
+  nr_sym = nr_sym_read;
+  qsort(syms, nr_sym, sizeof(Symbol), cmp);
+  for (int i = 0; i < nr_sym; i++)
+    printf("name='%s', %#lx, %ld\n", syms[i].name, (long)syms[i].addr, (long)syms[i].size);
   fclose(f);
 }
 
@@ -108,13 +108,13 @@ void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset) {
   char *nhole;
   if (name == NULL) name = &nhole;
   if (offset == NULL) offset = &uhole;
-  for (int i = 0; i < nr_func; i++) {
-    if (funcs[i].addr <= addr && addr < funcs[i].addr + funcs[i].size) {
-      *name = funcs[i].name;
-      *offset = addr - funcs[i].addr;
+  for (int i = 0; i < nr_sym; i++) {
+    if (syms[i].addr <= addr && addr < syms[i].addr + syms[i].size) {
+      *name = syms[i].name;
+      *offset = addr - syms[i].addr;
       return;
     }
   }
-  *name = unknown_func;
+  *name = name_unk;
   *offset = -1;
 }
