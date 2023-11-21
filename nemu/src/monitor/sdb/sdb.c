@@ -233,8 +233,12 @@ static int cmd_info(char *args) {
       // #endif
     } else if (strcmp(arg, "w") == 0) {
       print_wp();
-    } else
+    } else if (strcmp(arg, "f") == 0) {
+      void iring_print();
+      iring_print();
+    } else {
       printf("Unknown symbol %s, try help info.\n", arg);
+    }
   }
 
   return 0;

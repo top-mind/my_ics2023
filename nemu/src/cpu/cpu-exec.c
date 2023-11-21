@@ -108,7 +108,7 @@ static void execute(uint64_t n) {
   }
 }
 
-static void iring_print() {
+void iring_print() {
 #ifdef CONFIG_ITRACE
   int i;
   if (g_iring_wrap)
