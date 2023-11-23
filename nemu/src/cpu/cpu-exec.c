@@ -20,6 +20,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include "trace.h"
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -34,10 +35,6 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-static void do_itrace(Decode *);
-static void do_iqtrace(Decode *s) {}
-static void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
-
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_TRACE
   do_itrace(_this);
