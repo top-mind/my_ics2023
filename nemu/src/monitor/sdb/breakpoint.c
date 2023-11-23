@@ -9,7 +9,7 @@ BP bp_pool[NR_BP];
 
 static inline bool new_breakpoint(char *s) {
   BP *p = &bp_pool[end];
-  paddr_t addr = 0x80000000; // TODO
+  paddr_t addr = 0x7fffffff; // TODO
   if (!in_pmem(addr)) {
     printf("I found %s at " FMT_PADDR ", but address out of range\n"
            "May symbol table unmatch?\n",
