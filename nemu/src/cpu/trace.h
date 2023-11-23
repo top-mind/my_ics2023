@@ -10,7 +10,7 @@ static bool g_print_step = false;
 char *trace_disassemble(Decode *s);
 
 static inline void do_iqtrace(Decode *s) {}
-static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
+static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s), ); }
 static inline void do_itrace(Decode *s) {
   MUXDEF(
     CONFIG_ITRACE, if (CONFIG_ITRACE_COND || g_print_step) {
