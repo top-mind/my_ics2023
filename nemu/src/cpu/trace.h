@@ -3,11 +3,14 @@
 #include <common.h>
 #ifdef CONFIG_TRACE
 #include "cpu/decode.h"
-static inline void do_iqtrace(Decode *s) {}
-static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
-static bool g_print_step = false;
 
 char *trace_disassemble(Decode *s);
+
+#define MAX_INST_TO_PRINT 10
+static bool g_print_step = false;
+
+static inline void do_iqtrace(Decode *s) {}
+static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
 static inline void do_itrace(Decode *s) {
   MUXDEF(
     CONFIG_ITRACE, if (CONFIG_ITRACE_COND || g_print_step) {
