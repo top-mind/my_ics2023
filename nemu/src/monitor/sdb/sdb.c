@@ -55,7 +55,7 @@ static int cmd_c(char *args) {
 }
 
 static int cmd_q(char *args) {
-  printf("%zd\n", sizeof(((BP *)0)->o));
+  printf("%zd\n", sizeof(int));
   nemu_state.state = NEMU_QUIT;
   return -1;
 }
