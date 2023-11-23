@@ -11,9 +11,9 @@ static inline bool new_breakpoint(char *s) {
   BP *p = &bp_pool[end];
   paddr_t addr = 0x7fffffff; // TODO
   if (!in_pmem(addr)) {
-    printf("I found %s at " FMT_PADDR ", but address out of range."
+    printf("I found %s at " FMT_PADDR ", but address out of range. "
            "May symbol table unmatch?\n"
-           "Fail to insert breakpoint",
+           "Fail to insert breakpoint\n",
            s, addr);
     return false;
   }
