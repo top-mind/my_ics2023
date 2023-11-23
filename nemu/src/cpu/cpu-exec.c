@@ -15,6 +15,7 @@
 
 #include "isa.h"
 #include "macro.h"
+#include "utils.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -34,17 +35,15 @@ static bool g_print_step = false;
 
 void device_update();
 static void do_itrace(Decode *);
-static void do_iqtrace(Decode *) {}
-static void do_mtrace(Decode *) {}
+static void do_iqtrace(Decode *s) {}
 static void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_TRACE
   do_itrace(_this);
   do_iqtrace(_this);
-  do_mtrace(_this);
   do_ftrace(_this);
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+  // if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
 #ifdef CONFIG_FTRACE
   isa_ras_update(_this);
 #endif
@@ -63,9 +62,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 #ifdef CONFIG_ITRACE
 #include <memory/paddr.h> // in_pmem
-static void print_disassemble(Decode *s) {
-  char p[128];
-  p += snprintf(p, sizeof(p), FMT_WORD ":", s->pc);
+static char *trace_disassemble(Decode *s) {
+  const int nrbuf = 128;
+  char *p, *buf = p = malloc(nrbuf);
+  p += snprintf(p, nrbuf, FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst.val;
@@ -79,17 +79,23 @@ static void print_disassemble(Decode *s) {
 
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(p, s->logbuf + sizeof(s->logbuf) - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc),
+  disassemble(p, buf + nrbuf - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc),
               (uint8_t *)&s->isa.inst.val, ilen);
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
-  printf("%s\n", p);
+  return buf;
 }
 #endif
 
 static void do_itrace(Decode *s) {
-  MUXDEF(CONFIG_ITRACE, if (CONFIG_ITRACE_COND) print_disassemble(s), );
+  MUXDEF(
+    CONFIG_ITRACE, if (CONFIG_ITRACE_COND || g_print_step) {
+      char *assem = trace_disassemble(s);
+      if (CONFIG_ITRACE_COND) log_write("%s\n", assem);
+      if (g_print_step) puts(assem);
+      free(assem);
+    }, );
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -111,7 +117,7 @@ static void execute(uint64_t n) {
 }
 
 void iring_print() {
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_IQUEUE
   int i;
   if (g_iring_wrap)
     for (i = g_iring_end; i < CONFIG_IRING_NR; i++)
