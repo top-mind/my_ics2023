@@ -27,6 +27,7 @@ static inline bool new_breakpoint(char *s) {
   // clang-format on
   printf("%zd\n", sizeof p->b.raw_instr);
   host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
+  printf("%x\n", inst_fetch(&addr, 4));
   return true;
 }
 
