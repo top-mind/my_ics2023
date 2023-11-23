@@ -90,10 +90,9 @@ bool wp_delete(int n) {
 }
 
 void print_wp() {
-  puts("Num\tOld value\tNew value\tWhat");
+  puts("Num\tValue\tWhat");
   for (WP *wp = head; wp != NULL; wp = wp->next) {
-    printf("%d\t" FMT_WORD "\t" FMT_WORD "\t%s\n", wp->NO, wp->old_value.value,
-           eval(wp->rpn, wp->nr_rpn).value, wp->hint);
+    printf("%d\t" FMT_WORD "\t%s\n", wp->NO, wp->old_value.value, wp->hint);
     if (wp->hit) {
       printf("\thit %zd times\n", wp->hit);
     }
