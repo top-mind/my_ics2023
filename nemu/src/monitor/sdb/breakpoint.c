@@ -3,13 +3,12 @@
 #include "memory/paddr.h"
 #include "sdb.h"
 #define NR_BP 32
-static int end;
+static int end, head_bp, head_wp;
 unsigned cnt_bp;
 BP bp_pool[NR_BP];
 
-static inline bool new_breakpoint(char *s) {
-  BP *p = &bp_pool[end];
-  paddr_t addr = 0x7fffffff; // TODO
+static inline bool new_breakpoint(char *s, BP *p) {
+  paddr_t addr = 0x80000000; // TODO
   if (!in_pmem(addr)) {
     printf("I found %s at " FMT_PADDR ", but address out of range. "
            "May symbol table unmatch?\n"
@@ -30,8 +29,7 @@ static inline bool new_breakpoint(char *s) {
   return true;
 }
 
-static inline bool new_watchpoint(char *s) {
-  BP *p = &bp_pool[end];
+static inline bool new_watchpoint(char *s, BP *p) {
   // p->w->rpn; TODO
   // p->w->nr_rpn;
   // p->w->old_value;
@@ -46,7 +44,8 @@ static inline bool new_watchpoint(char *s) {
 
 int new_bp(char *s, bool is_watchpoint) {
   if (end == -1) return -1;
-  bool suc = is_watchpoint ? new_watchpoint(s) : new_breakpoint(s);
+  BP *p = &bp_pool[end];
+  bool suc = is_watchpoint ? new_watchpoint(s, p) : new_breakpoint(s, p);
   if (!suc)
     return -1;
   bp_pool[end].num = ++cnt_bp;
@@ -55,4 +54,22 @@ int new_bp(char *s, bool is_watchpoint) {
   bp_pool[end].hit = 0;
   end = bp_pool[end].next;
   return cnt_bp;
+}
+
+void show_wp() {
+  int cur = head_wp;
+  printf("Num\tAddress\t\tWhat\n");
+  while( -1 != (cur = bp_pool[cur].w.next)) {
+    BP *p = &bp_pool[cur];
+    printf("%d\t\t\t%s\n", p->num, p->hint);
+  }
+}
+
+void show_bp() {
+  int cur = head_bp;
+  printf("Num\tAddress\t\tWhat\n");
+  while (-1 != (cur = bp_pool[cur].next)) {
+    BP *p = &bp_pool[cur];
+    printf("%d\t" FMT_PADDR "\t\t%s\n", p->num, p->is_watchpoint ? 0 : p->b.addr, p->hint);
+  }
 }
