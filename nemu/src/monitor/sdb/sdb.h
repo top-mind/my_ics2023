@@ -69,8 +69,8 @@ typedef struct __attribute__((packed)) _breakpoint {
     } b;
     struct {
       rpn_t *rpn;
+      int nr_rpn;
       eval_t old_value;
-      size_t nr_rpn;
     } w;
   };
 } BP;
