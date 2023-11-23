@@ -56,13 +56,14 @@ void init_addelf(char *filename) {
   section_fseek(0);
   R(shdr);
   if (shdr.sh_size > nr_sh) nr_sh = shdr.sh_size;
+
   for (uintN_t sh_idx = 1; sh_idx < nr_sh; sh_idx++) {
     section_fseek(sh_idx);
     R(shdr);
     if (shdr.sh_type == SHT_SYMTAB) {
       // save sh_offset and sh_size
-      // read sh[sh_link]
-      // save strtab_off[]
+      // goto section: sh[sh_link] (strtab)
+      // read 
       // iterate from 0 to sh_size with steps sizeof(Elf_Sym)
       // for STT_FUNC
       //   name, value, size
@@ -92,6 +93,7 @@ void init_addelf(char *filename) {
         }
       }
       free(strtab);
+      break;
     }
   }
   size_t nr_sym_read = nr_sym < ARRLEN(syms) ? nr_sym : ARRLEN(syms);

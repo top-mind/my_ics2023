@@ -32,13 +32,10 @@ void init_wp_pool() {
   free_ = wp_pool;
 }
 
-bool wp_empty() {
-  return head == NULL;
-}
+bool wp_empty() { return head == NULL; }
 
 void wp_delete_all() {
-  while (head != NULL)
-    wp_delete(head->NO);
+  while (head != NULL) wp_delete(head->NO);
 }
 
 /* assgin a watchpoint
@@ -49,8 +46,7 @@ int new_wp(char *hint) {
   WP *r = free_;
   if (r != NULL) {
     r->rpn = exprcomp_r(hint, &r->nr_rpn);
-    if (r->rpn == NULL)
-      return -1;
+    if (r->rpn == NULL) return -1;
     r->old_value = eval(r->rpn, r->nr_rpn);
     r->hint = (char *)malloc(strlen(hint) + 1);
     r->hit = 0;
@@ -70,19 +66,16 @@ static void free_wp(WP *wp) {
 }
 
 bool wp_delete(int n) {
-  if (head == NULL)
-    return false;
+  if (head == NULL) return false;
   WP *wp;
   if (head->NO == n) {
     wp = head;
     head = head->next;
   } else {
     WP *tmp = head;
-    while (tmp->next && tmp->next->NO != n)
-      tmp = tmp->next;
+    while (tmp->next && tmp->next->NO != n) tmp = tmp->next;
     wp = tmp->next;
-    if (wp == NULL)
-      return false;
+    if (wp == NULL) return false;
     tmp->next = wp->next;
   }
   free_wp(wp);
@@ -93,9 +86,7 @@ void print_wp() {
   puts("Num\tValue\t\tWhat");
   for (WP *wp = head; wp != NULL; wp = wp->next) {
     printf("%d\t" FMT_WORD "\t%s\n", wp->NO, wp->old_value.value, wp->hint);
-    if (wp->hit) {
-      printf("\thit %zd times\n", wp->hit);
-    }
+    if (wp->hit) { printf("\thit %zd times\n", wp->hit); }
   }
 }
 
