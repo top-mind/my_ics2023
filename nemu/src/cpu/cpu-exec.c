@@ -40,10 +40,12 @@ void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+  /*
   strcpy(g_iring_buf[g_iring_end], _this->logbuf);
   g_iring_end = (g_iring_end + 1) % CONFIG_IRING_NR;
   if (g_iring_end == 0)
     g_iring_wrap = 1;
+  */
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
 #ifdef CONFIG_FTRACE
