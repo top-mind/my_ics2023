@@ -84,6 +84,7 @@ static void print_disassemble(Decode *s) {
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
+  printf("%s\n", p);
 }
 #endif
 
