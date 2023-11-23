@@ -25,10 +25,8 @@ static inline bool new_breakpoint(char *s) {
                   MUXDEF(CONFIG_ISA_loongarch32r, ,     // LOONGARCH32 break 0
                   ))));
   // clang-format on
-  printf("%zd\n", sizeof p->b.raw_instr);
+  printf("%zd %x\n", sizeof p->b.raw_instr, data);
   host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
-  printf("%x\n", inst_fetch(&addr, 4));
-  *(uint32_t *)guest_to_host(addr) = 0;
   printf("%x\n", inst_fetch(&addr, 4));
   return true;
 }
