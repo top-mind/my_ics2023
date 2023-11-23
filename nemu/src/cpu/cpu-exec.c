@@ -32,7 +32,6 @@
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
-static bool g_print_step = false;
 
 void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
@@ -56,16 +55,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE
 #include <memory/paddr.h> // in_pmem
 #endif
-
-void do_itrace(Decode *s) {
-  MUXDEF(
-    CONFIG_ITRACE, if (CONFIG_ITRACE_COND || g_print_step) {
-      char *assem = trace_disassemble(s);
-      if (CONFIG_ITRACE_COND) log_write("%s\n", assem);
-      if (g_print_step) puts(assem);
-      free(assem);
-    }, );
-}
 
 
 static void exec_once(Decode *s, vaddr_t pc) {
