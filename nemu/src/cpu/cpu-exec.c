@@ -27,6 +27,7 @@ void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_TRACE
   do_itrace(_this);
+  do_iqueue(_this);
   do_ftrace(_this);
 #endif
 
