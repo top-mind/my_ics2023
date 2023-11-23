@@ -35,12 +35,12 @@ typedef struct eval_t {
 
 typedef struct watchpoint {
   int NO;
-  struct watchpoint *next;
   rpn_t *rpn;
   size_t nr_rpn;
   eval_t old_value;
   char *hint;
   size_t hit;
+  struct watchpoint *next;
 } WP;
 
 eval_t expr(char *e);
