@@ -16,6 +16,7 @@
 #ifndef __SDB_H__
 #define __SDB_H__
 
+#include <cpu/decode.h>
 #include <common.h>
 #include <elf-def.h>
 typedef struct {
@@ -55,6 +56,23 @@ bool wp_delete(int n);
 void print_wp();
 
 typedef struct {
-} breakpoint;
+} watchpoint;
+
+typedef struct _breakpoint {
+  int num, hit, next, prev;
+  char *hint;
+  bool is_watchpoint;
+  union {
+    struct {
+      paddr_t addr;
+      MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
+    } b;
+    struct {
+      rpn_t *rpn;
+      size_t nr_rpn;
+      eval_t old_value;
+    } w;
+  };
+} BP;
 
 #endif
