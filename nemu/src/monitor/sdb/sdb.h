@@ -34,7 +34,7 @@ typedef struct eval_t {
   eval_state type;
 } eval_t;
 
-typedef struct _watchpoint{
+typedef struct _watchpoint {
   int NO;
   rpn_t *rpn;
   size_t nr_rpn;
@@ -55,10 +55,10 @@ int new_wp(char *hint);
 bool wp_delete(int n);
 void print_wp();
 
-typedef struct {
-} watchpoint;
-
 typedef struct _breakpoint {
+  int num, hit, next, prev;
+  char *hint;
+  bool is_watchpoint;
   union {
     struct {
       paddr_t addr;
@@ -70,9 +70,6 @@ typedef struct _breakpoint {
       eval_t old_value;
     } w;
   };
-  bool is_watchpoint;
-  int num, hit, next, prev;
-  char *hint;
 } BP;
 
 #endif
