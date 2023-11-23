@@ -2,8 +2,10 @@
 #define __TRACE_H__
 #include <common.h>
 #include "cpu/decode.h"
+
 #define MAX_INST_TO_PRINT 10
 #ifdef CONFIG_TRACE
+extern bool g_print_step;
 char *trace_disassemble(Decode *s);
 
 static inline void do_iqtrace(Decode *s) {}
