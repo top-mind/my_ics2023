@@ -58,7 +58,7 @@ void print_wp();
 typedef struct {
 } watchpoint;
 
-typedef struct __attribute__((packed)) _breakpoint {
+typedef struct _breakpoint {
   int num, hit, next, prev;
   union {
     struct {
