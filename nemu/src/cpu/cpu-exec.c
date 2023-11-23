@@ -13,6 +13,8 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "isa.h"
+#include "macro.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -29,27 +31,23 @@ CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
-#ifdef CONFIG_IRING_NR
-char g_iring_buf[CONFIG_IRING_NR][sizeof ((Decode *)0)->logbuf] = {};
-int g_iring_end = 0;
-bool g_iring_wrap = 0;
-#endif
 
 void device_update();
+static void do_itrace(Decode *);
+static void do_iqtrace(Decode *) {}
+static void do_mtrace(Decode *) {}
+static void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s),); }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-  /*
-  strcpy(g_iring_buf[g_iring_end], _this->logbuf);
-  g_iring_end = (g_iring_end + 1) % CONFIG_IRING_NR;
-  if (g_iring_end == 0)
-    g_iring_wrap = 1;
-  */
-#endif
+#ifdef CONFIG_TRACE
+  do_itrace(_this);
+  do_iqtrace(_this);
+  do_mtrace(_this);
+  do_ftrace(_this);
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
 #ifdef CONFIG_FTRACE
   isa_ras_update(_this);
+#endif
 #endif
 
 #ifndef CONFIG_TARGET_AM
@@ -65,9 +63,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 #ifdef CONFIG_ITRACE
 #include <memory/paddr.h> // in_pmem
-static void itrace_log(Decode *s) {
-  char *p = s->logbuf;
-  p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
+static void print_disassemble(Decode *s) {
+  char p[128];
+  p += snprintf(p, sizeof(p), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst.val;
@@ -89,14 +87,15 @@ static void itrace_log(Decode *s) {
 }
 #endif
 
+static void do_itrace(Decode *s) {
+  MUXDEF(CONFIG_ITRACE, if (CONFIG_ITRACE_COND) print_disassemble(s), );
+}
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
-#ifdef CONFIG_ITRACE
-  itrace_log(s);
-#endif
 }
 
 static void execute(uint64_t n) {

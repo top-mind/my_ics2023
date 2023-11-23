@@ -162,10 +162,15 @@ config ITRACE_COND
   string "Only trace instructions when the condition is true"
   default "true"
 
+config IQUEUE
+  depends on TRACE
+  bool "Enable instruction ring tracer (performance overhead: low)"
+  default y
+
 config IRING_NR
-  depends on ITRACE
-  int "Instruction trace ring buffer size (unit: number of instructions)"
-  default 20
+  depends on IQUEUE
+  int "Maximum number of instructions in queue"
+  default 50
 
 config MTRACE
   depends on TRACE
