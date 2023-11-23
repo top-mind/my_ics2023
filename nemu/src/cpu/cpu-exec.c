@@ -57,7 +57,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #include <memory/paddr.h> // in_pmem
 #endif
 
-static void do_itrace(Decode *s) {
+void do_itrace(Decode *s) {
   MUXDEF(
     CONFIG_ITRACE, if (CONFIG_ITRACE_COND || g_print_step) {
       char *assem = trace_disassemble(s);
