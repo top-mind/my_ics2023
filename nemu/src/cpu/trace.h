@@ -20,6 +20,7 @@ static inline void do_iqueue(Decode *s) {
     iqueue_end = 0;
     iquque_wrap = 1;
   }
+  Log("1 %zd %d", iqueue_end, iquque_wrap);
 #endif
 }
 static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s), ); }
@@ -41,10 +42,11 @@ void iqueue_show() {
     puts(assem);                                     \
     free(assem);                                     \
   } while (0)
+  size_t i;
   if (iquque_wrap)
-    for (int i = iqueue_end; i < CONFIG_NR_IQUEUE; i++)
+    for (i = iqueue_end; i < CONFIG_NR_IQUEUE; i++)
       disasm_print;
-  for (int i = 0; i < iqueue_end; i++)
+  for (i = 0; i < iqueue_end; i++)
     disasm_print;
 #undef disasm_print
 #endif
