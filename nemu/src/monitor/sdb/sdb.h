@@ -56,9 +56,9 @@ bool wp_delete(int n);
 void print_wp();
 
 typedef struct _breakpoint {
+  bool is_watchpoint;
   int num, hit, next, prev;
   char *hint;
-  bool is_watchpoint;
   union {
     struct {
       paddr_t addr;
