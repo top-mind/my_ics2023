@@ -7,6 +7,7 @@ static bool g_print_step = false;
 
 #ifdef CONFIG_TRACE
 char *trace_disassemble(Decode *s);
+// Decode iqueue_buf
 
 static inline void do_iqtrace(Decode *s) {}
 static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s), ); }
