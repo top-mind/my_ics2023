@@ -39,7 +39,6 @@ void iqueue_show() {
 #define disasm_print                                 \
   do {                                               \
     char *assem = trace_disassemble(iqueue_buf + i); \
-    assert(assem); \
     puts(assem);                                     \
     free(assem);                                     \
   } while (0)
