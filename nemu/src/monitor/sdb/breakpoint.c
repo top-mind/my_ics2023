@@ -14,10 +14,10 @@ static inline void new_breakpoint(char *s) {
   p->b.raw_instr = inst_fetch(&addr, sizeof p->b.raw_instr);
   // clang-format off
   uint32_t data = MUXDEF(CONFIG_ISA_x86, 0xcc,          // int3
-                  MUXDEF(CONFIG_ISA_mips32, 0xdeadbeaf, // sdbbp TODO
+                  MUXDEF(CONFIG_ISA_mips32, ,           // sdbbp TODO
                   MUXDEF(CONFIG_ISA_riscv, 0x00100073,  // ebreak
-                                                        // LOONGARCH32 break 0
-                  )));
+                  MUXDEF(CONFIG_ISA_loongarch32r, ,     // LOONGARCH32 break 0
+                  ))));
   // clang-format on
   host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
 }
@@ -29,16 +29,14 @@ static inline void new_watchpoint(char *s) {
   // p->w->old_value;
   p->w.next = -1;
   int cur = end;
-  while (-1 != (cur = bp_pool[cur].prev) && !bp_pool[cur].is_watchpoint);
-  if (cur != -1)
-    bp_pool[cur].next = end;
+  while (-1 != (cur = bp_pool[cur].prev) && !bp_pool[cur].is_watchpoint)
+    ;
+  if (cur != -1) bp_pool[cur].next = end;
   p->w.prev = cur;
 }
 
-
 int new_bp(char *s, bool is_watchpoint) {
-  if (end == -1)
-    return -1;
+  if (end == -1) return -1;
   bp_pool[end].num = ++cnt_bp;
   bp_pool[end].is_watchpoint = is_watchpoint;
   bp_pool[end].hint = s;
@@ -52,7 +50,6 @@ int new_bp(char *s, bool is_watchpoint) {
 }
 
 int breakat(void *dummy) {
-  if (end == -1)
-    return -1;
+  if (end == -1) return -1;
   return 0;
 }
