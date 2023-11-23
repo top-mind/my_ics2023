@@ -122,3 +122,11 @@
   })
 
 #endif
+
+// for tracer
+#define trace_enable                                                                           \
+  ({                                                                                           \
+    extern uint64_t g_nr_guest_inst;                                                           \
+    MUXDEF(CONFIG_TRACE,                                                                       \
+           g_nr_guest_inst >= CONFIG_TRACE_START && g_nr_guest_inst <= CONFIG_TRACE_END, false); \
+  })

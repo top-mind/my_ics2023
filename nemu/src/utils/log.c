@@ -29,7 +29,5 @@ void init_log(const char *log_file) {
 }
 
 bool log_enable() {
-  return MUXDEF(CONFIG_TRACE,
-                (g_nr_guest_inst >= CONFIG_TRACE_START) && (g_nr_guest_inst <= CONFIG_TRACE_END),
-                false);
+  return trace_enable;
 }
