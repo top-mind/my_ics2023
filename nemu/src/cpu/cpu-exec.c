@@ -63,19 +63,6 @@ static void execute(uint64_t n) {
   }
 }
 
-void iring_print() {
-#ifdef CONFIG_IQUEUE
-  int i;
-  if (g_iring_wrap)
-    for (i = g_iring_end; i < CONFIG_IRING_NR; i++)
-      printf("%s\n", g_iring_buf[i]);
-  for (i = 0; i < g_iring_end; i++)
-    printf("%s\n", g_iring_buf[i]);
-  if (in_pmem(cpu.pc)) {
-  }
-#endif
-}
-
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
   char *p, *buf = p = malloc(nrbuf);
@@ -112,9 +99,9 @@ static void statistic() {
     Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
-void assert_fail_msg() {
+void print_fail_msg() {
   isa_reg_display();
-  iring_print();
+  // iqueue
   statistic();
 }
 
@@ -146,8 +133,7 @@ void cpu_exec(uint64_t n) {
           // nothing to do here
           break;
         case ABORT_MEMIO:
-          isa_reg_display();
-          iring_print();
+          print_fail_msg();
           break;
       }
     case NEMU_END:

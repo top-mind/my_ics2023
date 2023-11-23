@@ -234,8 +234,7 @@ static int cmd_info(char *args) {
     } else if (strcmp(arg, "w") == 0) {
       print_wp();
     } else if (strcmp(arg, "f") == 0) {
-      void iring_print();
-      iring_print();
+      panic("not imp");
     } else {
       printf("Unknown subcommand %s, try help info.\n", arg);
     }
