@@ -28,6 +28,8 @@ static inline bool new_breakpoint(char *s) {
   printf("%zd\n", sizeof p->b.raw_instr);
   host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
   printf("%x\n", inst_fetch(&addr, 4));
+  *(uint32_t *)guest_to_host(addr) = 0;
+  printf("%x\n", inst_fetch(&addr, 4));
   return true;
 }
 
