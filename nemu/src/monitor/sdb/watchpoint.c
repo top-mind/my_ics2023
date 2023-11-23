@@ -103,7 +103,7 @@ bool is_watchpoint_hit() {
   bool stop = false;
   for (WP *wp = head; wp != NULL; wp = wp->next) {
     eval_t new_value = eval(wp->rpn, wp->nr_rpn);
-    if (0 != memcmp(&new_value, &wp->old_value, sizeof(eval_t))) {
+    if (wp->old_value.value != new_value.value || wp->old_value.type != new_value.type) {
       printf("Hit watchpoint %d: %s\n", wp->NO, wp->hint);
       wp->hit++;
       printf("Old value: ");

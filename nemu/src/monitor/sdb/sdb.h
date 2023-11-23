@@ -30,7 +30,7 @@ typedef enum { EV_SUC, EV_DIVZERO, EV_INVADDR, EV_SYNTAX } eval_state;
 
 typedef struct eval_t {
   word_t value;
-  eval_state state;
+  eval_state type;
 } eval_t;
 
 typedef struct watchpoint {

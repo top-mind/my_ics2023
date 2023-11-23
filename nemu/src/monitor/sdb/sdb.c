@@ -85,7 +85,7 @@ static int cmd_p(char *args) {
     printf("\n");
   } else {
     eval_t result = expr(args);
-    if (result.state == EV_SUC) {
+    if (result.type == EV_SUC) {
       peval(result);
       printf(" ");
       printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
@@ -261,7 +261,7 @@ static int cmd_x(char *args) {
   if (errno == ERANGE) { puts("Numeric constant too large."); }
 
   eval_t res = expr(endptr + 1);
-  if (res.state != EV_SUC) {
+  if (res.type != EV_SUC) {
     peval(res);
     return 0;
   }

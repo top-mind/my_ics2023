@@ -388,7 +388,7 @@ eval_t expr(char *e) {
 }
 
 void peval(eval_t ev) {
-  switch (ev.state) {
+  switch (ev.type) {
     case EV_SUC: printf(FMT_WORD, ev.value); break;
     case EV_DIVZERO: printf("Division by zero"); break;
     case EV_INVADDR: printf("Cannot access address " FMT_PADDR, ev.value); break;
