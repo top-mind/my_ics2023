@@ -33,14 +33,14 @@ typedef struct eval_t {
   eval_state type;
 } eval_t;
 
-typedef struct watchpoint {
+typedef struct _watchpoint{
   int NO;
   rpn_t *rpn;
   size_t nr_rpn;
   eval_t old_value;
   char *hint;
   size_t hit;
-  struct watchpoint *next;
+  struct _watchpoint *next;
 } WP;
 
 eval_t expr(char *e);
@@ -53,5 +53,8 @@ void peval(eval_t);
 int new_wp(char *hint);
 bool wp_delete(int n);
 void print_wp();
+
+typedef struct {
+} breakpoint;
 
 #endif

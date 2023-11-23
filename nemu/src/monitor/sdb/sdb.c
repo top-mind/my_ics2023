@@ -110,8 +110,6 @@ static int cmd_w(char *args) {
   int n = new_wp(args);
   if (n >= 0)
     printf("Watchpoint %d: %s\n", n, args);
-  else
-    puts("");
   return 0;
 }
 
