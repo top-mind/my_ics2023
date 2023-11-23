@@ -59,8 +59,6 @@ typedef struct {
 } watchpoint;
 
 typedef struct _breakpoint {
-  int num, hit, next, prev;
-  char *hint;
   union {
     struct {
       paddr_t addr;
@@ -73,6 +71,8 @@ typedef struct _breakpoint {
     } w;
   };
   bool is_watchpoint;
+  int num, hit, next, prev;
+  char *hint;
 } BP;
 
 #endif
