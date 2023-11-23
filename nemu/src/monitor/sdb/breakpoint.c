@@ -14,6 +14,7 @@ static inline bool new_breakpoint(char *s) {
     printf("I found %s at " FMT_PADDR ", but address out of range\n"
            "May symbol table unmatch?\n",
            s, addr);
+    return false;
   }
   p->b.addr = addr;
   p->b.raw_instr = inst_fetch(&addr, sizeof p->b.raw_instr);
