@@ -14,7 +14,7 @@ static inline void new_breakpoint(char *s) {
   p->b.raw_instr = inst_fetch(&addr, sizeof p->b.raw_instr);
   // clang-format off
   uint32_t data = MUXDEF(CONFIG_ISA_x86, 0xcc,          // int3
-                  MUXDEF(CONFIG_ISA_mips32, ,           // sdbbp TODO
+                  MUXDEF(CONFIG_ISA_mips32, ,           // sdbbp
                   MUXDEF(CONFIG_ISA_riscv, 0x00100073,  // ebreak
                   MUXDEF(CONFIG_ISA_loongarch32r, ,     // LOONGARCH32 break 0
                   ))));
@@ -47,9 +47,4 @@ int new_bp(char *s, bool is_watchpoint) {
     new_breakpoint(s);
   end = bp_pool[end].next;
   return cnt_bp;
-}
-
-int breakat(void *dummy) {
-  if (end == -1) return -1;
-  return 0;
 }

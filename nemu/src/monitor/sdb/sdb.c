@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <utils.h>
 
+#define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -68,7 +70,7 @@ static int cmd_info(char *);
 static int cmd_x(char *);
 
 static int cmd_p(char *args) {
-  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+  if (NOMORE(args)) {
     puts("Usage: p EXPR");
     return 0;
   }
@@ -102,8 +104,19 @@ static int cmd_p(char *args) {
   return 0;
 }
 
+static int cmd_b(char *args) {
+  if (NOMORE(args)) {
+    puts("Not impl. To developer: read gdb manual");
+    return 0;
+  }
+  int n = new_bp(args, 0);
+  if (n >= 0)
+    printf("bp: %d: %s\n", n, args);
+  return 0;
+}
+
 static int cmd_w(char *args) {
-  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+  if (NOMORE(args)) {
     puts("Usage: watch EXPR");
     return 0;
   }
@@ -114,7 +127,7 @@ static int cmd_w(char *args) {
 }
 
 static int cmd_d(char *args) {
-  if (args == NULL || '\0' == args[strspn(args, " ")]) {
+  if (NOMORE(args)) {
     void wp_delete_all();
     char *str = readline("Delete all watchpoints? (y|N) ");
     if (str[0] == 'y') wp_delete_all();
@@ -149,6 +162,7 @@ static struct {
    "number is specified, memory is examined backward from the address.",
    cmd_x},
   {"p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
+  {"b", "Set breakpoint", cmd_b},
   {"w",
    "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
    "A watchpoint stops execution of your program whenever the value of an expression changes. This "
@@ -190,7 +204,7 @@ static int cmd_si(char *args) {
   char *endptr = NULL;
   char *arg_n = strtok(NULL, " ");
   char *arg_more = strtok(NULL, "");
-  if (arg_more != NULL && arg_more[strspn(arg_more, " ")]) {
+  if (!NOMORE(arg_more)) {
     puts("Usage: si [N]");
     return 0;
   }
@@ -245,7 +259,7 @@ static int cmd_info(char *args) {
 static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
   char *arg2 = strtok(NULL, ""); // extract verbatim
-  if (arg2 == NULL || '\0' == arg2[strspn(arg2, " ")]) {
+  if (NOMORE(arg2)) {
     puts("Argument(s) required");
     puts("Usage: x N EXPR");
     return 0;

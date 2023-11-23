@@ -73,4 +73,5 @@ typedef struct _breakpoint {
   };
 } BP;
 
+int new_bp(char *s, bool is_watchpoint);
 #endif
