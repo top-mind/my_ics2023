@@ -167,7 +167,7 @@ config IQUEUE
   bool "Enable instruction ring tracer (performance overhead: low)"
   default y
 
-config IRING_NR
+config NR_IQUEUE
   depends on IQUEUE
   int "Maximum number of instructions in queue"
   default 50
