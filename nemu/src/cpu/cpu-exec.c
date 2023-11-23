@@ -43,10 +43,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   do_itrace(_this);
   do_iqtrace(_this);
   do_ftrace(_this);
-  // if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-#ifdef CONFIG_FTRACE
-  isa_ras_update(_this);
-#endif
 #endif
 
 #ifndef CONFIG_TARGET_AM
