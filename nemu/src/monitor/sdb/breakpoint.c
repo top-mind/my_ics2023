@@ -17,7 +17,7 @@ static inline bool new_breakpoint(char *s) {
     return false;
   }
   p->b.addr = addr;
-  p->b.raw_instr = inst_fetch(&addr, sizeof p->b.raw_instr);
+  p->b.raw_instr = host_read(guest_to_host(addr), sizeof p->b.raw_instr);
   // clang-format off
   uint32_t data = MUXDEF(CONFIG_ISA_x86, 0xcc,          // int3
                   MUXDEF(CONFIG_ISA_mips32, ,           // sdbbp
@@ -25,9 +25,7 @@ static inline bool new_breakpoint(char *s) {
                   MUXDEF(CONFIG_ISA_loongarch32r, ,     // LOONGARCH32 break 0
                   ))));
   // clang-format on
-  printf("%zd %x\n", sizeof p->b.raw_instr, data);
   host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
-  printf("%x %x\n", addr,  inst_fetch(&addr, 4));
   return true;
 }
 
