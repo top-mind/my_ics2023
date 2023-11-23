@@ -33,7 +33,7 @@ static inline void do_itrace(Decode *s) {
     }, );
 }
 
-void show_iqueue() {
+void iqueue_show() {
 #ifdef CONFIG_IQUEUE
 #define disasm_print                                 \
   do {                                               \
