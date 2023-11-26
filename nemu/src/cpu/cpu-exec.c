@@ -60,6 +60,7 @@ static void execute(uint64_t n) {
   }
 }
 
+#if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
   char *p, *buf = p = malloc(nrbuf);
@@ -84,6 +85,7 @@ char *trace_disassemble(Decode *s) {
 #endif
   return buf;
 }
+#endif
 
 static void statistic() {
   IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
