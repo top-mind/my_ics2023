@@ -33,6 +33,7 @@ static inline void do_itrace(Decode *s) {
       free(assem);
     }, );
 }
+#endif
 
 void iqueue_show() {
 #ifdef CONFIG_IQUEUE
@@ -51,6 +52,4 @@ void iqueue_show() {
 #undef disasm_print
 #endif
 }
-
-#endif
 #endif
