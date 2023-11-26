@@ -35,7 +35,7 @@ static inline void do_itrace(Decode *s) {
 }
 #endif
 
-void iqueue_show() {
+void trace_show_message_error() {
 #ifdef CONFIG_IQUEUE
 #define disasm_print                                 \
   do {                                               \
@@ -52,4 +52,5 @@ void iqueue_show() {
 #undef disasm_print
 #endif
 }
+
 #endif

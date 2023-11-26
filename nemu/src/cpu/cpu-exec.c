@@ -98,7 +98,7 @@ static void statistic() {
 
 void print_fail_msg() {
   isa_reg_display();
-  iqueue_show();
+  trace_show_message_error();
   statistic();
 }
 
