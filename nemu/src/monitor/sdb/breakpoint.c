@@ -1,4 +1,3 @@
-#include "cpu/ifetch.h"
 #include "memory/host.h"
 #include "memory/paddr.h"
 #include "sdb.h"
