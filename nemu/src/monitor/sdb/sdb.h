@@ -63,6 +63,7 @@ typedef struct _breakpoint {
     struct {
       paddr_t addr;
       MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
+      bool duplicate;
     } b;
     struct {
       rpn_t *rpn;

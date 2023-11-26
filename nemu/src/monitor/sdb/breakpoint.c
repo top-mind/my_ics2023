@@ -7,6 +7,14 @@ static int end, head_bp, head_wp;
 unsigned cnt_bp;
 BP bp_pool[NR_BP];
 
+/*
+ * called by insert_breakpoint and delete_breakpoint
+ * a wrapper of BP->duplicate
+ */
+static bool breakpoint_need_insert(BP *p) {
+  return p->is_watchpoint ? 1 : p->b.duplicate;
+}
+
 static inline bool new_breakpoint(char *s, BP *p) {
   paddr_t addr = 0x80000000; // TODO
   if (!in_pmem(addr)) {
@@ -16,6 +24,10 @@ static inline bool new_breakpoint(char *s, BP *p) {
            s, addr);
     return false;
   }
+  // TODO check if ADDR is already set
+  // if so, mark it as duplicate
+  // int cur = head_bp;
+  bool __attribute__((unused)) tmp = breakpoint_need_insert(p);
   p->b.addr = addr;
   p->b.raw_instr = host_read(guest_to_host(addr), sizeof p->b.raw_instr);
   // clang-format off
@@ -59,9 +71,10 @@ int new_bp(char *s, bool is_watchpoint) {
 void show_wp() {
   int cur = head_wp;
   printf("Num\tAddress\t\tWhat\n");
-  while( -1 != (cur = bp_pool[cur].w.next)) {
+  while( -1 != cur) {
     BP *p = &bp_pool[cur];
     printf("%d\t\t\t%s\n", p->num, p->hint);
+    cur = bp_pool[cur].w.next;
   }
 }
 
