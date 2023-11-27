@@ -55,5 +55,8 @@ $(BINARY):: $(OBJS) $(ARCHIVES)
 
 clean:
 	-rm -rf $(BUILD_DIR)
-count:
-	find ./src ./include -path './src/isa/*' ! -path './src/isa/riscv32' ! -wholename './src/isa/riscv32/*' -prune -o -type f -exec sh -c 'echo $$(grep -v ^$$ {}|wc -l) {}' \; -exec ./tools/wc_short {} + | sort -n
+tools/line_count:
+	@echo '#!/usr/bin/sh\ngrep -v ^$$ $$* | wc -l' > tools/line_count
+	@chmod +x tools/line_count
+count: tools/line_count
+	find ./src ./include -path './src/isa/*' ! -path './src/isa/riscv32' ! -wholename './src/isa/riscv32/*' -prune -o -type f -name '*.[ch]' -exec sh -c 'echo $$(grep -v ^$$ {}|wc -l) {}' \; -exec ./tools/line_count {} + | sort -n
