@@ -55,3 +55,5 @@ $(BINARY):: $(OBJS) $(ARCHIVES)
 
 clean:
 	-rm -rf $(BUILD_DIR)
+count:
+	find ./src ./include -path './src/isa/*' ! -path './src/isa/riscv32' ! -wholename './src/isa/riscv32/*' -prune -o -type f -exec sh -c 'echo $$(grep -v ^$$ {}|wc -l) {}' \; -exec ./tools/wc_short {} + | sort -n
