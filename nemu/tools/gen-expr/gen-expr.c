@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     sscanf(argv[1], "%d", &loop);
   }
   int i;
-  for (i = 0; i < loop; i ++) {
+  for (i = 0; i < loop;) {
     nr_buf = 0;
     gen_rand_expr();
     buf[nr_buf] = '\0';
@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
 
     int ret = system("gcc -Wall -Werror -Wno-parentheses /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
+    i++;
 
     fp = popen("/tmp/.expr", "r");
     assert(fp != NULL);
