@@ -309,6 +309,8 @@ void sdb_mainloop() {
     return;
   }
 
+  printf("a");
+
   for (char *str; (str = rl_gets()) != NULL;) {
     char *str_end = str + strlen(str);
 
