@@ -66,7 +66,7 @@ static void statistic() {
 
 void print_fail_msg() {
   isa_reg_display();
-  // trace_show_message_error();
+  irtrace_print();
   statistic();
 }
 
