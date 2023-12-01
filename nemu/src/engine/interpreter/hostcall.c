@@ -25,7 +25,10 @@ void set_nemu_state(int state, vaddr_t pc, int halt_ret) {
   nemu_state.halt_ret = halt_ret;
 }
 
+/* Called when a unrecogonized opcode is executed. */
 __attribute__((noinline)) void invalid_inst(vaddr_t thispc) {
+  // this may cause by an out of bound PC, detect it here.
+  if (nemu_state.state == NEMU_ABORT) return;
   uint32_t temp[2];
   vaddr_t pc = thispc;
   temp[0] = paddr_read(pc, 4);

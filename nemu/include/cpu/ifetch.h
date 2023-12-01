@@ -17,10 +17,16 @@
 
 #include <memory/vaddr.h>
 
-static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
+static inline uint32_t inst_fetch0(vaddr_t *pc, int len) {
   uint32_t inst = vaddr_ifetch(*pc, len);
   if (unlikely(nemu_state.state == NEMU_ABORT))
     panic("INSTRUNCTION FETCH FAILS! pc = " FMT_PADDR, *pc);
+  (*pc) += len;
+  return inst;
+}
+
+static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
+  uint32_t inst = vaddr_ifetch(*pc, len);
   (*pc) += len;
   return inst;
 }
