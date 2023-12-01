@@ -46,8 +46,10 @@ void trace_set_itrace_stdout(int enable) {
 }
  void do_itrace(Decode *s) {
 #ifdef CONFIG_ITRACE
-  if (g_itrace_stdout || CONFIG_ITRACE_COND) {
+  if (g_itrace_stdout || ITRACE_COND) {
     char *buf = trace_disassemble(s);
+    if (g_itrace_stdout)
+      puts(buf);
     free(buf);
   }
 #endif
