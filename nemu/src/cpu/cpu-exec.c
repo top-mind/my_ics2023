@@ -25,7 +25,9 @@ static uint64_t g_timer = 0; // unit: us
 
 void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-
+#ifdef CONFIG_TRACE
+  do_trace(_this);
+#endif
 #ifndef CONFIG_TARGET_AM
   // TODO stop if hit a breakpoint
 #endif

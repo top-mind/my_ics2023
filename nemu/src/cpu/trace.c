@@ -6,9 +6,12 @@
  * 4. function tracer
  * 5. device tracer (TBD)
  * One can enable or disable them in menuconfig.
+ * This file do not contain impl of memory tracer and device tracer.
+ * See paddr.c and device.c(TBD) for more details.S
  */
 #include <common.h>
 #include "trace.h"
+#include <isa.h>
 #ifdef CONFIG_LIBDISASM
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
@@ -37,21 +40,68 @@ char *trace_disassemble(Decode *s) {
 #endif
 
 #ifdef CONFIG_TRACE
+
+#ifdef CONFIG_IQUEUE
+#endif
 static bool g_itrace_stdout = 0;
 void trace_init() {
   // TODO
 }
-void trace_set_itrace_stdout(int enable) {
+void trace_set_itrace_stdout(bool enable) {
   g_itrace_stdout = enable;
 }
- void do_itrace(Decode *s) {
+void do_itrace(Decode *s) {
 #ifdef CONFIG_ITRACE
   if (g_itrace_stdout || ITRACE_COND) {
     char *buf = trace_disassemble(s);
-    if (g_itrace_stdout)
-      puts(buf);
+    if (g_itrace_stdout) puts(buf);
+    if (ITRACE_COND) log_write("%s\n", buf);
     free(buf);
   }
 #endif
 }
+
+#ifdef CONFIG_IQUEUE
+static Decode iqueue[CONFIG_NR_IQUEUE];
+static int iqueue_end = 0;
+static bool iqueue_wrap = 0;
+#endif
+
+static inline void do_irtrace(Decode *s) { 
+#ifdef CONFIG_IQUEUE
+  iqueue[iqueue_end] = *s; // It is better to use ISA depended method to copy ISADecodeInfo
+  iqueue_end ++;
+  if (iqueue_end == CONFIG_NR_IQUEUE) {
+    iqueue_end = 0;
+    iqueue_wrap = 1;
+  }
+#endif
+}
+
+static inline void do_ftrace(Decode *s) { MUXDEF(CONFIG_FTRACE, isa_ras_update(s), ); }
+
+void do_trace(Decode *s) {
+  do_itrace(s);
+  do_irtrace(s);
+  do_ftrace(s);
+}
+
+void irtrace_print() {
+#ifdef CONFIG_IQUEUE
+  int i;
+  if (iqueue_wrap) {
+    for (i = iqueue_end; i < CONFIG_NR_IQUEUE; i++) {
+      char *buf = trace_disassemble(&iqueue[i]);
+      puts(buf);
+      free(buf);
+    }
+  }
+  for (i = 0; i < iqueue_end; i++) {
+    char *buf = trace_disassemble(&iqueue[i]);
+    puts(buf);
+    free(buf);
+  }
+#endif
+}
+
 #endif
