@@ -7,7 +7,7 @@
 #ifdef CONFIG_TRACE
 void trace_init();
 void do_trace(Decode *);
-void irtrace_print();
+void irtrace_print(uint64_t total);
 void trace_set_itrace_stdout(bool enable);
 #endif
 

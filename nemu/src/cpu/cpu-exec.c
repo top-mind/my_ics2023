@@ -64,9 +64,15 @@ static void statistic() {
     Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
+void trace_display() {
+#ifdef CONFIG_IQUEUE
+  
+#endif
+}
+
 void print_fail_msg() {
   isa_reg_display();
-  irtrace_print();
+  trace_display();
   statistic();
 }
 

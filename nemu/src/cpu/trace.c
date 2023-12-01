@@ -86,9 +86,10 @@ void do_trace(Decode *s) {
   do_ftrace(s);
 }
 
-void irtrace_print() {
+void irtrace_print(uint64_t total) {
 #ifdef CONFIG_IQUEUE
   int i;
+  printf("Last %d/%" PRIu64 " instructions:\n", iqueue_wrap ? CONFIG_NR_IQUEUE : iqueue_end, total);
   if (iqueue_wrap) {
     for (i = iqueue_end; i < CONFIG_NR_IQUEUE; i++) {
       char *buf = trace_disassemble(&iqueue[i]);
