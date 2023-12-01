@@ -234,8 +234,8 @@ static int cmd_info(char *args) {
     } else if (strcmp(arg, "w") == 0) {
       print_wp();
     } else if (strcmp(arg, "h") == 0) {
-      MUXDEF(CONFIG_IQUEUE, void irtrace_print();
-             irtrace_print(), puts("Please enable iring tracer"));
+      MUXDEF(CONFIG_IQUEUE, void trace_display();
+             trace_display(), puts("Please enable iring tracer"));
     } else {
       printf("Unknown subcommand %s, try help info.\n", arg);
     }

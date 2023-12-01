@@ -66,7 +66,7 @@ static void statistic() {
 
 void trace_display() {
 #ifdef CONFIG_IQUEUE
-  
+  irtrace_print(g_nr_guest_inst);
 #endif
 }
 
