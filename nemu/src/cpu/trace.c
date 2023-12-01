@@ -1,6 +1,14 @@
 /* Everything about tracer
+ * There are 5 independent tracer:
+ * 1. instruction tracer
+ * 2. instruction ring tracer
+ * 3. memory tracer
+ * 4. function tracer
+ * 5. device tracer (TBD)
+ * One can enable or disable them in menuconfig.
  */
-
+#include <common.h>
+#include "trace.h"
 #ifdef CONFIG_LIBDISASM
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
@@ -28,3 +36,20 @@ char *trace_disassemble(Decode *s) {
 }
 #endif
 
+#ifdef CONFIG_TRACE
+static bool g_itrace_stdout = 0;
+void trace_init() {
+  // TODO
+}
+void trace_set_itrace_stdout(int enable) {
+  g_itrace_stdout = enable;
+}
+ void do_itrace(Decode *s) {
+#ifdef CONFIG_ITRACE
+  if (g_itrace_stdout || CONFIG_ITRACE_COND) {
+    char *buf = trace_disassemble(s);
+    free(buf);
+  }
+#endif
+}
+#endif

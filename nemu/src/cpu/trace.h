@@ -4,5 +4,6 @@
 
 #define MAX_INST_TO_PRINT 10
 
-
+#ifdef CONFIG_TRACE
+#endif
 #endif
