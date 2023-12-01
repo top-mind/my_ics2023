@@ -25,18 +25,9 @@ static uint64_t g_timer = 0; // unit: us
 
 void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_TRACE
-  do_itrace(_this);
-  do_iqueue(_this);
-  do_ftrace(_this);
-#endif
 
 #ifndef CONFIG_TARGET_AM
-  bool is_watchpoint_hit();
-  if (is_watchpoint_hit()) {
-    if (nemu_state.state == NEMU_RUNNING)
-      nemu_state.state = NEMU_STOP;
-  }
+  // TODO stop if hit a breakpoint
 #endif
 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -60,33 +51,6 @@ static void execute(uint64_t n) {
   }
 }
 
-#if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
-char *trace_disassemble(Decode *s) {
-  const int nrbuf = 128;
-  char *p, *buf = p = malloc(nrbuf);
-  p += snprintf(p, nrbuf, FMT_WORD ":", s->pc);
-  int ilen = s->snpc - s->pc;
-  int i;
-  uint8_t *inst = (uint8_t *)&s->isa.inst.val;
-  for (i = ilen - 1; i >= 0; i--) { p += snprintf(p, 4, " %02x", inst[i]); }
-  int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
-  int space_len = ilen_max - ilen;
-  if (space_len < 0) space_len = 0;
-  space_len = space_len * 3 + 1;
-  memset(p, ' ', space_len);
-  p += space_len;
-
-#ifndef CONFIG_ISA_loongarch32r
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(p, buf + nrbuf - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc),
-              (uint8_t *)&s->isa.inst.val, ilen);
-#else
-  p[0] = '\0'; // the upstream llvm does not support loongarch32r
-#endif
-  return buf;
-}
-#endif
-
 static void statistic() {
   IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
@@ -100,13 +64,13 @@ static void statistic() {
 
 void print_fail_msg() {
   isa_reg_display();
-  trace_show_message_error();
+  // trace_show_message_error();
   statistic();
 }
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
-  g_print_step = (n < MAX_INST_TO_PRINT);
+  // TODO tell the trace system N.
   switch (nemu_state.state) {
     case NEMU_END:
     case NEMU_ABORT:
