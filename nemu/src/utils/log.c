@@ -29,5 +29,5 @@ void init_log(const char *log_file) {
 }
 
 bool log_enable() {
-  return trace_enable;
+  return TRACE_ENABLE;
 }
