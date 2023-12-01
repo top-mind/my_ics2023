@@ -67,7 +67,7 @@ static int iqueue_end = 0;
 static bool iqueue_wrap = 0;
 #endif
 
-static inline void do_irtrace(Decode *s) { 
+static inline void do_irtrace(Decode *s) {
 #ifdef CONFIG_IQUEUE
   iqueue[iqueue_end] = *s; // It is better to use ISA depended method to copy ISADecodeInfo
   iqueue_end ++;
@@ -107,10 +107,13 @@ void irtrace_print(uint64_t total) {
 
 #include <elf-def.h>
 static int ras_depth = 0;
-static bool ras_nocall = false;
+static bool ras_tailcall = false;
+static paddr_t ras_lastpc = 0;
+static paddr_t ras_nr_repeat = 0;
+
 void ftrace_push(vaddr_t pc, vaddr_t dnpc) {
-  if (ras_nocall) printf(" {\n");
-  ras_nocall = true;
+  if (ras_tailcall) printf(" {\n");
+  ras_tailcall = true;
   printf("%*.s", (ras_depth++) * 2, "");
   char *f_name;
   uintN_t f_off;
@@ -122,21 +125,29 @@ void ftrace_push(vaddr_t pc, vaddr_t dnpc) {
     printf("[" FMT_PADDR "]", dnpc);
   printf("()");
 }
+
 void ftrace_pop(vaddr_t pc, vaddr_t dnpc) {
   if (ras_depth == 0) return;
-  if (ras_nocall) {
-    --ras_depth;
-    ras_nocall = false;
-    printf(";\n");
-  } else {
-    printf("%*.s", (--ras_depth) * 2, "");
-    printf("} /*");
+  --ras_depth;
   char *f_name;
   uintN_t f_off;
   elf_getname_and_offset(pc, &f_name, &f_off);
-  printf(" %s", f_name);
-  printf(" */\n");
+
+  if (ras_tailcall) {
+    ras_tailcall = false;
+    if (ras_lastpc == pc - f_off) {
+      ras_nr_repeat++;
+    } else {
+      ras_lastpc = pc - f_off;
+      ras_nr_repeat = 0;
+    }
+    printf(";\n");
+  } else {
+    printf("%*.s", ras_depth * 2, "");
+    printf("} /* %s */\n", f_name);
   }
 }
 
+void ftrace_flush() {
+}
 #endif

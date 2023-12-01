@@ -63,7 +63,7 @@ void init_addelf(char *filename) {
     if (shdr.sh_type == SHT_SYMTAB) {
       // save sh_offset and sh_size
       // goto section: sh[sh_link] (strtab)
-      // read 
+      // read
       // iterate from 0 to sh_size with steps sizeof(Elf_Sym)
       // for STT_FUNC
       //   name, value, size
