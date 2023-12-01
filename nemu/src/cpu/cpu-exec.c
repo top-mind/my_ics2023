@@ -73,6 +73,7 @@ void print_fail_msg() {
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   // TODO tell the trace system N.
+  trace_set_itrace_stdout(n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END:
     case NEMU_ABORT:
