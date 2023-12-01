@@ -172,6 +172,12 @@ config NR_IQUEUE
   int "Maximum number of instructions in queue"
   default 50
 
+if ITRACE || IQUEUE
+config LIBDISASM
+  bool
+  default y
+endif
+
 config MTRACE
   depends on TRACE
   bool "Enable memory i/o tracer"
