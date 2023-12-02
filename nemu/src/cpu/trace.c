@@ -150,10 +150,11 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
     printf(" {\n");
   // print new
   if (need_print_new)
-    ftrace_push_printfunc(dnpc, ras_depth++);
+    ftrace_push_printfunc(dnpc, ras_depth);
   // update
   if (need_print_new) ras_lastpc = dnpc, ras_nr_repeat = 1;
   else ras_nr_repeat++;
+  ras_depth++;
   ras_tailcall = true;
 }
 
