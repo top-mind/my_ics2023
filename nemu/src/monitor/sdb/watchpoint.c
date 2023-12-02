@@ -87,7 +87,7 @@ void print_wp() {
   for (WP *wp = head; wp != NULL; wp = wp->next) {
     printf("%d\t", wp->NO);
     peval(wp->old_value);
-    printf("%s\n", wp->hint);
+    printf("\t%s\n", wp->hint);
     if (wp->hit) { printf("\thit %zd times\n", wp->hit); }
   }
 }
