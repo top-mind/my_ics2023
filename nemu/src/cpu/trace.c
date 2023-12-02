@@ -116,7 +116,6 @@ void ftrace_flush() {
     printf("; /* repeated %d times */\n", ras_nr_repeat);
     ras_nr_repeat = 0;
   }
-  ras_lastpc = 0;
 }
 
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
@@ -133,6 +132,10 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   fflush(stdout);
 }
 
+/* Often, we print message if we prepare a whole line to print.
+ * But as soon as program stop inside a function, sdb tells us we go into, as desired.
+ * This may be modified when backtrace is available.
+ */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
