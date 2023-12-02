@@ -1,87 +1,86 @@
 #include "memory/host.h"
 #include "memory/paddr.h"
 #include "sdb.h"
-#define NR_BP 32
-static int end, head_bp, head_wp;
-unsigned cnt_bp;
-BP bp_pool[NR_BP];
 
-/*
- * called by insert_breakpoint and delete_breakpoint
- * a wrapper of BP->duplicate
- */
-static bool breakpoint_need_insert(BP *p) {
-  return p->is_watchpoint ? 1 : p->b.duplicate;
-}
+bp_t *head_bp;
+wp_t *head_wp;
 
-static inline bool new_breakpoint(char *s, BP *p) {
-  paddr_t addr = 0x80000000; // TODO
-  if (!in_pmem(addr)) {
-    printf("I found %s at " FMT_PADDR ", but address out of range. "
-           "May symbol table unmatch?\n"
-           "Fail to insert breakpoint\n",
-           s, addr);
-    return false;
-  }
-  // TODO check if ADDR is already set
-  // if so, mark it as duplicate
-  // int cur = head_bp;
-  bool __attribute__((unused)) tmp = breakpoint_need_insert(p);
-  p->b.addr = addr;
-  p->b.raw_instr = host_read(guest_to_host(addr), sizeof p->b.raw_instr);
-  // clang-format off
-  uint32_t data = MUXDEF(CONFIG_ISA_x86, 0xcc,          // int3
-                  MUXDEF(CONFIG_ISA_mips32, ,           // sdbbp
-                  MUXDEF(CONFIG_ISA_riscv, 0x00100073,  // ebreak
-                  MUXDEF(CONFIG_ISA_loongarch32r, ,     // LOONGARCH32 break 0
-                  ))));
-  // clang-format on
-  host_write(guest_to_host(addr), sizeof p->b.raw_instr, data);
-  return true;
-}
-
-static inline bool new_watchpoint(char *s, BP *p) {
-  // p->w->rpn; TODO
-  // p->w->nr_rpn;
-  // p->w->old_value;
-  p->w.next = -1;
-  int cur = end;
-  while (-1 != (cur = bp_pool[cur].prev) && !bp_pool[cur].is_watchpoint)
-    ;
-  if (cur != -1) bp_pool[cur].next = end;
-  p->w.prev = cur;
-  return true;
-}
-
-int new_bp(char *s, bool is_watchpoint) {
-  if (end == -1) return -1;
-  BP *p = &bp_pool[end];
-  bool suc = is_watchpoint ? new_watchpoint(s, p) : new_breakpoint(s, p);
-  if (!suc)
-    return -1;
-  bp_pool[end].num = ++cnt_bp;
-  bp_pool[end].is_watchpoint = is_watchpoint;
-  bp_pool[end].hint = s;
-  bp_pool[end].hit = 0;
-  end = bp_pool[end].next;
-  return cnt_bp;
-}
-
-void show_wp() {
-  int cur = head_wp;
-  printf("Num\tAddress\t\tWhat\n");
-  while( -1 != cur) {
-    BP *p = &bp_pool[cur];
-    printf("%d\t\t\t%s\n", p->num, p->hint);
-    cur = bp_pool[cur].w.next;
+static void *breakpoint_next(bool next, bool *type) {
+  static bp_t *cur_bp = NULL;
+  static wp_t *cur_wp = NULL;
+  if (!next) {
+    cur_bp = head_bp;
+    cur_wp = head_wp;
+    return NULL;
+  } else {
+    if (cur_bp == NULL && cur_wp == NULL) {
+      return NULL;
+    }
+    //                   true              false       false         true
+    *type = cur_bp == NULL ?true: cur_wp == NULL ? 0: cur_bp->NO > cur_wp->NO;
+    if (*type) {
+      void *ret = cur_wp;
+      cur_wp = cur_wp->next;
+      return ret;
+    } else {
+      void *ret = cur_bp;
+      cur_bp = cur_bp->next;
+      return ret;
+    }
   }
 }
 
-void show_bp() {
-  int cur = head_bp;
-  printf("Num\tAddress\t\tWhat\n");
-  while (-1 != (cur = bp_pool[cur].next)) {
-    BP *p = &bp_pool[cur];
-    printf("%d\t" FMT_PADDR "\t\t%s\n", p->num, p->is_watchpoint ? 0 : p->b.addr, p->hint);
+int create_breakpoint(char *e) {
+  return 0;
+}
+int create_watchpoint(char *e) {
+  return 0;
+}
+
+static void free_bp_t(void *e) {
+}
+
+static void free_wp_t(void *e) {
+}
+
+bool delete_breakpoint(int n) {
+#define delete0(type, target) ({ \
+  type *tmp = (type *)target->next; \
+  target->next = tmp == target ? NULL : tmp->next; \
+  (void *)tmp; })
+
+#define find_in_list(type, head)          \
+  do {                                    \
+    if (head == NULL) { break ; }         \
+    type *cur = head; \
+    do { \
+      if (cur->next->NO == n) { \
+        concat(free_, type)(delete0(type, cur)); \
+        return 1; \
+      }  \
+    } while ((cur = cur->next) != head); \
+  } while (0)
+
+  find_in_list(bp_t, head_bp);
+  find_in_list(wp_t, head_wp);
+  return 0;
+#undef delete0
+#undef find_in_list
+}
+
+void print_all_breakpoints() {
+  breakpoint_next(0, NULL);
+  bool type;
+  while (breakpoint_next(1, &type)) {
+    if (type) {
+      bp_t *bp = (bp_t *)breakpoint_next(1, &type);
+      printf("Breakpoint %d at 0x%08x\n", bp->NO, bp->addr);
+    } else {
+      wp_t *wp = (wp_t *)breakpoint_next(1, &type);
+      printf("Watchpoint %d, %s\n", wp->NO, wp->expr);
+    }
   }
+}
+
+void print_watchpoints() {
 }

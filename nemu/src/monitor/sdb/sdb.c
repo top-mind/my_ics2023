@@ -109,7 +109,7 @@ static int cmd_b(char *args) {
     puts("Not impl. To developer: read gdb manual");
     return 0;
   }
-  int n = new_bp(args, 0);
+  int n = create_breakpoint(args);
   if (n >= 0)
     printf("bp: %d: %s\n", n, args);
   return 0;
@@ -120,7 +120,7 @@ static int cmd_w(char *args) {
     puts("Usage: watch EXPR");
     return 0;
   }
-  int n = new_wp(args);
+  int n = create_watchpoint(args);
   if (n >= 0)
     printf("Watchpoint %d: %s\n", n, args);
   return 0;
@@ -128,14 +128,13 @@ static int cmd_w(char *args) {
 
 static int cmd_d(char *args) {
   if (NOMORE(args)) {
-    void wp_delete_all();
     char *str = readline("Delete all watchpoints? (y|N) ");
-    if (str[0] == 'y') wp_delete_all();
+    if (str[0] == 'y') panic("not impl");
     free(str);
     return 0;
   }
   int n = atoi(args);
-  if (!wp_delete(n)) { printf("No watchpoint %d.\n", n); }
+  if (!delete_breakpoint(n)) { printf("No breakpoint %d.\n", n); }
   return 0;
 }
 
@@ -232,7 +231,7 @@ static int cmd_info(char *args) {
       printf("%-15s0x%-" MUXDEF(CONFIG_ISA64, "16l", "8") "x\n", "pc", cpu.pc);
       // #endif
     } else if (strcmp(arg, "w") == 0) {
-      print_wp();
+      print_watchpoints();
     } else if (strcmp(arg, "h") == 0) {
       MUXDEF(CONFIG_IQUEUE, void trace_display();
              trace_display(), puts("Please enable iring tracer"));
@@ -332,7 +331,4 @@ void sdb_mainloop() {
 void init_sdb() {
   /* Compile the regular expressions. */
   init_regex();
-
-  /* Initialize the watchpoint pool. */
-  init_wp_pool();
 }

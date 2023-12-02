@@ -50,29 +50,32 @@ rpn_t *exprcomp(char *e, size_t *);
 eval_t eval(const rpn_t *, size_t);
 void peval(eval_t);
 
+// for breakpoints
 
-int new_wp(char *hint);
-bool wp_delete(int n);
-void print_wp();
+int create_breakpoint(char *e);
+int create_watchpoint(char *e);
 
-typedef struct _breakpoint {
-  unsigned num, hit, next, prev;
-  char *hint;
-  bool is_watchpoint;
-  union {
-    struct {
-      paddr_t addr;
-      MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
-      bool duplicate;
-    } b;
-    struct {
-      rpn_t *rpn;
-      size_t nr_rpn;
-      eval_t old_value;
-      int next, prev;
-    } w;
-  };
-} BP;
+bool delete_breakpoint(int n);
+bool delete_watchpoint(int n);
 
-int new_bp(char *s, bool is_watchpoint);
+void print_all_breakpoints();
+void print_watchpoints();
+
+typedef struct breakpoint_node {
+  int NO;
+  paddr_t addr;
+  MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
+  bool duplicate;
+  struct breakpoint_node *next;
+} bp_t;
+
+typedef struct watchpoint_node {
+  int NO;
+  char *expr;
+  rpn_t *rpn;
+  size_t nr_rpn;
+  eval_t old_value;
+  struct watchpoint_node *next;
+} wp_t;
+
 #endif
