@@ -16,8 +16,8 @@ static void *breakpoint_next(bool next, bool *type) {
     if (cur_bp == NULL && cur_wp == NULL) {
       return NULL;
     }
-    //                   true              false       false         true
-    *type = cur_bp == NULL ?true: cur_wp == NULL ? 0: cur_bp->NO > cur_wp->NO;
+    //                    true                false       false         true
+    *type = cur_bp == NULL ? 1 : cur_wp == NULL ? 0: cur_bp->NO > cur_wp->NO;
     if (*type) {
       void *ret = cur_wp;
       cur_wp = cur_wp->next;
@@ -71,17 +71,20 @@ bool delete_breakpoint(int n) {
 #undef find_in_list
 }
 
+static inline void print_breakpoint(bp_t *bp) {
+}
+static inline void print_watchpoint(wp_t *wp) {
+}
+
 void print_all_breakpoints() {
   breakpoint_next(0, NULL);
   bool type;
-  while (breakpoint_next(1, &type)) {
-    if (type) {
-      bp_t *bp = (bp_t *)breakpoint_next(1, &type);
-      printf("Breakpoint %d at 0x%08x\n", bp->NO, bp->addr);
-    } else {
-      wp_t *wp = (wp_t *)breakpoint_next(1, &type);
-      printf("Watchpoint %d, %s\n", wp->NO, wp->expr);
-    }
+  void *cur;
+  while ((cur = breakpoint_next(1, &type)) != NULL) {
+    if (type == false)
+      print_breakpoint(cur);
+    else
+      print_watchpoint(cur);
   }
 }
 
