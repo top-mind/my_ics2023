@@ -391,8 +391,7 @@ eval_t expr(char *e) {
   return eval(g_rpn, nr_g_rpn);
 }
 
-/* For compatibility with nemu's breakpoint no newlines are printed.
- * breakpoint.c knows everything but the meaning of the value.
+/* nemu's info command require a no-newline output.
  */
 void peval(eval_t ev) {
   switch (ev.type) {
