@@ -71,9 +71,7 @@ void trace_display() {
 }
 
 void print_fail_msg() {
-#ifdef CONFIG_FTRACE
-  ftrace_flush();
-#endif
+  MUXDEF(CONFIG_FTRACE, ftrace_flush(), );
   isa_reg_display();
   trace_display();
   statistic();
