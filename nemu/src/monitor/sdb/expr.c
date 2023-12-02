@@ -286,7 +286,7 @@ static int compile_token(int l, int r) {
  * return: rpn_t array
  * If failed, or the expression is empty, return NULL
  */
-static rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
+static rpn_t *exprcomp0(char *e, size_t *p_nr_rpn) {
   size_t null;
   if (p_nr_rpn == NULL) p_nr_rpn = &null;
   p_expr = e;
@@ -303,8 +303,8 @@ static rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
  * return: rpn_t array
  * If failed, or the expression is empty, return NULL
  */
-rpn_t *exprcomp_r(char *e, size_t *p_nr_rpn) {
-  if (exprcomp(e, p_nr_rpn) == NULL) return NULL;
+rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
+  if (exprcomp0(e, p_nr_rpn) == NULL) return NULL;
   rpn_t *rpn = (rpn_t *)malloc(sizeof(rpn_t) * nr_g_rpn);
   memcpy(rpn, g_rpn, sizeof(rpn_t) * nr_g_rpn);
   return rpn;
@@ -383,7 +383,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
 
 eval_t expr(char *e) {
   Assert(e, REPORTBUG);
-  if (!exprcomp(e, NULL)) return (eval_t){0, EV_SYNTAX};
+  if (!exprcomp0(e, NULL)) return (eval_t){0, EV_SYNTAX};
   return eval(g_rpn, nr_g_rpn);
 }
 

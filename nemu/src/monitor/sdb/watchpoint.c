@@ -45,7 +45,7 @@ void wp_delete_all() {
 int new_wp(char *hint) {
   WP *r = free_;
   if (r != NULL) {
-    r->rpn = exprcomp_r(hint, &r->nr_rpn);
+    r->rpn = exprcomp(hint, &r->nr_rpn);
     if (r->rpn == NULL) return -1;
     r->old_value = eval(r->rpn, r->nr_rpn);
     r->hint = (char *)malloc(strlen(hint) + 1);
