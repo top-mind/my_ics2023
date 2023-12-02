@@ -168,7 +168,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_tailcall) {
     ras_tailcall = false;
   } else {
-    ftrace_flush();
+    // ftrace_flush();
     printf("%*.s", ras_depth * 2, "");
     printf("} /* %s */\n", f_name);
   }
