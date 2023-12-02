@@ -109,24 +109,51 @@ void irtrace_print(uint64_t total) {
 static int ras_depth = 0;
 static bool ras_tailcall = false;
 static paddr_t ras_lastpc = 0;
-static paddr_t ras_nr_repeat = 0;
+static int ras_nr_repeat = 0;
 
-void ftrace_push(vaddr_t pc, vaddr_t dnpc) {
-  if (ras_tailcall) printf(" {\n");
-  ras_tailcall = true;
-  printf("%*.s", (ras_depth++) * 2, "");
+void ftrace_flush() {
+  if (ras_nr_repeat > 0) {
+    printf("; /* repeated %d times */\n", ras_nr_repeat);
+    ras_nr_repeat = 0;
+  }
+  ras_lastpc = 0;
+}
+
+static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   char *f_name;
   uintN_t f_off;
-  elf_getname_and_offset(dnpc, &f_name, &f_off);
+  printf("%*.s", depth * 2, "");
+  elf_getname_and_offset(pc, &f_name, &f_off);
   printf("%s", f_name);
   if (f_off != 0 && ELF_OFFSET_VALID(f_off))
     printf("+0x%lx", (unsigned long) f_off);
   if (!ELF_OFFSET_VALID(f_off))
-    printf("[" FMT_PADDR "]", dnpc);
+    printf("[" FMT_PADDR "]", pc);
   printf("()");
 }
 
-void ftrace_pop(vaddr_t pc, vaddr_t dnpc) {
+void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
+  bool need_minus_nr_repeat, need_print_old, need_print_new;
+  need_print_old = need_minus_nr_repeat = ras_tailcall;
+  need_print_new = ras_tailcall || dnpc != ras_lastpc || ras_nr_repeat == 0;
+  // The last condition is necessary. Consider lastpc being initially a function entry.
+  // That is, the first call is ((void (*)())0)()
+  // flush
+  if (need_minus_nr_repeat) ras_nr_repeat--;
+  ftrace_flush();
+  // print old
+  if (need_print_old)
+    ftrace_push_printfunc(ras_lastpc, ras_depth);
+  // print new
+  if (need_print_new)
+    ftrace_push_printfunc(dnpc, ras_depth++);
+  // update
+  if (need_print_new) ras_lastpc = dnpc, ras_nr_repeat = 1;
+  else ras_nr_repeat++;
+  ras_tailcall = true;
+}
+
+void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
   char *f_name;
@@ -135,19 +162,11 @@ void ftrace_pop(vaddr_t pc, vaddr_t dnpc) {
 
   if (ras_tailcall) {
     ras_tailcall = false;
-    if (ras_lastpc == pc - f_off) {
-      ras_nr_repeat++;
-    } else {
-      ras_lastpc = pc - f_off;
-      ras_nr_repeat = 0;
-    }
-    printf(";\n");
   } else {
+    ftrace_flush();
     printf("%*.s", ras_depth * 2, "");
     printf("} /* %s */\n", f_name);
   }
 }
 
-void ftrace_flush() {
-}
 #endif
