@@ -71,7 +71,9 @@ void trace_display() {
 }
 
 void print_fail_msg() {
+#ifdef CONFIG_FTRACE
   ftrace_flush();
+#endif
   isa_reg_display();
   trace_display();
   statistic();
@@ -79,8 +81,9 @@ void print_fail_msg() {
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
-  // TODO tell the trace system N.
+#ifdef CONFIG_TRACE
   trace_set_itrace_stdout(n < MAX_INST_TO_PRINT);
+#endif
   switch (nemu_state.state) {
     case NEMU_END:
     case NEMU_ABORT:
