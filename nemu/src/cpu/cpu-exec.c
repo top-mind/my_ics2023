@@ -94,7 +94,7 @@ void cpu_exec(uint64_t n) {
 
   execute(n);
 
-  MUXDEF(CONFIG_FTRACE, ftrace_flush(),);
+  MUXDEF(CONFIG_FTRACE, ftrace_flush(), );
 
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
