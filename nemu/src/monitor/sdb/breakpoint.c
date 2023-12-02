@@ -39,7 +39,7 @@ int create_watchpoint(char *e) {
 
 static inline void free_bp_t(void *e) {}
 
-static inline void free_wp_t(void *e) {
+static inline void free_wp_t(wp_t *e) {
   free(((wp_t *)e)->expr);
   free(((wp_t *)e)->rpn);
 }
