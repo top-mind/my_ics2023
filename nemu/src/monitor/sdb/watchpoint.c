@@ -85,7 +85,9 @@ bool wp_delete(int n) {
 void print_wp() {
   puts("Num\tValue\t\tWhat");
   for (WP *wp = head; wp != NULL; wp = wp->next) {
-    printf("%d\t" FMT_WORD "\t%s\n", wp->NO, wp->old_value.value, wp->hint);
+    printf("%d\t", wp->NO);
+    peval(wp->old_value);
+    printf("%s\n", wp->hint);
     if (wp->hit) { printf("\thit %zd times\n", wp->hit); }
   }
 }
