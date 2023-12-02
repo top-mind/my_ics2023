@@ -45,21 +45,23 @@ static inline void free_wp_t(void *e) {
 }
 
 bool delete_breakpoint(int n) {
-#define delete0(type, target) ({ \
-  type *tmp = (type *)target->next; \
-  target->next = tmp == target ? NULL : tmp->next; \
-  (void *)tmp; })
+#define delete0(type, target)                        \
+  ({                                                 \
+    type *tmp = (type *)target->next;                \
+    target->next = tmp == target ? NULL : tmp->next; \
+    (void *)tmp;                                     \
+  })
 
-#define find_in_list(type, head)          \
-  do {                                    \
-    if (head == NULL) { break ; }         \
-    type *cur = head; \
-    do { \
-      if (cur->next->NO == n) { \
+#define find_in_list(type, head)                 \
+  do {                                           \
+    if (head == NULL) { break; }                 \
+    type *cur = head;                            \
+    do {                                         \
+      if (cur->next->NO == n) {                  \
         concat(free_, type)(delete0(type, cur)); \
-        return 1; \
-      }  \
-    } while ((cur = cur->next) != head); \
+        return 1;                                \
+      }                                          \
+    } while ((cur = cur->next) != head);         \
   } while (0)
 
   find_in_list(bp_t, head_bp);
