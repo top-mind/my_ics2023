@@ -71,6 +71,7 @@ void trace_display() {
 }
 
 void print_fail_msg() {
+  ftrace_flush();
   isa_reg_display();
   trace_display();
   statistic();

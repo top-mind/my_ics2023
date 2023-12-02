@@ -140,21 +140,20 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   need_print_new = ras_tailcall || dnpc != ras_lastpc || ras_nr_repeat == 0;
   // The last condition is necessary. Consider lastpc being initially a function entry.
   // That is, the first call is ((void (*)())0)()
+
   // flush
   if (need_minus_nr_repeat) ras_nr_repeat--;
-  if (need_print_new)
-    ftrace_flush();
+  if (need_print_new) ftrace_flush();
   // print old
-  if (need_print_old)
-    ftrace_push_printfunc(ras_lastpc, ras_depth);
-  if (need_print_lbrace)
-    printf(" {\n");
+  if (need_print_old) ftrace_push_printfunc(ras_lastpc, ras_depth);
+  if (need_print_lbrace) printf(" {\n");
   // print new
-  if (need_print_new)
-    ftrace_push_printfunc(dnpc, ras_depth);
+  if (need_print_new) ftrace_push_printfunc(dnpc, ras_depth);
   // update
-  if (need_print_new) ras_lastpc = dnpc, ras_nr_repeat = 1;
-  else ras_nr_repeat++;
+  if (need_print_new)
+    ras_lastpc = dnpc, ras_nr_repeat = 1;
+  else
+    ras_nr_repeat++;
   ras_depth++;
   ras_tailcall = true;
 }
