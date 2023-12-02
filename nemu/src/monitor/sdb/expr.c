@@ -299,9 +299,10 @@ static rpn_t *exprcomp0(char *e, size_t *p_nr_rpn) {
   return nr_g_rpn == 0 ? NULL : g_rpn;
 }
 
-/* Same as exprcomp, but return a copy of rpn_t array
- * return: rpn_t array
+/* Compile expression to reverse polish notation.
+ * Return a copy of g_rpn.
  * If failed, or the expression is empty, return NULL
+ * If you just want to evaluate the expression, use expr() instead.
  */
 rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
   if (exprcomp0(e, p_nr_rpn) == NULL) return NULL;
@@ -381,12 +382,18 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
   return (eval_t){_value, EV_SUC};
 }
 
+/* Evaluate expression
+ * This is a wrapper of exprcomp() and eval().
+ */
 eval_t expr(char *e) {
   Assert(e, REPORTBUG);
   if (!exprcomp0(e, NULL)) return (eval_t){0, EV_SYNTAX};
   return eval(g_rpn, nr_g_rpn);
 }
 
+/* For compatibility with nemu's breakpoint no newlines are printed.
+ * breakpoint.c knows everything but the meaning of the value.
+ */
 void peval(eval_t ev) {
   switch (ev.type) {
     case EV_SUC: printf(FMT_WORD, ev.value); break;
