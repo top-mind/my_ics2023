@@ -44,8 +44,8 @@ typedef struct _watchpoint {
   struct _watchpoint *next;
 } WP;
 
+// for expression evaluation
 eval_t expr(char *e);
-rpn_t *exprcomp(char *e, size_t *);
 rpn_t *exprcomp_r(char *e, size_t *);
 eval_t eval(const rpn_t *, size_t);
 void peval(eval_t);

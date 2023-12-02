@@ -235,10 +235,6 @@ static bool make_token(char *e) {
   return true;
 }
 
-/* Compile expression to reverse polish notation
- * return: array length
- * If failed, or the expression is empty, return 0
- */
 #define ESYNTAX(pos)                                                                       \
   do {                                                                                     \
     printf("Syntax error near `%s'", pos < nr_token ? p_expr + tokens[pos].position : ""); \
@@ -249,6 +245,10 @@ static bool make_token(char *e) {
     printf("Expression too long (atoms and operators in stack)."); \
     return 0;                                                      \
   } while (0)
+/* Compile expression to reverse polish notation
+ * return: array length
+ * If failed, or the expression is empty, return 0
+ */
 static int compile_token(int l, int r) {
   if (l > r) ESYNTAX(l);
   if (nr_g_rpn >= ARRLEN(g_rpn)) ETOOLONG;
@@ -286,7 +286,7 @@ static int compile_token(int l, int r) {
  * return: rpn_t array
  * If failed, or the expression is empty, return NULL
  */
-rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
+static rpn_t *exprcomp(char *e, size_t *p_nr_rpn) {
   size_t null;
   if (p_nr_rpn == NULL) p_nr_rpn = &null;
   p_expr = e;
