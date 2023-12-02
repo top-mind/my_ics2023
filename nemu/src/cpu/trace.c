@@ -134,9 +134,9 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
 }
 
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
-  bool need_minus_nr_repeat, need_print_old, need_print_new;
+  bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
-  need_minus_nr_repeat = ras_tailcall;
+  need_minus_nr_repeat = need_print_lbrace = ras_tailcall;
   need_print_new = ras_tailcall || dnpc != ras_lastpc || ras_nr_repeat == 0;
   // The last condition is necessary. Consider lastpc being initially a function entry.
   // That is, the first call is ((void (*)())0)()
@@ -144,10 +144,10 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (need_minus_nr_repeat) ras_nr_repeat--;
   ftrace_flush();
   // print old
-  if (need_print_old) {
+  if (need_print_old)
     ftrace_push_printfunc(ras_lastpc, ras_depth);
+  if (need_print_lbrace)
     printf(" {\n");
-  }
   // print new
   if (need_print_new)
     ftrace_push_printfunc(dnpc, ras_depth++);
