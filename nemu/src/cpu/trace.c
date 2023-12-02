@@ -130,6 +130,7 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   if (!ELF_OFFSET_VALID(f_off))
     printf("[" FMT_PADDR "]", pc);
   printf("()");
+  fflush(stdout);
 }
 
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
