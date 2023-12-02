@@ -142,8 +142,10 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (need_minus_nr_repeat) ras_nr_repeat--;
   ftrace_flush();
   // print old
-  if (need_print_old)
+  if (need_print_old) {
     ftrace_push_printfunc(ras_lastpc, ras_depth);
+    printf(" {\n");
+  }
   // print new
   if (need_print_new)
     ftrace_push_printfunc(dnpc, ras_depth++);
