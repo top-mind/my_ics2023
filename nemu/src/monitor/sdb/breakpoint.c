@@ -37,10 +37,11 @@ int create_watchpoint(char *e) {
   return 0;
 }
 
-static void free_bp_t(void *e) {
-}
+static inline void free_bp_t(void *e) {}
 
-static void free_wp_t(void *e) {
+static inline void free_wp_t(void *e) {
+  free(((wp_t *)e)->expr);
+  free(((wp_t *)e)->rpn);
 }
 
 bool delete_breakpoint(int n) {
