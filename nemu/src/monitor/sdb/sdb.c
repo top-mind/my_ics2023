@@ -263,6 +263,7 @@ static int cmd_x(char *args) {
   eval_t res = expr(endptr + 1);
   if (res.type != EV_SUC) {
     peval(res);
+    puts("");
     return 0;
   }
   word_t addr_begin = res.value;
