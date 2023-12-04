@@ -54,7 +54,9 @@ int create_breakpoint(char *e) {
     } while(cur != head_bp);
     bp_t *t = create0(bp_t, head_bp, .addr = addr, .duplicate = duplicate);
     if (!duplicate) {
-      t->raw_instr = paddr_read(addr, sizeof ((bp_t *)0)->raw_instr);
+      int size = sizeof ((bp_t *)0)->raw_instr;
+      t->raw_instr = paddr_read(addr, size);
+      paddr_write(addr, size, breakpoint_instruction);
     }
     return nr_breakpoints;
   } else {

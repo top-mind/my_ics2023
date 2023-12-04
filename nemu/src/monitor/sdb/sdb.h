@@ -69,4 +69,9 @@ typedef struct watchpoint_node {
   eval_t old_value;
   struct watchpoint_node *next;
 } wp_t;
+
+#define breakpoint_instruction \
+  MUXDEF(CONFIG_ISA_x86, 0xcc, \
+  MUXDEF(CONFIG_ISA_mips32, 0x0005000d, \
+  MUXDEF(CONFIG_ISA_riscv, 0x00100073, )))
 #endif
