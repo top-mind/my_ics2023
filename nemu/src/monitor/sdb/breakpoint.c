@@ -127,6 +127,10 @@ void print_all_breakpoints() {
 }
 
 void print_watchpoints() {
+  wp_t *cur = head_wp;
+  do {
+    print_watchpoint(cur);
+  } while ((cur = cur->next) != head_wp);
 }
 
 void free_all_breakpoints() {
