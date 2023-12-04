@@ -17,6 +17,8 @@
 #define __UTILS_H__
 
 #include <common.h>
+// xmalloc
+void *xmalloc(size_t size);
 
 // ----------- state -----------
 

@@ -13,5 +13,6 @@ typedef uint32_t uintN_t;
 
 #define ELF_OFFSET_VALID(x) (~x)
 void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset);
+uintN_t elf_getaddr(char *name);
 
 #endif

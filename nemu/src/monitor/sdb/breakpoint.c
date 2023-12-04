@@ -1,9 +1,11 @@
 #include "memory/host.h"
 #include "memory/paddr.h"
 #include "sdb.h"
+#include "elf-def.h"
 
 bp_t *head_bp;
 wp_t *head_wp;
+size_t nr_breakpoints;
 
 static void *breakpoint_next(bool next, bool *type) {
   static bp_t *cur_bp = NULL;
@@ -30,10 +32,43 @@ static void *breakpoint_next(bool next, bool *type) {
   }
 }
 
+#define create0(type, head, ...) \
+  ({                        \
+   type *old = malloc(sizeof(type)); \
+   type *target = head; \
+   *old = *head; \
+   *head = (type){.NO = ++nr_breakpoints, .next = old, __VA_ARGS__}; \
+   head = old; \
+   target; \
+  })
 int create_breakpoint(char *e) {
+  uintN_t addr = elf_getaddr(e);
+  if (ELF_OFFSET_VALID(addr)) {
+    // test if already exists
+    bool duplicate = false;
+    bp_t *cur = head_bp;
+    do {
+      if (cur->addr == addr) {
+        duplicate = true;
+        break;
+      }
+    } while(cur != head_bp);
+    bp_t *t = create0(bp_t, head_bp, .addr = addr, .duplicate = duplicate);
+    if (!duplicate) {
+      t->raw_instr = paddr_read(addr, sizeof ((bp_t *)0)->raw_instr);
+    }
+    return nr_breakpoints;
+  }
   return 0;
 }
+
 int create_watchpoint(char *e) {
+  rpn_t *rpn;
+  size_t nr_rpn;
+  if ((rpn = exprcomp(e, &nr_rpn)) == NULL)
+    return 0;
+  create0(wp_t, head_wp, .expr = savestring(e), .rpn = rpn, .nr_rpn = nr_rpn,
+          .old_value = eval(rpn, nr_rpn));
   return 0;
 }
 
@@ -46,7 +81,7 @@ static inline void free_wp_t(wp_t *e) {
 
 bool delete_breakpoint(int n) {
 #define delete0(type, target)                        \
-  ({                                                 \
+  ({                                                  \
     type *tmp = (type *)target->next;                \
     target->next = tmp == target ? NULL : tmp->next; \
     (void *)tmp;                                     \
@@ -89,4 +124,18 @@ void print_all_breakpoints() {
 }
 
 void print_watchpoints() {
+}
+
+void free_all_breakpoints() {
+  breakpoint_next(0, NULL);
+  bool type;
+  void *cur;
+  while ((cur = breakpoint_next(1, &type)) != NULL) {
+    if (type == false)
+      free_bp_t(cur);
+    else
+      free_wp_t(cur);
+  }
+  head_bp = NULL;
+  head_wp = NULL;
 }

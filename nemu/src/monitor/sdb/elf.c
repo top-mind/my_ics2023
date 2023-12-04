@@ -120,3 +120,9 @@ void elf_getname_and_offset(uintN_t addr, char **name, uintN_t *offset) {
   *name = name_unk;
   *offset = -1;
 }
+
+uintN_t elf_getaddr(char *name) {
+  for (int i = 0; i < nr_sym; i++)
+    if (strcmp(syms[i].name, name) == 0) return syms[i].addr;
+  return -1;
+}
