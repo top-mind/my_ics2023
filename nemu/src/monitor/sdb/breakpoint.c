@@ -35,8 +35,8 @@ static void *breakpoint_next(bool next, bool *type) {
 #define create0(type, head, ...) \
   ({                        \
    type *old = malloc(sizeof(type)); \
-   type *target = head; \
-   *old = *head; \
+   type *target; \
+   if (head == NULL) target = head = old; else target = head, *old = *head; \
    *head = (type){.NO = ++nr_breakpoints, .next = old, __VA_ARGS__}; \
    head = old; \
    target; \
