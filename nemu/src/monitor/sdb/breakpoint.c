@@ -80,10 +80,11 @@ static inline void free_wp_t(wp_t *e) {
 }
 
 bool delete_breakpoint(int n) {
-#define delete0(type, target)                        \
-  ({                                                  \
+#define delete0(type, head, target)                        \
+  ({                                                 \
     type *tmp = (type *)target->next;                \
     target->next = tmp == target ? NULL : tmp->next; \
+    if (head == target) head = target->next;         \
     (void *)tmp;                                     \
   })
 
@@ -93,7 +94,7 @@ bool delete_breakpoint(int n) {
     type *cur = head;                            \
     do {                                         \
       if (cur->next->NO == n) {                  \
-        concat(free_, type)(delete0(type, cur)); \
+        concat(free_, type)(delete0(type, head, cur)); \
         return 1;                                \
       }                                          \
     } while ((cur = cur->next) != head);         \
