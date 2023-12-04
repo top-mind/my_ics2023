@@ -58,6 +58,8 @@ int create_breakpoint(char *e) {
       t->raw_instr = paddr_read(addr, sizeof ((bp_t *)0)->raw_instr);
     }
     return nr_breakpoints;
+  } else {
+    printf("No symbol %s in elf file(s)", e);
   }
   return 0;
 }

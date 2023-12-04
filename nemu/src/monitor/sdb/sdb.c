@@ -110,7 +110,7 @@ static int cmd_b(char *args) {
     return 0;
   }
   int n = create_breakpoint(args);
-  if (n >= 0)
+  if (n > 0)
     printf("bp: %d: %s\n", n, args);
   return 0;
 }
