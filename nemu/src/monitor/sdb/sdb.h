@@ -18,7 +18,11 @@
 
 #include <cpu/decode.h>
 #include <common.h>
+
+// elf
 #include <elf-def.h>
+
+// expr
 typedef struct {
   int type;
   union {
@@ -34,24 +38,12 @@ typedef struct eval_t {
   eval_state type;
 } eval_t;
 
-typedef struct _watchpoint {
-  int NO;
-  rpn_t *rpn;
-  size_t nr_rpn;
-  eval_t old_value;
-  char *hint;
-  size_t hit;
-  struct _watchpoint *next;
-} WP;
-
-// for expression evaluation
 eval_t expr(char *e);
 rpn_t *exprcomp(char *e, size_t *);
 eval_t eval(const rpn_t *, size_t);
 void peval(eval_t);
 
-// for breakpoints
-
+// breakpoints
 int create_breakpoint(char *e);
 int create_watchpoint(char *e);
 
@@ -77,5 +69,4 @@ typedef struct watchpoint_node {
   eval_t old_value;
   struct watchpoint_node *next;
 } wp_t;
-
 #endif

@@ -78,7 +78,7 @@ static int cmd_p(char *args) {
   if (strcmp(args, "$pc") == 0) {
     printf(FMT_PADDR, cpu.pc);
     char *f_name;
-    uintN_t f_off;
+    Elf_Off f_off;
     elf_getname_and_offset(cpu.pc, &f_name, &f_off);
     if (ELF_OFFSET_VALID(f_off))
       printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
@@ -92,7 +92,7 @@ static int cmd_p(char *args) {
       printf(" ");
       printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
       char *f_name;
-      uintN_t f_off;
+      Elf_Off f_off;
       elf_getname_and_offset(result.value, &f_name, &f_off);
       if (ELF_OFFSET_VALID(f_off)) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
       printf("\n");

@@ -1,7 +1,6 @@
 #include "memory/host.h"
 #include "memory/paddr.h"
 #include "sdb.h"
-#include "elf-def.h"
 
 bp_t *head_bp;
 wp_t *head_wp;
@@ -42,7 +41,7 @@ static void *breakpoint_next(bool next, bool *type) {
    target; \
   })
 int create_breakpoint(char *e) {
-  uintN_t addr = elf_getaddr(e);
+  Elf_Addr addr = elf_find_func_byname(e);
   if (ELF_OFFSET_VALID(addr)) {
     // test if already exists
     bool duplicate = false;

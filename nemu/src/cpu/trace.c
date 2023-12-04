@@ -120,7 +120,7 @@ void ftrace_flush() {
 
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   char *f_name;
-  uintN_t f_off;
+  Elf_Off f_off;
   printf("%*.s", depth * 2, "");
   elf_getname_and_offset(pc, &f_name, &f_off);
   printf("%s", f_name);
@@ -165,7 +165,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
   char *f_name;
-  uintN_t f_off;
+  Elf_Off f_off;
   elf_getname_and_offset(pc, &f_name, &f_off);
 
   if (ras_tailcall) {
