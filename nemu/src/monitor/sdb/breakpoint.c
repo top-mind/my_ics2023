@@ -69,7 +69,7 @@ int create_watchpoint(char *e) {
     return 0;
   create0(wp_t, head_wp, .expr = savestring(e), .rpn = rpn, .nr_rpn = nr_rpn,
           .old_value = eval(rpn, nr_rpn));
-  return 0;
+  return nr_breakpoints;
 }
 
 static inline void free_bp_t(void *e) {}
@@ -107,8 +107,10 @@ bool delete_breakpoint(int n) {
 }
 
 static inline void print_breakpoint(bp_t *bp) {
+  printf("breakpoint %d at " FMT_PADDR "\n", bp->NO, bp->addr);
 }
 static inline void print_watchpoint(wp_t *wp) {
+  printf("watchpoint %d, is `%s'\n", wp->NO, wp->expr);
 }
 
 void print_all_breakpoints() {
