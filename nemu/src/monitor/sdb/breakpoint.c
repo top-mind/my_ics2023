@@ -58,7 +58,7 @@ int create_breakpoint(char *e) {
     }
     return nr_breakpoints;
   } else {
-    printf("No symbol %s in elf file(s)", e);
+    printf("No symbol %s\n", e);
   }
   return 0;
 }
