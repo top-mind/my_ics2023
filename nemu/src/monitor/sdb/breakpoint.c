@@ -67,9 +67,8 @@ int create_watchpoint(char *e) {
   size_t nr_rpn;
   if ((rpn = exprcomp(e, &nr_rpn)) == NULL)
     return 0;
-  // create0(wp_t, head_wp, .expr = savestring(e), .rpn = rpn, .nr_rpn = nr_rpn,
-  //         .old_value = eval(rpn, nr_rpn));
-  create0(wp_t, head_wp, );
+  create0(wp_t, head_wp, .expr = savestring(e), .rpn = rpn, .nr_rpn = nr_rpn,
+          .old_value = eval(rpn, nr_rpn));
   return nr_breakpoints;
 }
 
