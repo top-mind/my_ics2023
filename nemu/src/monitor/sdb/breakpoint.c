@@ -84,7 +84,7 @@ bool delete_breakpoint(int n) {
   ({                                                 \
     type *tmp = (type *)target->next;                \
     target->next = tmp == target ? NULL : tmp->next; \
-    if (head == target) head = target->next;         \
+    if (head == tmp) head = target->next;         \
     (void *)tmp;                                     \
   })
 
