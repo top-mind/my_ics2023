@@ -44,6 +44,7 @@ eval_t eval(const rpn_t *, size_t);
 void peval(eval_t);
 
 // breakpoints
+void init_breakpoints();
 int create_breakpoint(char *e);
 int create_watchpoint(char *e);
 
@@ -52,23 +53,6 @@ bool delete_watchpoint(int n);
 
 void print_all_breakpoints();
 void print_watchpoints();
-
-typedef struct breakpoint_node {
-  int NO;
-  paddr_t addr;
-  MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
-  bool duplicate;
-  struct breakpoint_node *next;
-} bp_t;
-
-typedef struct watchpoint_node {
-  int NO;
-  char *expr;
-  rpn_t *rpn;
-  size_t nr_rpn;
-  eval_t old_value;
-  struct watchpoint_node *next;
-} wp_t;
 
 #define breakpoint_instruction \
   MUXDEF(CONFIG_ISA_x86, 0xcc, \

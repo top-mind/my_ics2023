@@ -1,78 +1,72 @@
-#include "memory/host.h"
-#include "memory/paddr.h"
+#include <elf-def.h>
+#include <memory/host.h>
+#include <memory/paddr.h>
 #include "sdb.h"
+#include <limits.h>
 
-bp_t *head_bp;
-wp_t *head_wp;
+typedef struct breakpoint_node {
+  struct breakpoint_node *prev, *next;
+  unsigned NO;
+  bool duplicate;
+  paddr_t addr;
+  MUXDEF(CONFIG_ISA_x86, uint8_t, uint32_t) raw_instr;
+} bp_t;
+
+typedef struct watchpoint_node {
+  struct watchpoint_node *prev, *next;
+  unsigned NO;
+  char *expr;
+  rpn_t *rpn;
+  size_t nr_rpn;
+  eval_t old_value;
+} wp_t;
+
+static bp_t *bp_nil;
+static wp_t *wp_nil;
+
 size_t nr_breakpoints;
 
-static void *breakpoint_next(bool next, bool *type) {
-  static bp_t *cur_bp = NULL;
-  static wp_t *cur_wp = NULL;
-  if (!next) {
-    cur_bp = head_bp;
-    cur_wp = head_wp;
-    return NULL;
-  } else {
-    if (cur_bp == NULL && cur_wp == NULL) {
-      return NULL;
-    }
-    //                    true                false       false         true
-    *type = cur_bp == NULL ? 1 : cur_wp == NULL ? 0: cur_bp->NO > cur_wp->NO;
-    if (*type) {
-      void *ret = cur_wp;
-      cur_wp = cur_wp->next;
-      return ret;
-    } else {
-      void *ret = cur_bp;
-      cur_bp = cur_bp->next;
-      return ret;
-    }
-  }
-}
+#define insert_before0(type, pos, ...)                                                \
+  do {                                                                                \
+    type *_p = malloc(sizeof(type));                                                  \
+    *_p = (type){.NO = ++nr_breakpoints, .prev = pos->prev, .next = pos, __VA_ARGS__}; \
+    pos->prev->next = _p;                                                             \
+    pos->prev = _p;                                                                   \
+  } while (0);
 
-#define create0(type, head, ...) \
-  ({                        \
-   type *old = malloc(sizeof(type)); \
-   type *target; \
-   if (head == NULL) target = head = old; else target = head, *old = *head; \
-   *head = (type){.NO = ++nr_breakpoints, .next = old, __VA_ARGS__}; \
-   head = old; \
-   target; \
-  })
+#define FOR_BREAKPOINTS(bp) \
+  for (bp_t *bp = bp_nil->next; bp != bp_nil; bp = bp->next)
+
+#define FOR_WATCHPOINTS(wp) \
+  for (wp_t *wp = wp_nil->next; wp != wp_nil; wp = wp->next)
+
 int create_breakpoint(char *e) {
   Elf_Addr addr = elf_find_func_byname(e);
-  if (ELF_OFFSET_VALID(addr)) {
-    // test if already exists
+  if (ELF_ADDR_VALID(addr)) {
     bool duplicate = false;
-    bp_t *cur = head_bp;
-    do {
-      if (cur->addr == addr) {
+    FOR_BREAKPOINTS(bp) {
+      if (bp->addr == addr) {
         duplicate = true;
         break;
       }
-    } while(cur != head_bp);
-    bp_t *t = create0(bp_t, head_bp, .addr = addr, .duplicate = duplicate);
-    if (!duplicate) {
-      int size = sizeof ((bp_t *)0)->raw_instr;
-      t->raw_instr = paddr_read(addr, size);
-      paddr_write(addr, size, breakpoint_instruction);
     }
-    return nr_breakpoints;
-  } else {
-    printf("No symbol %s\n", e);
+    uint64_t raw_instr = 0;
+    if (!duplicate) {
+      if (!in_pmem(addr)) {
+        printf("Cannot insert breakpoint at %lx\n", (long) addr);
+        return 0;
+      }
+      int size = sizeof ((bp_t *)0)->raw_instr;
+      raw_instr = host_read(guest_to_host(addr), size);
+      host_write(guest_to_host(addr), size, breakpoint_instruction);
+    }
+    insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
   }
   return 0;
 }
 
 int create_watchpoint(char *e) {
-  rpn_t *rpn;
-  size_t nr_rpn;
-  if ((rpn = exprcomp(e, &nr_rpn)) == NULL)
-    return 0;
-  create0(wp_t, head_wp, .expr = savestring(e), .rpn = rpn, .nr_rpn = nr_rpn,
-          .old_value = eval(rpn, nr_rpn));
-  return nr_breakpoints;
+  return 0;
 }
 
 static inline void free_bp_t(void *e) {}
@@ -83,69 +77,42 @@ static inline void free_wp_t(wp_t *e) {
 }
 
 bool delete_breakpoint(int n) {
-#define delete0(type, head, target)                        \
-  ({                                                 \
-    type *tmp = (type *)target->next;                \
-    target->next = tmp == target ? NULL : tmp->next; \
-    if (head == tmp) head = target->next;         \
-    (void *)tmp;                                     \
-  })
-
-#define find_in_list(type, head)                 \
-  do {                                           \
-    if (head == NULL) { break; }                 \
-    type *cur = head;                            \
-    do {                                         \
-      if (cur->next->NO == n) {                  \
-        concat(free_, type)(delete0(type, head, cur)); \
-        return 1;                                \
-      }                                          \
-    } while ((cur = cur->next) != head);         \
-  } while (0)
-
-  find_in_list(bp_t, head_bp);
-  find_in_list(wp_t, head_wp);
-  return 0;
-#undef delete0
-#undef find_in_list
+  return false;
 }
 
-static inline void print_breakpoint(bp_t *bp) {
-  printf("breakpoint %d at " FMT_PADDR "\n", bp->NO, bp->addr);
+void print_breakpoints() {
+  FOR_BREAKPOINTS(bp) {
+    printf("breakpoint %u at " FMT_PADDR "\n", bp->NO, bp->addr);
+  }
 }
-static inline void print_watchpoint(wp_t *wp) {
-  printf("watchpoint %d, is `%s'\n", wp->NO, wp->expr);
-}
-
-void print_all_breakpoints() {
-  breakpoint_next(0, NULL);
-  bool type;
-  void *cur;
-  while ((cur = breakpoint_next(1, &type)) != NULL) {
-    if (type == false)
-      print_breakpoint(cur);
-    else
-      print_watchpoint(cur);
+void print_watchpoints() {
+  FOR_WATCHPOINTS(wp) {
+    printf("watchpoint %u, is `%s'\n", wp->NO, wp->expr);
   }
 }
 
-void print_watchpoints() {
-  wp_t *cur = head_wp;
-  do {
-    print_watchpoint(cur);
-  } while ((cur = cur->next) != head_wp);
+#define SORTED_FOR_ALL(bp, wp, flag)                                                 \
+  for (bp = bp_nil->next, wp = wp_nil->next, flag = bp->NO < wp->NO; \
+       bp != bp_nil || wp != wp_nil;                                                 \
+       (flag = bp->NO < wp->NO) ? (bp = bp->next, 0) : (wp = wp->next, 0))
+
+void init_breakpoints() {
+  bp_nil = malloc(sizeof(bp_t));
+  bp_nil->prev = bp_nil->next = bp_nil;
+  wp_nil = malloc(sizeof(wp_t));
+  wp_nil->prev = wp_nil->next = wp_nil;
+  bp_nil->NO = wp_nil->NO = UINT_MAX;
+  nr_breakpoints = 0;
 }
 
 void free_all_breakpoints() {
-  breakpoint_next(0, NULL);
-  bool type;
-  void *cur;
-  while ((cur = breakpoint_next(1, &type)) != NULL) {
-    if (type == false)
-      free_bp_t(cur);
+  bp_t *bp;
+  wp_t *wp;
+  int flag;
+  SORTED_FOR_ALL(bp, wp, flag) {
+    if (flag)
+      free_bp_t(bp);
     else
-      free_wp_t(cur);
+      free_wp_t(wp);
   }
-  head_bp = NULL;
-  head_wp = NULL;
 }
