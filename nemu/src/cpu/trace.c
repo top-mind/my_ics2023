@@ -186,7 +186,6 @@ void backtrace() {
 }
 
 void trace_init() {
-  printf("trace_init\n");
   ftrace_push(0, RESET_VECTOR);
 }
 
