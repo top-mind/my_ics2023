@@ -107,14 +107,14 @@ static int ras_depth = 0;
 paddr_t stk_func[8192];
 static int ras_nr_repeat = 0;
 
+
+#ifdef CONFIG_FTRACE_COND
 void ftrace_flush() {
   if (ras_nr_repeat > 0) {
     printf("; /* repeated %d times */\n", ras_nr_repeat);
     ras_nr_repeat = 0;
   }
 }
-
-#ifdef CONFIG_FTRACE_COND
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   char *f_name;
   Elf_Off f_off;
