@@ -197,7 +197,7 @@ void backtrace() {
     printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
     return;
   }
-  for (size_t i = 0; i < ras_depth; i--)
+  for (size_t i = 0; i < ras_depth; i++)
     print_frame(i);
 }
 
