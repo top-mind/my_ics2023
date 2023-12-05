@@ -27,6 +27,8 @@ static wp_t *wp_nil;
 
 size_t nr_breakpoints;
 
+static bool breakpoint_enable;
+
 #define LEN_BREAK_INST (sizeof ((bp_t *)0)->raw_instr)
 
 #define insert_before0(type, pos, ...)                                                 \
@@ -94,6 +96,7 @@ int create_watchpoint(char *e) {
 }
 
 void disable_breakpoints() {
+  breakpoint_enable = false;
   FOR_BREAKPOINTS(bp) {
     if (!bp->duplicate)
       host_write(guest_to_host(bp->addr), LEN_BREAK_INST, bp->raw_instr);
@@ -117,6 +120,7 @@ void watchpoints_notify() {
 }
 
 void enable_breakpoints() {
+  breakpoint_enable = 1;
   FOR_BREAKPOINTS(bp) {
     if (!bp->duplicate)
       host_write(guest_to_host(bp->addr), LEN_BREAK_INST, breakpoint_instruction);
@@ -191,6 +195,7 @@ void print_watchpoints() {
 }
 
 bool stop_at_breakpoint(vaddr_t pc) {
+  if (!breakpoint_enable) return 0;
   FOR_BREAKPOINTS(bp) {
     if (bp->addr == pc) {
       printf("hit breakpoint %u at " FMT_PADDR, bp->NO, bp->addr);

@@ -108,10 +108,14 @@ void cpu_exec(uint64_t n) {
                    bool stop_at_breakpoint(vaddr_t);
                    !stop_at_breakpoint(nemu_state.halt_pc);
                  }))) {
+#ifdef CONFIG_ISA_riscv
         nemu_state.state = NEMU_END;
         goto nemu_end;
+#elif defined(CONFIG_ISA_x86)
+#endif
+      } else {
+        cpu.pc = nemu_state.halt_pc;
       }
-      cpu.pc = nemu_state.halt_pc;
       break;
     case NEMU_ABORT:
       switch (nemu_state.halt_ret) {
