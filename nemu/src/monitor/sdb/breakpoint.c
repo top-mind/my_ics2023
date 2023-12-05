@@ -81,7 +81,7 @@ int create_watchpoint(char *e) {
   eval_t ev = eval(rpn, nr_rpn);
   insert_before0(wp_t, wp_nil, .expr = savestring(e), .nr_rpn = nr_rpn, .rpn = rpn,
                  .old_value = ev);
-  return 0;
+  return nr_breakpoints;
 }
 
 void disable_breakpoints() {
