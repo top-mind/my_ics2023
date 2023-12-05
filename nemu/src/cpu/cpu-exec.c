@@ -105,8 +105,8 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
     case NEMU_INT:
       if (MUXDEF(CONFIG_TARGET_AM, 1, ({
-                   bool stop_at_breakpoint(vaddr_t);
-                   !stop_at_breakpoint(nemu_state.halt_pc);
+                   bool breakpoint_notify(vaddr_t);
+                   !breakpoint_notify(nemu_state.halt_pc);
                  }))) {
 #ifdef CONFIG_ISA_riscv
         nemu_state.state = NEMU_END;
