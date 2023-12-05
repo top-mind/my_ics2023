@@ -227,7 +227,8 @@ static int cmd_info(char *args) {
   char *arg = strtok(NULL, " ");
   if (arg == NULL) {
     puts("info r  \tdisplay registers");
-    puts("info w  \tstatus watchpoints");
+    puts("info b  \tstatus of breakpoints");
+    puts("info w  \tstatus of watchpoints");
     puts("info h  \thistrory intructions");
   } else {
     if (strcmp(arg, "r") == 0) {
