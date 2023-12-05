@@ -42,7 +42,7 @@ static char *rl_gets() {
   } else {
     free(line_read);
   }
-  return prev_line_read;
+  return savestring(prev_line_read);
 }
 
 static int cmd_gdb(char *args) {
@@ -316,7 +316,7 @@ void sdb_mainloop() {
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
-    if (cmd == NULL) { continue; }
+    if (cmd == NULL) goto finally;
 
     /* treat the remaining string as the arguments,
      * which may need further parsing
@@ -338,6 +338,8 @@ void sdb_mainloop() {
     }
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
+finally:
+    free(str);
   }
 }
 
