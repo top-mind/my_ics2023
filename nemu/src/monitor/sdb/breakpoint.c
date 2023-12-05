@@ -46,14 +46,20 @@ int create_breakpoint(char *e) {
     bool duplicate = false;
     FOR_BREAKPOINTS(bp) {
       if (bp->addr == addr) {
-        duplicate = true;
-        break;
+        if (!duplicate) {
+          duplicate = true;
+          printf("Note: breakpoint %u", bp->NO);
+        } else {
+          printf(", %u", bp->NO);
+        }
       }
     }
     uint64_t raw_instr = 0;
-    if (!duplicate) {
+    if (duplicate) {
+      printf(" also set at pc 0x%lx", (long) addr);
+    } else {
       if (!in_pmem(addr)) {
-        printf("Cannot insert breakpoint at %lx\n", (long) addr);
+        printf("Cannot insert breakpoint at 0x%lx\n", (long) addr);
         return 0;
       }
       int size = sizeof ((bp_t *)0)->raw_instr;
@@ -61,11 +67,18 @@ int create_breakpoint(char *e) {
       host_write(guest_to_host(addr), size, breakpoint_instruction);
     }
     insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
+    return nr_breakpoints;
   }
   return 0;
 }
 
 int create_watchpoint(char *e) {
+  size_t nr_rpn;
+  rpn_t *rpn = exprcomp(e, &nr_rpn);
+  if (rpn == NULL) return 0;
+  eval_t ev = eval(rpn, nr_rpn);
+  insert_before0(wp_t, wp_nil, .expr = savestring(e), .nr_rpn = nr_rpn, .rpn = rpn,
+                 .old_value = ev);
   return 0;
 }
 
