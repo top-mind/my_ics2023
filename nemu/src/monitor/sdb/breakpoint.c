@@ -29,19 +29,24 @@ size_t nr_breakpoints;
 
 #define LEN_BREAK_INST (sizeof ((bp_t *)0)->raw_instr)
 
-#define insert_before0(type, pos, ...)                                                \
-  do {                                                                                \
-    type *_p = malloc(sizeof(type));                                                  \
+#define insert_before0(type, pos, ...)                                                 \
+  ({                                                                                   \
+    type *_p = malloc(sizeof(type));                                                   \
     *_p = (type){.NO = ++nr_breakpoints, .prev = pos->prev, .next = pos, __VA_ARGS__}; \
-    pos->prev->next = _p;                                                             \
-    pos->prev = _p;                                                                   \
-  } while (0);
+    pos->prev->next = _p;                                                              \
+    pos->prev = _p;                                                                    \
+    _p;                                                                                 \
+  })
 
 #define FOR_BREAKPOINTS(bp) \
   for (bp_t *bp = bp_nil->next; bp != bp_nil; bp = bp->next)
 
 #define FOR_WATCHPOINTS(wp) \
   for (wp_t *wp = wp_nil->next; wp != wp_nil; wp = wp->next)
+
+static void print_breakpoint(bp_t *bp) {
+  printf("breakpoint %u at " FMT_PADDR "\n", bp->NO, bp->addr);
+}
 
 int create_breakpoint(char *e) {
   Elf_Addr addr = elf_find_func_byname(e);
@@ -68,7 +73,9 @@ int create_breakpoint(char *e) {
       }
       raw_instr = host_read(guest_to_host(addr), LEN_BREAK_INST);
     }
-    insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
+    bp_t *p =
+      insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
+    print_breakpoint(p);
     return nr_breakpoints;
   } else {
     printf("%s is not a function name\n", e);
@@ -157,21 +164,32 @@ found:
   return true;
 }
 
-void print_breakpoints() {
-  FOR_BREAKPOINTS(bp) {
-    printf("breakpoint %u at " FMT_PADDR "\n", bp->NO, bp->addr);
-  }
-}
-void print_watchpoints() {
-  FOR_WATCHPOINTS(wp) {
-    printf("watchpoint %u, is `%s'\n", wp->NO, wp->expr);
-  }
-}
-
 #define SORTED_FOR_ALL(bp, wp, flag)                                                 \
   for (bp = bp_nil->next, wp = wp_nil->next, flag = bp->NO < wp->NO; \
        bp != bp_nil || wp != wp_nil;                                                 \
        (flag = bp->NO < wp->NO) ? (bp = bp->next, 0) : (wp = wp->next, 0))
+
+static inline void print_watchpoint(wp_t *wp) {
+  printf("watchpoint %u, is `%s'\n", wp->NO, wp->expr);
+}
+
+void print_all_breakpoints() {
+  bp_t *bp;
+  wp_t *wp;
+  bool f;
+  SORTED_FOR_ALL(bp, wp, f) {
+    if (f)
+      print_breakpoint(bp);
+    else
+      print_watchpoint(wp);
+  }
+}
+
+void print_watchpoints() {
+  FOR_WATCHPOINTS(wp) {
+  }
+}
+
 
 void init_breakpoints() {
   bp_nil = malloc(sizeof(bp_t));
