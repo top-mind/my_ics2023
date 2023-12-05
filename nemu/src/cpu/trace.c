@@ -184,19 +184,21 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 
 static inline void print_frame(size_t id) {
   char *f_name;
-  paddr_t pc = stk_func[ras_depth - id];
+  paddr_t pc = stk_func[id];
   elf_getname_and_offset(pc, &f_name, NULL);
-  printf("# %zu " FMT_PADDR " in %s ()\n", id, pc, f_name);
+  printf("# %zu " FMT_PADDR " in %s ()\n", ras_depth - id, pc, f_name);
 }
 
 void backtrace() {
   char *f_name;
   elf_getname_and_offset(cpu.pc, &f_name, NULL);
   printf("# 0 " FMT_PADDR " in %s ()\n", cpu.pc, f_name);
-  if (ras_depth >= ARRLEN(stk_func)) {
+  size_t i = ras_depth - 1;
+  if (ras_depth > ARRLEN(stk_func)) {
     printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
+    i = ARRLEN(stk_func) - 1;
   }
-  for (size_t i = 1; i < ras_depth && i < ARRLEN(stk_func); i++)
+  for (; i > 0; i--)
     print_frame(i);
 }
 
