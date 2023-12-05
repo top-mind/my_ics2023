@@ -198,6 +198,11 @@ config FTRACE
   bool "Enable function call tracer"
   default n
 
+config FTRACE_COND
+  depends on FTRACE
+  bool "linux ftrace graph"
+  default n
+
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"

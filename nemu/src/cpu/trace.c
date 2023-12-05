@@ -41,8 +41,6 @@ char *trace_disassemble(Decode *s) {
 
 #ifdef CONFIG_TRACE
 
-#ifdef CONFIG_IQUEUE
-#endif
 static bool g_itrace_stdout = 0;
 void trace_init() {
   // TODO
@@ -107,8 +105,10 @@ void irtrace_print(uint64_t total) {
 
 #include <elf-def.h>
 static int ras_depth = 0;
+#ifdef CONFIG_FTRACE_COND
 static bool ras_tailcall = false;
 static paddr_t ras_lastpc = 0;
+#endif
 static int ras_nr_repeat = 0;
 
 void ftrace_flush() {
@@ -129,7 +129,6 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   if (!ELF_OFFSET_VALID(f_off))
     printf("[" FMT_PADDR "]", pc);
   printf("()");
-  fflush(stdout);
 }
 
 /* Often, we print message if we prepare a whole line to print.
@@ -137,6 +136,8 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
  * This may be modified when backtrace is available.
  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
+
+#ifdef CONFIG_FTRACE_COND
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
   need_minus_nr_repeat = need_print_lbrace = ras_tailcall;
@@ -157,13 +158,15 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
     ras_lastpc = dnpc, ras_nr_repeat = 1;
   else
     ras_nr_repeat++;
-  ras_depth++;
   ras_tailcall = true;
+#endif
+  ras_depth++;
 }
 
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
+#ifdef CONFIG_FTRACE_COND
   char *f_name;
   Elf_Off f_off;
   elf_getname_and_offset(pc, &f_name, &f_off);
@@ -175,6 +178,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
     printf("%*.s", ras_depth * 2, "");
     printf("} /* %s */\n", f_name);
   }
+#endif
 }
 
 #endif
