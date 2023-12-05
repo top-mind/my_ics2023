@@ -29,10 +29,10 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+static char *prev_line_read = NULL;
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char *rl_gets() {
-  static char *prev_line_read = NULL;
   char *line_read = readline("(nemu) ");
   if (line_read == NULL) return NULL;
   if (*line_read) {
@@ -343,6 +343,8 @@ void sdb_mainloop() {
 
 void init_sdb() {
   /* Compile the regular expressions. */
+  prev_line_read = malloc(1);
+  *prev_line_read = 0;
   init_regex();
   init_breakpoints();
 }
