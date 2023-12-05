@@ -85,7 +85,7 @@ void cpu_exec(uint64_t n) {
   trace_set_itrace_stdout(n < MAX_INST_TO_PRINT);
 #endif
   switch (nemu_state.state) {
-    case NEMU_INT:
+    case NEMU_END:
     case NEMU_ABORT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
       return;
@@ -108,9 +108,10 @@ void cpu_exec(uint64_t n) {
                    bool stop_at_breakpoint(vaddr_t);
                    stop_at_breakpoint(nemu_state.halt_pc);
                  }))) {
+        nemu_state.state = NEMU_END;
         goto nemu_end;
       }
-
+      break;
     case NEMU_ABORT:
       switch (nemu_state.halt_ret) {
         case ABORT_INV:

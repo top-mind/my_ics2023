@@ -22,7 +22,7 @@ void *xmalloc(size_t size);
 
 // ----------- state -----------
 
-enum { NEMU_RUNNING, NEMU_STOP, NEMU_ABORT, NEMU_QUIT, NEMU_INT };
+enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT, NEMU_INT };
 #define ABORT_INV 1
 #define ABORT_MEMIO 2
 
