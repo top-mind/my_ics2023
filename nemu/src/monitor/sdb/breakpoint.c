@@ -92,11 +92,16 @@ void disable_breakpoints() {
 }
 
 void watchpoints_notify() {
+  if (nemu_state.state != NEMU_RUNNING) return;
   FOR_WATCHPOINTS(wp) {
     eval_t ev = eval(wp->rpn, wp->nr_rpn);
     if(!eveq(ev, wp->old_value)) {
       nemu_state.state = NEMU_STOP;
-      return;
+      printf("Watchpoint %u: %s\nOld = ", wp->NO, wp->expr);
+      peval(wp->old_value);
+      printf("\nNew = ");
+      peval(ev);
+      wp->old_value = ev;
     }
   }
 }
