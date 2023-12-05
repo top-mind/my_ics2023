@@ -52,7 +52,9 @@ static int cmd_gdb(char *args) {
 }
 
 static int cmd_c(char *args) {
+  enable_breakpoints();
   cpu_exec(-1);
+  disable_breakpoints();
   return 0;
 }
 
