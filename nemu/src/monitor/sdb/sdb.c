@@ -132,7 +132,7 @@ static int cmd_w(char *args) {
 static int cmd_d(char *args) {
   if (NOMORE(args)) {
     char *str = readline("Delete all watchpoints? (y|N) ");
-    if (str[0] == 'y') panic("not impl");
+    if (str[0] == 'y') free_all_breakpoints();
     free(str);
     return 0;
   }

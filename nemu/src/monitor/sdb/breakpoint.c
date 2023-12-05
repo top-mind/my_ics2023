@@ -207,8 +207,8 @@ bool breakpoint_notify(vaddr_t pc) {
 
 void init_breakpoints() {
   bp_nil = malloc(sizeof(bp_t));
-  bp_nil->prev = bp_nil->next = bp_nil;
   wp_nil = malloc(sizeof(wp_t));
+  bp_nil->prev = bp_nil->next = bp_nil;
   wp_nil->prev = wp_nil->next = wp_nil;
   bp_nil->NO = wp_nil->NO = UINT_MAX;
   nr_breakpoints = 0;
@@ -224,4 +224,6 @@ void free_all_breakpoints() {
     else
       free_wp(wp);
   }
+  bp_nil->prev = bp_nil->next = bp_nil;
+  wp_nil->prev = wp_nil->next = wp_nil;
 }
