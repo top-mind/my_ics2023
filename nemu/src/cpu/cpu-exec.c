@@ -106,7 +106,7 @@ void cpu_exec(uint64_t n) {
     case NEMU_INT:
       if (MUXDEF(CONFIG_TARGET_AM, 1, ({
                    bool stop_at_breakpoint(vaddr_t);
-                   stop_at_breakpoint(nemu_state.halt_pc);
+                   !stop_at_breakpoint(nemu_state.halt_pc);
                  }))) {
         nemu_state.state = NEMU_END;
         goto nemu_end;

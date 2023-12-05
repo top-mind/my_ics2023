@@ -192,8 +192,10 @@ void print_watchpoints() {
 
 bool stop_at_breakpoint(vaddr_t pc) {
   FOR_BREAKPOINTS(bp) {
-    if (bp->addr == pc)
+    if (bp->addr == pc) {
+      printf("hit breakpoint %u at " FMT_PADDR, bp->NO, bp->addr);
       return true;
+    }
   }
   return false;
 }
