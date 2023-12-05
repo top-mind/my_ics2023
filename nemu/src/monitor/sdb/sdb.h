@@ -60,6 +60,8 @@ void print_watchpoints();
 void enable_breakpoints();
 void disable_breakpoints();
 
+void free_all_breakpoints();
+
 #define breakpoint_instruction \
   MUXDEF(CONFIG_ISA_x86, 0xcc, \
   MUXDEF(CONFIG_ISA_mips32, 0x0005000d, \
