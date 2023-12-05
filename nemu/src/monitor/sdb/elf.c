@@ -104,7 +104,7 @@ void elf_getname_and_offset(Elf_Addr addr, char **name, Elf_Off *offset) {
 Elf_Addr elf_find_func_byname(char *name) {
   for (size_t i = 0; i < nr_sym; i++) {
     if (syms[i].type_func && 0 == strcmp(syms[i].name, name))
-      return i;
+      return syms[i].st_value;
   }
   return -1;
 }
