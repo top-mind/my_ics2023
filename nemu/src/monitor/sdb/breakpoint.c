@@ -101,6 +101,7 @@ void watchpoints_notify() {
       peval(wp->old_value);
       printf("\nNew = ");
       peval(ev);
+      puts("");
       wp->old_value = ev;
     }
   }
