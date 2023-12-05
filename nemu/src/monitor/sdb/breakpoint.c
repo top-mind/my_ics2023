@@ -141,8 +141,8 @@ static inline void delete_bp(bp_t *p) {
 #define find_delete(loop, t, ...) \
   loop(t) {                       \
     if ((t)->NO == n) {           \
-      (t)->prev = (t)->next;      \
-      (t)->next = (t)->prev;      \
+      (t)->prev->next = (t)->next;      \
+      (t)->next->prev = (t)->prev;      \
       __VA_ARGS__;                \
       goto found;                 \
     }                             \
