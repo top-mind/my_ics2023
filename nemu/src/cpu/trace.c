@@ -184,7 +184,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 
 static inline void print_frame(size_t id) {
   char *f_name;
-  paddr_t pc = stk_func[ras_depth - id];
+  paddr_t pc = stk_func[ras_depth - id - 1];
   elf_getname_and_offset(pc, &f_name, NULL);
   printf("# %zu " FMT_PADDR " in %s ()\n", id, pc, f_name);
 }
