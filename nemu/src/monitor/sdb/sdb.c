@@ -26,9 +26,9 @@
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
 
 static int is_batch_mode = false;
-
 void init_regex();
 void init_wp_pool();
+void trace_init();
 static char *prev_line_read = NULL;
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
@@ -349,4 +349,5 @@ void init_sdb() {
   *prev_line_read = 0;
   init_regex();
   init_breakpoints();
+  trace_init();
 }
