@@ -111,6 +111,7 @@ void cpu_exec(uint64_t n) {
         nemu_state.state = NEMU_END;
         goto nemu_end;
       }
+      cpu.pc = nemu_state.halt_pc;
       break;
     case NEMU_ABORT:
       switch (nemu_state.halt_ret) {
