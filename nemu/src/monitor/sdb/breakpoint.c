@@ -2,6 +2,7 @@
 #include <memory/host.h>
 #include <memory/paddr.h>
 #include "sdb.h"
+#include "utils.h"
 #include <limits.h>
 
 typedef struct breakpoint_node {
@@ -90,13 +91,14 @@ void disable_breakpoints() {
   }
 }
 
-bool watchpoints_notify() {
+void watchpoints_notify() {
   FOR_WATCHPOINTS(wp) {
     eval_t ev = eval(wp->rpn, wp->nr_rpn);
-    if(!eveq(ev, wp->old_value))
-      return 1;
+    if(!eveq(ev, wp->old_value)) {
+      nemu_state.state = NEMU_STOP;
+      return;
+    }
   }
-  return 0;
 }
 
 void enable_breakpoints() {
