@@ -195,7 +195,7 @@ void backtrace() {
   printf("# 0 " FMT_PADDR " in %s ()\n", cpu.pc, f_name);
   size_t i = ras_depth - 1;
   if (ras_depth > ARRLEN(stk_func)) {
-    printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
+    printf("%u frame(s) folded\n", ras_depth - ARRLEN(stk_func));
     i = ARRLEN(stk_func) - 1;
   }
   for (; i > 0; i--)
