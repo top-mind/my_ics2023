@@ -32,18 +32,18 @@ void init_wp_pool();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char *rl_gets() {
-  static char *line_read = NULL;
+  static char *prev_line_read = NULL;
 
-  if (line_read) {
-    free(line_read);
-    line_read = NULL;
+  char *line_read = readline("(nemu) ");
+
+  if (line_read && *line_read) {
+    add_history(line_read); 
+    if (prev_line_read) {
+      free(prev_line_read);
+      prev_line_read = line_read;
+    }
   }
-
-  line_read = readline("(nemu) ");
-
-  if (line_read && *line_read) { add_history(line_read); }
-
-  return line_read;
+  return prev_line_read;
 }
 
 static int cmd_gdb(char *args) {
