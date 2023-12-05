@@ -10,6 +10,7 @@
  * See paddr.c and device.c(TBD) for more details.S
  */
 #include <common.h>
+#include <memory/paddr.h>
 #include "trace.h"
 #include <isa.h>
 #ifdef CONFIG_LIBDISASM
@@ -131,13 +132,10 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
 static bool ras_tailcall = false;
 static paddr_t ras_lastpc = 0;
 #endif
-
-/* Often, we print message if we prepare a whole line to print.
- * But as soon as program stop inside a function, sdb tells us we go into, as desired.
- * This may be modified when backtrace is available.
- */
+/* Often, we print message if we prepare a whole line to print.  * But as soon as program stop inside a function, sdb tells us we go into, as desired.  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
-
+  if (ras_depth < ARRLEN(stk_func))
+    stk_func[ras_depth] = _pc;
 #ifdef CONFIG_FTRACE_COND
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
@@ -163,7 +161,6 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
 #endif
   ras_depth++;
 }
-
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
@@ -180,6 +177,14 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
     printf("} /* %s */\n", f_name);
   }
 #endif
+}
+
+void backtrace() {
+  if (ras_depth >= ARRLEN(stk_func)) {
+
+    printf("emit %u\n", ras_depth - ARRLEN(stk_func));
+    return;
+  }
 }
 
 #endif
