@@ -195,7 +195,6 @@ void backtrace() {
   printf("# 0 " FMT_PADDR " in %s ()\n", cpu.pc, f_name);
   if (ras_depth >= ARRLEN(stk_func)) {
     printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
-    return;
   }
   for (size_t i = 1; i < ras_depth; i++)
     print_frame(i);
