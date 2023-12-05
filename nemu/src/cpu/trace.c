@@ -115,6 +115,7 @@ void ftrace_flush() {
     ras_nr_repeat = 0;
   }
 }
+
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   char *f_name;
   Elf_Off f_off;
@@ -130,7 +131,10 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
 static bool ras_tailcall = false;
 static paddr_t ras_lastpc = 0;
 #endif
-/* Often, we print message if we prepare a whole line to print.  * But as soon as program stop inside a function, sdb tells us we go into, as desired.  * This may be modified when backtrace is available.  */
+
+/* Often, we print message if we prepare a whole line to print.  * But as soon
+ * as program stop inside a function, sdb tells us we go into, as desired.  *
+ * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func))
     stk_func[ras_depth] = _pc;
@@ -159,6 +163,7 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
 #endif
   ras_depth++;
 }
+
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
@@ -177,11 +182,23 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 #endif
 }
 
+static inline void print_frame(size_t id) {
+  char *f_name;
+  paddr_t pc = stk_func[id];
+  elf_getname_and_offset(pc, &f_name, NULL);
+  printf("# %zu " FMT_PADDR "in %s ()\n", ras_depth - id + 1, pc, f_name);
+}
+
 void backtrace() {
+  char *f_name;
+  elf_getname_and_offset(cpu.pc, &f_name, NULL);
+  printf("#0 " FMT_PADDR "in %s ()\n", cpu.pc, f_name);
   if (ras_depth >= ARRLEN(stk_func)) {
-    printf("emit %u\n", ras_depth - ARRLEN(stk_func));
+    printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
     return;
   }
+  for (size_t i = ras_depth; i > 0; i--)
+    print_frame(i);
 }
 
 void trace_init() {
