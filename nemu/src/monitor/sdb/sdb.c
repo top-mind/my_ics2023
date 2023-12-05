@@ -215,7 +215,12 @@ static int cmd_si(char *args) {
       return 0;
     }
   }
-  cpu_exec(n);
+  if (n > 0) {
+    cpu_exec(1);
+    enable_breakpoints();
+    cpu_exec(n - 1);
+    disable_breakpoints();
+  }
   return 0;
 }
 

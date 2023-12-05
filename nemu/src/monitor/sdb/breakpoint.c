@@ -26,6 +26,8 @@ static wp_t *wp_nil;
 
 size_t nr_breakpoints;
 
+#define LEN_BREAK_INST (sizeof ((bp_t *)0)->raw_instr)
+
 #define insert_before0(type, pos, ...)                                                \
   do {                                                                                \
     type *_p = malloc(sizeof(type));                                                  \
@@ -42,29 +44,28 @@ size_t nr_breakpoints;
 
 int create_breakpoint(char *e) {
   Elf_Addr addr = elf_find_func_byname(e);
+  uint64_t raw_instr = 0;
   if (ELF_ADDR_VALID(addr)) {
     bool duplicate = false;
     FOR_BREAKPOINTS(bp) {
       if (bp->addr == addr) {
         if (!duplicate) {
           duplicate = true;
+          raw_instr = bp->raw_instr;
           printf("Note: breakpoint %u", bp->NO);
         } else {
           printf(", %u", bp->NO);
         }
       }
     }
-    uint64_t raw_instr = 0;
     if (duplicate) {
-      printf(" also set at pc 0x%lx", (long) addr);
+      printf(" also set at pc 0x%lx\n", (long) addr);
     } else {
       if (!in_pmem(addr)) {
         printf("Cannot insert breakpoint at 0x%lx\n", (long) addr);
         return 0;
       }
-      int size = sizeof ((bp_t *)0)->raw_instr;
-      raw_instr = host_read(guest_to_host(addr), size);
-      host_write(guest_to_host(addr), size, breakpoint_instruction);
+      raw_instr = host_read(guest_to_host(addr), LEN_BREAK_INST);
     }
     insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
     return nr_breakpoints;
@@ -82,15 +83,66 @@ int create_watchpoint(char *e) {
   return 0;
 }
 
-static inline void free_bp_t(void *e) {}
-
-static inline void free_wp_t(wp_t *e) {
-  free(e->expr);
-  free(e->rpn);
+void disable_breakpoints() {
+  FOR_BREAKPOINTS(bp) {
+    if (!bp->duplicate)
+      host_write(guest_to_host(bp->addr), LEN_BREAK_INST, bp->raw_instr);
+  }
 }
 
+bool watchponint_notify() {
+  FOR_WATCHPOINTS(wp) {
+    eval_t ev = eval(wp->rpn, wp->nr_rpn);
+    if(!eveq(ev, wp->old_value))
+      return 1;
+  }
+  return 0;
+}
+
+void enable_breakpoints() {
+  FOR_BREAKPOINTS(bp) {
+    if (!bp->duplicate)
+      host_write(guest_to_host(bp->addr), LEN_BREAK_INST, breakpoint_instruction);
+  }
+}
+
+static inline void free_bp(bp_t *p) {
+  // XXX All breakpoints should be disabled ???
+  int size = sizeof ((bp_t *)0)->raw_instr;
+  assert(host_read(guest_to_host(p->addr), size) == p->raw_instr);
+}
+
+static inline void free_wp(wp_t *p) {
+  free(p->expr);
+  free(p->rpn);
+}
+
+static inline void delete_bp(bp_t *p) {
+  free_bp(p);
+  if (p->duplicate) return;
+  FOR_BREAKPOINTS(bp) {
+    if (bp->duplicate && bp->addr == p->addr) {
+      bp->duplicate = false;
+      break;
+    }
+  }
+}
+
+#define find_delete(loop, t, ...) \
+  loop(t) {                       \
+    if ((t)->NO == n) {           \
+      __VA_ARGS__;                \
+      goto found;                 \
+    }                             \
+    if ((t)->NO > n) break;       \
+  }
+
 bool delete_breakpoint(int n) {
+  find_delete(FOR_BREAKPOINTS, t, delete_bp(t));
+  find_delete(FOR_WATCHPOINTS, t, free_wp(t));
   return false;
+found:
+  return true;
 }
 
 void print_breakpoints() {
@@ -124,8 +176,8 @@ void free_all_breakpoints() {
   int flag;
   SORTED_FOR_ALL(bp, wp, flag) {
     if (flag)
-      free_bp_t(bp);
+      free_bp(bp);
     else
-      free_wp_t(wp);
+      free_wp(wp);
   }
 }
