@@ -191,6 +191,7 @@ void print_all_breakpoints() {
 
 void print_watchpoints() {
   FOR_WATCHPOINTS(wp) {
+    print_watchpoint(wp);
   }
 }
 
