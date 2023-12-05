@@ -186,13 +186,13 @@ static inline void print_frame(size_t id) {
   char *f_name;
   paddr_t pc = stk_func[id];
   elf_getname_and_offset(pc, &f_name, NULL);
-  printf("# %zu " FMT_PADDR "in %s ()\n", ras_depth - id + 1, pc, f_name);
+  printf("# %zu " FMT_PADDR " in %s ()\n", ras_depth - id + 1, pc, f_name);
 }
 
 void backtrace() {
   char *f_name;
   elf_getname_and_offset(cpu.pc, &f_name, NULL);
-  printf("#0 " FMT_PADDR "in %s ()\n", cpu.pc, f_name);
+  printf("# 0 " FMT_PADDR " in %s ()\n", cpu.pc, f_name);
   if (ras_depth >= ARRLEN(stk_func)) {
     printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
     return;
