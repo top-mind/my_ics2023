@@ -190,6 +190,13 @@ void print_watchpoints() {
   }
 }
 
+bool stop_at_breakpoint(vaddr_t pc) {
+  FOR_BREAKPOINTS(bp) {
+    if (bp->addr == pc)
+      return true;
+  }
+  return false;
+}
 
 void init_breakpoints() {
   bp_nil = malloc(sizeof(bp_t));

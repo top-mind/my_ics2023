@@ -184,7 +184,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11 ", remu, R,
           R(rd) = src2 == 0 ? src1 : src1 % src2);
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, INV(s->pc));
-  INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUTRAP(s->pc, R(10))); // x10 = a0
+  INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUINT(s->pc, R(10))); // x10 = a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
 

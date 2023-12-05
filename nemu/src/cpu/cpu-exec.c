@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include "trace.h"
+#include "utils.h"
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -84,7 +85,7 @@ void cpu_exec(uint64_t n) {
   trace_set_itrace_stdout(n < MAX_INST_TO_PRINT);
 #endif
   switch (nemu_state.state) {
-    case NEMU_END:
+    case NEMU_INT:
     case NEMU_ABORT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
       return;
@@ -102,6 +103,13 @@ void cpu_exec(uint64_t n) {
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
+    case NEMU_INT:
+      if (MUXDEF(CONFIG_TARGET_AM, 1, ({
+                   bool stop_at_breakpoint(vaddr_t);
+                   stop_at_breakpoint(nemu_state.halt_pc);
+                 }))) {
+        goto nemu_end;
+      }
 
     case NEMU_ABORT:
       switch (nemu_state.halt_ret) {
@@ -113,7 +121,7 @@ void cpu_exec(uint64_t n) {
           print_fail_msg();
           break;
       }
-    case NEMU_END:
+nemu_end:
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT
              ? ANSI_FMT("ABORT", ANSI_FG_RED)
