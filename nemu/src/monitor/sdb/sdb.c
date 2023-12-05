@@ -40,8 +40,8 @@ static char *rl_gets() {
     add_history(line_read); 
     if (prev_line_read) {
       free(prev_line_read);
-      prev_line_read = line_read;
     }
+    prev_line_read = line_read;
   }
   return prev_line_read;
 }
