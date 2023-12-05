@@ -43,9 +43,7 @@ char *trace_disassemble(Decode *s) {
 #ifdef CONFIG_TRACE
 
 static bool g_itrace_stdout = 0;
-void trace_init() {
-  // TODO
-}
+
 void trace_set_itrace_stdout(bool enable) {
   g_itrace_stdout = enable;
 }
@@ -185,6 +183,10 @@ void backtrace() {
     printf("emit %u\n", ras_depth - ARRLEN(stk_func));
     return;
   }
+}
+
+void trace_init() {
+  ftrace_push(0, RESET_VECTOR);
 }
 
 #endif
