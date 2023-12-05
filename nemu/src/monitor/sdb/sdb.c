@@ -74,6 +74,8 @@ static int cmd_info(char *);
 
 static int cmd_x(char *);
 
+static int cmd_bt(char *);
+
 static int cmd_p(char *args) {
   if (NOMORE(args)) {
     puts("Usage: p EXPR");
@@ -175,6 +177,7 @@ static struct {
    "Arguments are watchpoint numbers with spaces in between.\n"
    "To delete all watchpoints, give no argument.",
    cmd_d},
+  {"bt", "Print backtrace of all stack frames", cmd_bt}, //XXX Copilot
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -300,6 +303,11 @@ static int cmd_x(char *args) {
     printf("\t" FMT_WORD, paddr_read(addr, sizeof(word_t)));
   }
   putchar('\n');
+  return 0;
+}
+
+static int cmd_bt(char *args) {
+  MUXDEF(CONFIG_FTRACE, void backtrace(); backtrace(), puts("Please enable ftrace"));
   return 0;
 }
 
