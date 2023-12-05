@@ -184,7 +184,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 
 static inline void print_frame(size_t id) {
   char *f_name;
-  paddr_t pc = stk_func[ras_depth - id - 1];
+  paddr_t pc = stk_func[ras_depth - id];
   elf_getname_and_offset(pc, &f_name, NULL);
   printf("# %zu " FMT_PADDR " in %s ()\n", id, pc, f_name);
 }
@@ -197,7 +197,7 @@ void backtrace() {
     printf("emit %u elements\n", ras_depth - ARRLEN(stk_func));
     return;
   }
-  for (size_t i = 0; i < ras_depth; i++)
+  for (size_t i = 1; i < ras_depth; i++)
     print_frame(i);
 }
 
