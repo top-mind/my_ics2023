@@ -97,7 +97,7 @@ void watchpoints_notify() {
     eval_t ev = eval(wp->rpn, wp->nr_rpn);
     if(!eveq(ev, wp->old_value)) {
       nemu_state.state = NEMU_STOP;
-      printf("Watchpoint %u: %s\nOld = ", wp->NO, wp->expr);
+      printf("\nWatchpoint %u: %s\nOld = ", wp->NO, wp->expr);
       peval(wp->old_value);
       printf("\nNew = ");
       peval(ev);
