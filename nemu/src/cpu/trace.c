@@ -105,10 +105,7 @@ void irtrace_print(uint64_t total) {
 
 #include <elf-def.h>
 static int ras_depth = 0;
-#ifdef CONFIG_FTRACE_COND
-static bool ras_tailcall = false;
-static paddr_t ras_lastpc = 0;
-#endif
+paddr_t stk_func[8192];
 static int ras_nr_repeat = 0;
 
 void ftrace_flush() {
@@ -118,6 +115,7 @@ void ftrace_flush() {
   }
 }
 
+#ifdef CONFIG_FTRACE_COND
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   char *f_name;
   Elf_Off f_off;
@@ -130,6 +128,9 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
     printf("[" FMT_PADDR "]", pc);
   printf("()");
 }
+static bool ras_tailcall = false;
+static paddr_t ras_lastpc = 0;
+#endif
 
 /* Often, we print message if we prepare a whole line to print.
  * But as soon as program stop inside a function, sdb tells us we go into, as desired.
