@@ -179,7 +179,6 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 
 void backtrace() {
   if (ras_depth >= ARRLEN(stk_func)) {
-
     printf("emit %u\n", ras_depth - ARRLEN(stk_func));
     return;
   }
