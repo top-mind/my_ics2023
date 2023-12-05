@@ -104,7 +104,7 @@ void irtrace_print(uint64_t total) {
 
 #include <elf-def.h>
 static int ras_depth = 0;
-paddr_t stk_func[8192];
+paddr_t stk_func[3];
 static int ras_nr_repeat = 0;
 
 
