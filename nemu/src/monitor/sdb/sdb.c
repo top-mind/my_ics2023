@@ -121,7 +121,7 @@ static int cmd_w(char *args) {
     return 0;
   }
   int n = create_watchpoint(args);
-  if (n >= 0)
+  if (n > 0)
     printf("Watchpoint %d: %s\n", n, args);
   return 0;
 }

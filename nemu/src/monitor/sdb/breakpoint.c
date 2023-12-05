@@ -70,6 +70,8 @@ int create_breakpoint(char *e) {
     }
     insert_before0(bp_t, bp_nil, .addr = addr, .duplicate = duplicate, .raw_instr = raw_instr);
     return nr_breakpoints;
+  } else {
+    printf("%s is not a function name\n", e);
   }
   return 0;
 }
