@@ -29,7 +29,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   do_trace(_this);
 #endif
 #ifndef CONFIG_TARGET_AM
-  // TODO stop if hit a breakpoint
+  void watchpoints_notify();
+  watchpoints_notify();
 #endif
 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));

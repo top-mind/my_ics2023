@@ -90,7 +90,7 @@ void disable_breakpoints() {
   }
 }
 
-bool watchponint_notify() {
+bool watchpoints_notify() {
   FOR_WATCHPOINTS(wp) {
     eval_t ev = eval(wp->rpn, wp->nr_rpn);
     if(!eveq(ev, wp->old_value))
