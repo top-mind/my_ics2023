@@ -379,6 +379,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
       case TK_AND: res = lsrc && rsrc; break;
       case TK_OR: res = lsrc || rsrc; break;
       case TK_DEREF:
+deref:
         if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
           res = paddr_read(rsrc, sizeof res);
         } else {
@@ -389,7 +390,13 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
       case TK_DOLLAR: res = *p_rpn[i].preg; break;
-      case TK_SYM: res = p_rpn[i].sym->st_value; break;
+      case TK_SYM:
+        if (p_rpn[i].sym->type_func)
+          res = p_rpn[i].sym->st_value;
+        else {
+          rsrc = p_rpn[i].sym->st_value;
+          goto deref;
+        }
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
