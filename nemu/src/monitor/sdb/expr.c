@@ -107,7 +107,7 @@ static struct rule {
   {"\\(", '('},       // lbrace
   {"\\)", ')'},       // rbrace
   {"\\$[a-z0-9$]+", TK_DOLLAR},
-  {"[_[:alnum:]]+", TK_SYM}
+  {"[_[:alnum:]]{1,31}", TK_SYM}
 };
 
 #define NR_REGEX ARRLEN(rules)
