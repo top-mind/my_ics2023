@@ -73,7 +73,7 @@ void trace_display() {
 }
 
 void print_fail_msg() {
-  MUXDEF(CONFIG_FTRACE, ftrace_flush(), );
+  MUXDEF(CONFIG_FTRACE_COND, ftrace_flush(), );
   isa_reg_display();
   trace_display();
   statistic();

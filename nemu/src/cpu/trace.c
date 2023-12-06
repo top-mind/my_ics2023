@@ -105,8 +105,6 @@ void irtrace_print(uint64_t total) {
 #include <elf-def.h>
 static int ras_depth = 0;
 paddr_t stk_func[3];
-static int ras_nr_repeat = 0;
-
 
 #ifdef CONFIG_FTRACE_COND
 void ftrace_flush() {
@@ -129,6 +127,7 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   printf("()");
 }
 static bool ras_tailcall = false;
+static int ras_nr_repeat = 0;
 static paddr_t ras_lastpc = 0;
 #endif
 
