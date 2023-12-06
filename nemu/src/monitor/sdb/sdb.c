@@ -357,5 +357,5 @@ void init_sdb() {
   *prev_line_read = 0;
   init_regex();
   init_breakpoints();
-  trace_init();
+  MUXDEF(CONFIG_TRACE, trace_init(), );
 }
