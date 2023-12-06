@@ -122,7 +122,6 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
 static bool ras_tailcall = false;
 static int ras_nr_repeat = 0;
 static paddr_t ras_lastpc = 0;
-#endif
 
 void ftrace_flush() {
   if (ras_nr_repeat > 0) {
@@ -130,6 +129,8 @@ void ftrace_flush() {
     ras_nr_repeat = 0;
   }
 }
+#endif
+
 
 /* Often, we print message if we prepare a whole line to print.  * But as soon
  * as program stop inside a function, sdb tells us we go into, as desired.  *
