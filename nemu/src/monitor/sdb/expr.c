@@ -289,15 +289,30 @@ static int compile_token(int l, int r) {
     }
     if (op_idx == -1) ESYNTAX(l + 1);
     int lres = ISBOP(tokens[op_idx]) ? compile_token(l, op_idx - 1) : 1;
+    int nr = nr_g_rpn;
     int res = lres ? compile_token(op_idx + 1, r) : 0;
-    if (!res) return 0;
-    if (nr_g_rpn >= ARRLEN(g_rpn)) ETOOLONG;
-    g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
+    if (tokens[op_idx].type == TK_REF) {
+      if (nr_g_rpn - nr != 1 || g_rpn[nr_g_rpn].type != TK_SYM) {
+        printf("Attempt to take address of value not located in memory.");
+        return 0;
+      }
+      // for object symbols, nemu take &foo as constant
+      // for function symbols, ignore a refrence
+      if (!g_rpn[nr_g_rpn].sym->type_func) {
+        g_rpn[nr_g_rpn].type = TK_NUM;
+        g_rpn[nr_g_rpn].numconstant = g_rpn[nr_g_rpn].sym->st_value;
+      }
+    } else {
+      if (!res) return 0;
+      if (nr_g_rpn >= ARRLEN(g_rpn)) ETOOLONG;
+      g_rpn[nr_g_rpn++].type = tokens[op_idx].type;
+    }
   }
   return nr_g_rpn;
 }
 #undef ESYNTAX
 #undef ETOOLONG
+#undef EINVREF
 
 /* Compile expression to reverse polish notation
  * return: rpn_t array
