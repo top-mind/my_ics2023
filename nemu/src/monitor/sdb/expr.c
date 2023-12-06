@@ -294,7 +294,7 @@ static int compile_token(int l, int r) {
     if (!res) return 0;
     if (tokens[op_idx].type == TK_REF) {
       if (nr_g_rpn - nr != 1 || g_rpn[nr_g_rpn].type != TK_SYM) {
-        printf("# %d %d name=%s\n", nr, nr_g_rpn, g_rpn[nr_g_rpn].sym->name);
+        printf("# %d %d type=%d\n", nr, nr_g_rpn, g_rpn[nr_g_rpn].type);
         printf("Attempt to take address of value not located in memory.");
         return 0;
       }
