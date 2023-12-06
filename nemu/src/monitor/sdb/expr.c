@@ -51,6 +51,7 @@ enum {
   TK_NOTYPE,
   TK_NUM,
   TK_DOLLAR,
+  TK_REF     = '&' | PRIO(15),
   TK_DEREF   = '*' | PRIO(15),
   TK_NEGTIVE = '-' | PRIO(15),
   TK_BITNOT  = '~' | PRIO(15),
@@ -131,7 +132,7 @@ void init_regex() {
 typedef struct token {
   int type;
   union {
-    word_t numconstant;
+    word_t constant;
     const word_t *preg;
     int lbmatch;
     int save_last_lbrace;
@@ -178,7 +179,7 @@ static bool make_token(char *e) {
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
-            tokens[nr_token].numconstant = (word_t)strtoull(substr_start, &endptr, 0);
+            tokens[nr_token].constant = (word_t)strtoull(substr_start, &endptr, 0);
             if (errno == ERANGE) {
               printf("Numeric constant too large.");
               return false;
@@ -255,7 +256,7 @@ static int compile_token(int l, int r) {
   if (l == r) {
     g_rpn[nr_g_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
-      case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].numconstant; break;
+      case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].constant; break;
       case TK_DOLLAR: g_rpn[nr_g_rpn].preg = tokens[l].preg; break;
       default: ESYNTAX(l + 1);
     }
