@@ -206,7 +206,7 @@ static bool make_token(char *e) {
             substr_start[substr_len] = '\0';
             sym = elf_find_symbol_byname(substr_start);
             if (!sym) {
-              printf("No symbol `%s'\n", e);
+              printf("No symbol `%s'", e);
               return false;
             }
             tokens[nr_token].sym = sym;
@@ -389,6 +389,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
       case TK_DOLLAR: res = *p_rpn[i].preg; break;
+      case TK_SYM: res = p_rpn[i].sym->st_value; break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
