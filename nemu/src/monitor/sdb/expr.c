@@ -302,6 +302,7 @@ static int compile_token(int l, int r) {
       // for function symbols, ignore a refrence
       if (!g_rpn[nr_g_rpn].sym->type_func) {
         g_rpn[nr_g_rpn].type = TK_NUM;
+        printf("# should not readch?\n");
         g_rpn[nr_g_rpn].numconstant = g_rpn[nr_g_rpn].sym->st_value;
       }
     } else {
