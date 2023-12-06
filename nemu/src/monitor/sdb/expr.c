@@ -397,6 +397,7 @@ deref:
           rsrc = p_rpn[i].sym->st_value;
           goto deref;
         }
+        break;
       default: Assert(0, "operator %d not dealt with", p_rpn[i].type);
     }
     stack[nr_stk++] = res;
