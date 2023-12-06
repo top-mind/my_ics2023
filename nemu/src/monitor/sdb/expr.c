@@ -202,7 +202,7 @@ static bool make_token(char *e) {
             tokens[nr_token].preg = preg;
             substr_start[substr_len] = save;
             break;
-          case TK_REF:
+          case TK_SYM:
             substr_start[substr_len] = '\0';
             sym = elf_find_symbol_byname(substr_start);
             if (!sym) {
@@ -273,7 +273,7 @@ static int compile_token(int l, int r) {
     switch (tokens[l].type) {
       case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].constant; break;
       case TK_DOLLAR: g_rpn[nr_g_rpn].preg = tokens[l].preg; break;
-      case TK_REF: g_rpn[nr_g_rpn].sym = tokens[l].sym; break;
+      case TK_SYM: g_rpn[nr_g_rpn].sym = tokens[l].sym; break;
       default: ESYNTAX(l + 1);
     }
     nr_g_rpn++;
