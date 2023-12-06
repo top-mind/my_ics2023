@@ -111,7 +111,7 @@ Elf_Addr elf_find_func_byname(char *name) {
 
 const Symbol *elf_find_symbol_byname(char *name) {
   for (size_t i = 0; i < nr_sym; i++) {
-    if (syms[i].type_func && 0 == strcmp(syms[i].name, name))
+    if (0 == strcmp(syms[i].name, name))
       return &syms[i];
   }
   return NULL;
