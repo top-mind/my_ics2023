@@ -51,6 +51,7 @@ enum {
   TK_NOTYPE,
   TK_NUM,
   TK_DOLLAR,
+  TK_SYM,
   TK_REF     = '&' | PRIO(15),
   TK_DEREF   = '*' | PRIO(15),
   TK_NEGTIVE = '-' | PRIO(15),
@@ -106,6 +107,7 @@ static struct rule {
   {"\\(", '('},       // lbrace
   {"\\)", ')'},       // rbrace
   {"\\$[a-z0-9$]+", TK_DOLLAR},
+  {"[:alnum:]", TK_SYM}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -132,7 +134,7 @@ void init_regex() {
 typedef struct token {
   int type;
   union {
-    word_t constant;
+    word_t constant; // for TK_NUM and TK_SYM
     const word_t *preg;
     int lbmatch;
     int save_last_lbrace;
