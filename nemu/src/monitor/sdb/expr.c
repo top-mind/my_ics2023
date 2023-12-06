@@ -12,6 +12,7 @@
  * * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
+#include "elf-def.h"
 #include "memory/paddr.h"
 #include "sdb.h"
 #include <isa.h>
@@ -94,7 +95,7 @@ static struct rule {
   {">>", TK_RSHIFT},  // right shift
   {">=", TK_GEQ},     // greater or equal
   {">", TK_GU},       // greater than
-  {"~", TK_BITNOT},   // bit not
+  {"~", TK_BITNOT},   // bit note
   {"\\^", TK_BITXOR}, // bit xor
   {"==", TK_EQ},      // equal
   {"!=", TK_NEQ},     // not equal
@@ -134,8 +135,9 @@ void init_regex() {
 typedef struct token {
   int type;
   union {
-    word_t constant; // for TK_NUM and TK_SYM
+    word_t constant;
     const word_t *preg;
+    const Symbol *sym;
     int lbmatch;
     int save_last_lbrace;
   };
@@ -175,22 +177,22 @@ static bool make_token(char *e) {
           printf("Expression too long (non-space tokens).");
           return false;
         }
-        char *endptr;
-        char save;
+        char *num_endptr;
+        char save = substr_start[substr_len];
+        const Symbol *sym;
         word_t *preg;
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
-            tokens[nr_token].constant = (word_t)strtoull(substr_start, &endptr, 0);
+            tokens[nr_token].constant = (word_t)strtoull(substr_start, &num_endptr, 0);
             if (errno == ERANGE) {
               printf("Numeric constant too large.");
               return false;
             }
-            substr_len = endptr - substr_start;
-            position = endptr - e;
+            substr_len = num_endptr - substr_start;
+            position = num_endptr - e;
             break;
           case TK_DOLLAR:
-            save = substr_start[substr_len];
             substr_start[substr_len] = '\0';
             preg = isa_reg_str2ptr(substr_start + 1);
             if (preg == NULL) {
@@ -198,6 +200,16 @@ static bool make_token(char *e) {
               return false;
             }
             tokens[nr_token].preg = preg;
+            substr_start[substr_len] = save;
+            break;
+          case TK_REF:
+            substr_start[substr_len] = '\0';
+            sym = elf_find_symbol_byname(substr_start);
+            if (!sym) {
+              printf("No symbol `%s'\n", e);
+              return false;
+            }
+            tokens[nr_token].sym = sym;
             substr_start[substr_len] = save;
             break;
           case '(':
@@ -214,6 +226,7 @@ static bool make_token(char *e) {
             break;
           case TK_MINUS:
           case TK_TIMES:
+          case TK_BITAND:
             if (nr_token == 0 || ISOP(tokens[nr_token - 1]) || tokens[nr_token - 1].type == '(')
               tokens[nr_token].type |= PRIO(0xf);
             break;
