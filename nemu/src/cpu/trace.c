@@ -104,7 +104,7 @@ void irtrace_print(uint64_t total) {
 
 #include <elf-def.h>
 static int ras_depth = 0;
-paddr_t stk_func[3];
+paddr_t stk_func[8192];
 
 #ifdef CONFIG_FTRACE_COND
 static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
