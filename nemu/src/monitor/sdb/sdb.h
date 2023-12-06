@@ -28,6 +28,7 @@ typedef struct {
   union {
     word_t numconstant;
     const word_t *preg;
+    const Symbol *sym;
   };
 } rpn_t;
 

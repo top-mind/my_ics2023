@@ -273,6 +273,7 @@ static int compile_token(int l, int r) {
     switch (tokens[l].type) {
       case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].constant; break;
       case TK_DOLLAR: g_rpn[nr_g_rpn].preg = tokens[l].preg; break;
+      case TK_REF: g_rpn[nr_g_rpn].sym = tokens[l].sym; break;
       default: ESYNTAX(l + 1);
     }
     nr_g_rpn++;
