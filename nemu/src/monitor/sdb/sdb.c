@@ -29,7 +29,11 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 void trace_init();
-MUXDEF(CONFIG_FTRACE, bool ftrace_enable_finish(),);
+#ifdef CONFIG_FTRACE
+bool ftrace_enable_finish();
+bool ftrace_disable_finish();
+#endif
+
 static char *prev_line_read = NULL;
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
@@ -313,6 +317,7 @@ static int cmd_finish(char *args) {
     printf("No function to finish\n");
   else
     cpu_exec(-1);
+  ftrace_disable_finish();
   return 0;
 #else
   printf("Please enable ftrace\n");
