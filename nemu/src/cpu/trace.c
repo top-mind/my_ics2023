@@ -177,6 +177,7 @@ bool ftrace_enable_finish() {
   g_finish_depth = ras_depth;
   return 1;
 }
+void ftrace_disable_finish() { g_finish_depth = 0; }
 
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
