@@ -164,9 +164,19 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   ras_depth++;
 }
 
+/* Two methods for sdb command finish
+ * 1. sdb detect the end of a function by detecting the return instruction.
+ * 2. sdb get an ISA dependent return address when entering a function.
+ * The choice may depend on the ISA.
+ * Both are RISC-V compatible, we use method 1.
+ */
+bool g_cmd_finish;
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   --ras_depth;
+  if (g_cmd_finish) {
+    nemu_state.state = NEMU_STOP;
+  }
 #ifdef CONFIG_FTRACE_COND
   char *f_name;
   Elf_Off f_off;
