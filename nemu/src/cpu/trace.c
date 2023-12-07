@@ -170,13 +170,15 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
  * The choice may depend on the ISA.
  * Both are RISC-V compatible, we use method 1.
  */
-bool g_cmd_finish;
+size_t g_finish_depth; // if > 0, cmd finish is enabled
+                       // stop when ras_depth == g_finish_depth
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
-  --ras_depth;
-  if (g_cmd_finish) {
+  if (g_finish_depth == ras_depth) {
+    printf("finish from " PRIx64 "\n", stk_func[ras_depth]);
     nemu_state.state = NEMU_STOP;
   }
+  --ras_depth;
 #ifdef CONFIG_FTRACE_COND
   char *f_name;
   Elf_Off f_off;
