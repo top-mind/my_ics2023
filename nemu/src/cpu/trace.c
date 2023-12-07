@@ -172,10 +172,16 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
  */
 size_t g_finish_depth; // if > 0, cmd finish is enabled
                        // stop when ras_depth == g_finish_depth
+bool ftrace_enable_finish() {
+  if (ras_depth == 0) return 0;
+  g_finish_depth = ras_depth;
+  return 1;
+}
+
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   if (g_finish_depth == ras_depth) {
-    printf("finish from " PRIx64 "\n", stk_func[ras_depth]);
+    printf("finish from " FMT_PADDR "\n", stk_func[ras_depth]);
     nemu_state.state = NEMU_STOP;
   }
   --ras_depth;

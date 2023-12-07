@@ -29,6 +29,7 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 void trace_init();
+MUXDEF(CONFIG_FTRACE, bool ftrace_enable_finish(),);
 static char *prev_line_read = NULL;
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
@@ -49,7 +50,6 @@ static int cmd_gdb(char *args) {
   asm volatile("int $3");
   return 0;
 }
-
 static int cmd_c(char *args) {
   cpu_exec(1);
   if (nemu_state.state == NEMU_STOP) {
@@ -59,23 +59,16 @@ static int cmd_c(char *args) {
   }
   return 0;
 }
-
 static int cmd_q(char *args) {
   free_all_breakpoints();
   nemu_state.state = NEMU_QUIT;
   return -1;
 }
-
 static int cmd_help(char *);
-
 static int cmd_si(char *);
-
 static int cmd_info(char *);
-
 static int cmd_x(char *);
-
 static int cmd_bt(char *);
-
 static int cmd_p(char *args) {
   if (NOMORE(args)) {
     puts("Usage: p EXPR");
@@ -110,7 +103,6 @@ static int cmd_p(char *args) {
   }
   return 0;
 }
-
 static int cmd_b(char *args) {
   if (NOMORE(args)) {
     puts("Not impl. To developer: read gdb manual");
@@ -119,7 +111,6 @@ static int cmd_b(char *args) {
   create_breakpoint(args);
   return 0;
 }
-
 static int cmd_w(char *args) {
   if (NOMORE(args)) {
     puts("Usage: watch EXPR");
@@ -130,7 +121,6 @@ static int cmd_w(char *args) {
     printf("Watchpoint %d: %s\n", n, args);
   return 0;
 }
-
 static int cmd_d(char *args) {
   if (NOMORE(args)) {
     char *str = readline("Delete all watchpoints? (y|N) ");
@@ -142,6 +132,7 @@ static int cmd_d(char *args) {
   if (!delete_breakpoint(n)) { printf("No breakpoint %d.\n", n); }
   return 0;
 }
+static int cmd_finish(char *);
 
 static struct {
   const char *name;
@@ -178,6 +169,7 @@ static struct {
    "To delete all watchpoints, give no argument.",
    cmd_d},
   {"bt", "Print backtrace of all stack frames", cmd_bt}, //XXX Copilot
+  {"fini", "Finish current function", cmd_finish},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -308,6 +300,23 @@ static int cmd_x(char *args) {
 
 static int cmd_bt(char *args) {
   MUXDEF(CONFIG_FTRACE, void backtrace(); backtrace(), puts("Please enable ftrace"));
+  return 0;
+}
+
+static int cmd_finish(char *args) {
+  if (!NOMORE(args)) {
+    printf("Usage: finish\n");
+    return 0;
+  }
+#ifdef CONFIG_FTRACE
+  if (!ftrace_enable_finish())
+    printf("No function to finish\n");
+  else
+    cpu_exec(-1);
+  return 0;
+#else
+  printf("Please enable ftrace\n");
+#endif
   return 0;
 }
 

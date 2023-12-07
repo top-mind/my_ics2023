@@ -11,6 +11,12 @@ void irtrace_print(uint64_t total);
 void trace_set_itrace_stdout(bool enable);
 #endif
 
+#ifdef CONFIG_FTRACE
+bool ftrace_enable_finish();
+#endif
+
+#ifdef CONFIG_FTRACE_COND
 void ftrace_flush();
+#endif
 #endif
 
