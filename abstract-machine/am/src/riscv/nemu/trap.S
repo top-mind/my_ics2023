@@ -78,7 +78,7 @@ __am_asm_trap:
   mret
 
 __am_asm_trap2:
-  li t0, 0x79
+  li t0, 0x80
   li t1, 0xa00003f8
   sb t0, 0(t1)
   csrr t0, mepc
