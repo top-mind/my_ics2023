@@ -29,7 +29,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   //   printf("mtvec: 0x%x, 0x%x\n", ref_r->mtvec, cpu.mtvec);
   // if (ref_r->mstatus != cpu.mstatus)
   //   printf("mstatus: 0x%x, 0x%x\n", ref_r->mstatus, cpu.mstatus);
-  return ref_r->pc == pc;
+  return ref_r->pc == cpu.pc;
 }
 
 void isa_difftest_attach() {}
