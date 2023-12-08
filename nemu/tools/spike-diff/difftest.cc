@@ -62,6 +62,7 @@ void sim_t::diff_get_regs(void* diff_context) {
   }
   ctx->pc = state->pc;
   ctx->mcause = state->mcause->read();
+  std::cout << "mcause: " << std::hex << ctx->mcause << std::endl;
   ctx->mstatus = state->mstatus->read();
   ctx->mepc = state->mepc->read();
   ctx->mtvec = state->mtvec->read();
