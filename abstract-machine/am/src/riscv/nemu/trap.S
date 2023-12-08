@@ -80,7 +80,7 @@ __am_asm_trap:
 __am_asm_trap2:
   li t0, 0x79
   li t1, 0xa00003f8
-  sw t0, 0(t1)
+  sb t0, 0(t1)
   csrr t0, mepc
   addi t0, t0, 4
   csrw mepc, t0
