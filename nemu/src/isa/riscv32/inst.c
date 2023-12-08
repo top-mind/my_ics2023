@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "isa.h"
 #include "local-include/reg.h"
 #include <cpu/cpu.h>
 #include <cpu/ifetch.h>
@@ -27,6 +28,7 @@ enum {
   TYPE_R,
   TYPE_I,
   TYPE_IS, // variant i type
+  TYPE_CSRw,
   TYPE_S,
   TYPE_B,
   TYPE_U,
@@ -56,14 +58,25 @@ enum {
     *imm = SEXT(BITS(i, 31, 31), 1) << 20 | BITS(i, 30, 21) << 1 | BITS(i, 20, 20) << 11 | \
            BITS(i, 19, 12) << 12;                                                          \
   } while (0)
+#define csr()                                 \
+  do {                                        \
+    switch (BITS(i, 31, 20)) {                \
+      case 0x300: *csr = &cpu.mstatus; break; \
+      case 0x305: *csr = &cpu.mtvec; break;   \
+      case 0x341: *csr = &cpu.mepc; break;    \
+      case 0x342: *csr = &cpu.mcause; break;  \
+      default: INV(s->pc);                    \
+    }                                         \
+  } while (0)
 
-static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, word_t **csr,
+                           int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
   *rd = BITS(i, 11, 7);
   switch (type) {
-    // RIISSBUJ
+    // RIISSBUJ CSRw
     case TYPE_R:
       src1R();
       src2R();
@@ -71,6 +84,11 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I:
       src1R();
       immI();
+      break;
+    case TYPE_CSRw:
+      src1R();
+      csr();
+      R(*rd) = **csr;
       break;
     case TYPE_IS:
       src1R();
@@ -89,17 +107,18 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_U: immU(); break;
     case TYPE_J: immJ(); break;
   }
-}
+    }
 
 static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
+  word_t *csr;
   s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */)         \
   {                                                                  \
-    decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+    decode_operand(s, &rd, &src1, &src2, &imm, &csr, concat(TYPE_, type)); \
     __VA_ARGS__;                                                     \
   }
 #define INSTBRANCH                                            \
@@ -183,8 +202,16 @@ static int decode_exec(Decode *s) {
                                                     : (sword_t)src1 % (sword_t)src2);
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11 ", remu, R,
           R(rd) = src2 == 0 ? src1 : src1 % src2);
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, INV(s->pc));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(11, s->pc));
+  // may call isa_raise_intr(3, s->pc) or NEMUINT based on sdb mode
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUINT(s->pc, R(10))); // x10 = a0
+
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, CSRw, *csr = src1);
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrs, CSRw, *csr |= src1);
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrc, CSRw, *csr &= ~src1);
+  INSTPAT("??????? ????? ????? 101 ????? 11100 11", csrrwi, CSRw, R(rd) = *csr);
+  INSTPAT("??????? ????? ????? 110 ????? 11100 11", csrrsi, CSRw, panic("csrrsi"));
+  INSTPAT("??????? ????? ????? 111 ????? 11100 11", csrrci, CSRw, panic("csrrci"));
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
 
