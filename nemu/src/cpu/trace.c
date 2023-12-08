@@ -124,10 +124,10 @@ static int ras_nr_repeat = 0;
 static paddr_t ras_lastpc = 0;
 
 void ftrace_flush() {
-  if (ras_nr_repeat > 0) {
+  if (ras_nr_repeat > 1) {
     printf("; /* repeated %d times */\n", ras_nr_repeat);
-    ras_nr_repeat = 0;
   }
+  ras_nr_repeat = 0;
 }
 #endif
 
