@@ -61,8 +61,6 @@ enum {
   } while (0)
 #define csr()                                 \
   do {                                        \
-    printf ("csr: %llx", BITS(i, 31, 20));         \
-    printf ("csr: %llx", BITS(i, 31, 0));         \
     switch (BITS(i, 31, 20)) {                \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
@@ -213,6 +211,8 @@ static int decode_exec(Decode *s) {
   // may call isa_raise_intr(3, s->pc) or NEMUINT based on sdb mode
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUINT(s->pc, R(10))); // x10 = a0
 
+  // XXX debug
+  printf("%x\n", s->isa.inst.val);
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, CSRw, *csr = src1);
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrs, CSRw, *csr |= src1);
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrc, CSRw, *csr &= ~src1);
