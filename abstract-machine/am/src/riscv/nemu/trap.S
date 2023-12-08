@@ -39,6 +39,7 @@ f(30) f(31)
 
 .align 3
 .globl __am_asm_trap
+.globl __am_asm_trap2
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
 
@@ -58,7 +59,13 @@ __am_asm_trap:
   # csrw mstatus, t1
 
   mv a0, sp
-  jal __am_irq_handle
+  # jal __am_irq_handle
+  la a0, __am_asm_trap2
+  csrw mtvec, a0
+  ecall
+  la a0, __am_asm_trap
+  csrw mtvec, a0
+
 
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
@@ -68,4 +75,7 @@ __am_asm_trap:
   MAP(REGS, POP)
 
   addi sp, sp, CONTEXT_SIZE
+  mret
+
+__am_asm_trap2:
   mret
