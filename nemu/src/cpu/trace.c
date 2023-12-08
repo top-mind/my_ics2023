@@ -53,6 +53,9 @@ void do_itrace(Decode *s) {
     if (ITRACE_COND) log_write("%s\n", buf);
     free(buf);
   }
+#elif defined(CONFIG_LIBDISASM)
+  if (g_itrace_stdout)
+    printf("%s\n", trace_disassemble(s));
 #endif
 }
 
