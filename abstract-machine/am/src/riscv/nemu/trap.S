@@ -59,7 +59,7 @@ __am_asm_trap:
   # csrw mstatus, t1
 
   mv a0, sp
-  # jal __am_irq_handle
+  jal __am_irq_handle
   la a0, __am_asm_trap2
   csrw mtvec, a0
   ecall
@@ -78,6 +78,9 @@ __am_asm_trap:
   mret
 
 __am_asm_trap2:
+  li t0, 0x79
+  li t1, 0xa00003f8
+  sw t0, 0(t1)
   csrr t0, mepc
   addi t0, t0, 4
   csrw mepc, t0
