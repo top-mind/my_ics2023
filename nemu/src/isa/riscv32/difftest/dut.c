@@ -21,12 +21,27 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   for (int i = 0; i < ARRLEN(((CPU_state *)0)->gpr); ++i) {
     if (ref_r->gpr[i] != cpu.gpr[i]) return false;
   }
-  if (ref_r->mepc != cpu.mepc ||
-      ref_r->mcause != cpu.mcause ||
-      ref_r->mtvec != cpu.mtvec ||
-      ref_r->mstatus != cpu.mstatus)
+  if (ref_r->mepc != cpu.mepc) {
+    printf("mepc: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.mepc, ref_r->mepc, pc);
     return false;
-  return ref_r->pc == cpu.pc;
+  }
+  if (ref_r->mstatus != cpu.mstatus) {
+    printf("mstatus: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.mstatus, ref_r->mstatus, pc);
+    return false;
+  }
+  if (ref_r->mtvec != cpu.mtvec) {
+    printf("mtvec: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.mtvec, ref_r->mtvec, pc);
+    return false;
+  }
+  if (ref_r->mcause != cpu.mcause) {
+    printf("mcause: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.mcause, ref_r->mcause, pc);
+    return false;
+  }
+  if (ref_r->pc != cpu.pc) {
+    printf("pc: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.pc, ref_r->pc, pc);
+    return false;
+  }
+  return true;
 }
 
 void isa_difftest_attach() {}
