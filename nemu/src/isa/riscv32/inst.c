@@ -61,6 +61,7 @@ enum {
   } while (0)
 #define csr()                                 \
   do {                                        \
+    printf ("csr: %llx", BITS(i, 31, 20));         \
     switch (BITS(i, 31, 20)) {                \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
