@@ -127,11 +127,13 @@ void ftrace_flush() {
   if (ras_nr_repeat > 0) {
     if (ras_nr_repeat > FTRACE_COMPRESS_THRESHOLD)
       printf("; /* repeated %d times */\n", ras_nr_repeat);
-    else
-      for (int i = 0; i < ras_nr_repeat; i++) {
+    else {
+      printf(";\n");
+      for (int i = 1; i < ras_nr_repeat; i++) {
         ftrace_push_printfunc(ras_lastpc, ras_depth);
         printf(";\n");
       }
+    }
     ras_nr_repeat = 0;
   }
 }
