@@ -49,9 +49,6 @@ static state_t *state = NULL;
 void sim_t::diff_init(int port) {
   p = get_core("0");
   state = p->get_state();
-  printf("Before: %lx\n", state->pc);
-  p->reset();
-  printf("After: %lx %lx\n", state->pc, state->mstatus->read());
 }
 
 void sim_t::diff_step(uint64_t n) {
@@ -66,7 +63,6 @@ void sim_t::diff_get_regs(void* diff_context) {
   ctx->pc = state->pc;
   ctx->mcause = state->mcause->read();
   ctx->mstatus = state->mstatus->read();
-  std::cout << "mstatus: " << std::hex << ctx->mstatus << std::endl;
   ctx->mepc = state->mepc->read();
   ctx->mtvec = state->mtvec->read();
 }
