@@ -77,19 +77,18 @@ extern "C" void init_disasm(const char *triple) {
   gMRI = target->createMCRegInfo(gTriple);
   auto AsmInfo = target->createMCAsmInfo(*gMRI, gTriple, MCOptions);
 #if LLVM_VERSION_MAJOR >= 13
-   auto llvmTripleTwine = Twine(triple);
-   auto llvmtriple = llvm::Triple(llvmTripleTwine);
-   auto Ctx = new llvm::MCContext(llvmtriple,AsmInfo, gMRI, nullptr);
+  auto llvmTripleTwine = Twine(triple);
+  auto llvmtriple = llvm::Triple(llvmTripleTwine);
+  auto Ctx = new llvm::MCContext(llvmtriple, AsmInfo, gMRI, nullptr);
 #else
-   auto Ctx = new llvm::MCContext(AsmInfo, gMRI, nullptr);
+  auto Ctx = new llvm::MCContext(AsmInfo, gMRI, nullptr);
 #endif
   gDisassembler = target->createMCDisassembler(*gSTI, *Ctx);
-  gIP = target->createMCInstPrinter(llvm::Triple(gTriple),
-      AsmInfo->getAssemblerDialect(), *AsmInfo, *gMII, *gMRI);
+  gIP = target->createMCInstPrinter(llvm::Triple(gTriple), AsmInfo->getAssemblerDialect(), *AsmInfo,
+                                    *gMII, *gMRI);
   gIP->setPrintImmHex(true);
   gIP->setPrintBranchImmAsAddress(true);
-  if (isa == "riscv32" || isa == "riscv64")
-    gIP->applyTargetSpecificCLOption("no-aliases");
+  if (isa == "riscv32" || isa == "riscv64") gIP->applyTargetSpecificCLOption("no-aliases");
 }
 
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {

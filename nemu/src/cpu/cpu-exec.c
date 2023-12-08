@@ -123,11 +123,9 @@ void cpu_exec(uint64_t n) {
           // err msg shown in isa_exec_once -> invalid_inst
           // nothing to do here
           break;
-        case ABORT_MEMIO:
-          print_fail_msg();
-          break;
+        case ABORT_MEMIO: print_fail_msg(); break;
       }
-nemu_end:
+    nemu_end:
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT
              ? ANSI_FMT("ABORT", ANSI_FG_RED)

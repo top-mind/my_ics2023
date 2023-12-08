@@ -43,9 +43,7 @@ eval_t expr(char *e);
 rpn_t *exprcomp(char *e, size_t *);
 eval_t eval(const rpn_t *, size_t);
 void peval(eval_t);
-static inline bool eveq(eval_t a, eval_t b) {
-  return a.type == b.type && a.value == b.value;
-}
+static inline bool eveq(eval_t a, eval_t b) { return a.type == b.type && a.value == b.value; }
 
 // breakpoints
 void init_breakpoints();
@@ -65,6 +63,5 @@ void free_all_breakpoints();
 
 #define breakpoint_instruction \
   MUXDEF(CONFIG_ISA_x86, 0xcc, \
-  MUXDEF(CONFIG_ISA_mips32, 0x0005000d, \
-  MUXDEF(CONFIG_ISA_riscv, 0x00100073, )))
+         MUXDEF(CONFIG_ISA_mips32, 0x0005000d, MUXDEF(CONFIG_ISA_riscv, 0x00100073, )))
 #endif

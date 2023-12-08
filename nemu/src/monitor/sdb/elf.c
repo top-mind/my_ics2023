@@ -58,13 +58,12 @@ void init_addelf(char *filename) {
       for (Elf_Off _off = 0; _off < sh_size; _off += sizeof(sym)) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
-        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC ||
-            ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
+        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC || ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
           if (nr_sym >= ARRLEN(syms)) {
             nr_sym++;
             continue;
           }
-          syms[nr_sym++] = (Symbol) {
+          syms[nr_sym++] = (Symbol){
             .st_value = sym.st_value,
             .st_size = sym.st_size,
             .type_func = ELF_ST_TYPE(sym.st_info) == STT_FUNC,
@@ -103,16 +102,14 @@ void elf_getname_and_offset(Elf_Addr addr, char **name, Elf_Off *offset) {
 
 Elf_Addr elf_find_func_byname(char *name) {
   for (size_t i = 0; i < nr_sym; i++) {
-    if (syms[i].type_func && 0 == strcmp(syms[i].name, name))
-      return syms[i].st_value;
+    if (syms[i].type_func && 0 == strcmp(syms[i].name, name)) return syms[i].st_value;
   }
   return -1;
 }
 
 const Symbol *elf_find_symbol_byname(char *name) {
   for (size_t i = 0; i < nr_sym; i++) {
-    if (0 == strcmp(syms[i].name, name))
-      return &syms[i];
+    if (0 == strcmp(syms[i].name, name)) return &syms[i];
   }
   return NULL;
 }

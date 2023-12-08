@@ -44,9 +44,7 @@ char *trace_disassemble(Decode *s) {
 
 static bool g_itrace_stdout = 0;
 
-void trace_set_itrace_stdout(bool enable) {
-  g_itrace_stdout = enable;
-}
+void trace_set_itrace_stdout(bool enable) { g_itrace_stdout = enable; }
 void do_itrace(Decode *s) {
 #ifdef CONFIG_ITRACE
   if (g_itrace_stdout || ITRACE_COND) {
@@ -67,7 +65,7 @@ static bool iqueue_wrap = 0;
 static inline void do_irtrace(Decode *s) {
 #ifdef CONFIG_IQUEUE
   iqueue[iqueue_end] = *s; // It is better to use ISA depended method to copy ISADecodeInfo
-  iqueue_end ++;
+  iqueue_end++;
   if (iqueue_end == CONFIG_NR_IQUEUE) {
     iqueue_end = 0;
     iqueue_wrap = 1;
@@ -113,10 +111,8 @@ static inline void ftrace_push_printfunc(vaddr_t pc, int depth) {
   printf("%*.s", depth * 2, "");
   elf_getname_and_offset(pc, &f_name, &f_off);
   printf("%s", f_name);
-  if (f_off != 0 && ELF_OFFSET_VALID(f_off))
-    printf("+0x%lx", (unsigned long) f_off);
-  if (!ELF_OFFSET_VALID(f_off))
-    printf("[" FMT_PADDR "]", pc);
+  if (f_off != 0 && ELF_OFFSET_VALID(f_off)) printf("+0x%lx", (unsigned long)f_off);
+  if (!ELF_OFFSET_VALID(f_off)) printf("[" FMT_PADDR "]", pc);
   printf("()");
 }
 static bool ras_tailcall = false;
@@ -139,13 +135,11 @@ void ftrace_flush() {
 }
 #endif
 
-
 /* Often, we print message if we prepare a whole line to print.  * But as soon
  * as program stop inside a function, sdb tells us we go into, as desired.  *
  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
-  if (ras_depth < ARRLEN(stk_func))
-    stk_func[ras_depth] = _pc;
+  if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
 #ifdef CONFIG_FTRACE_COND
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
@@ -225,12 +219,9 @@ void backtrace() {
     printf("%u frame(s) folded\n", ras_depth - ARRLEN(stk_func));
     i = ARRLEN(stk_func) - 1;
   }
-  for (; i > 0; i--)
-    print_frame(i);
+  for (; i > 0; i--) print_frame(i);
 }
 
-void trace_init() {
-  ftrace_push(0, RESET_VECTOR);
-}
+void trace_init() { ftrace_push(0, RESET_VECTOR); }
 
 #endif

@@ -3,7 +3,7 @@
 #include <cpu/decode.h>
 
 #ifdef CONFIG_TRACE
-#define MAX_INST_TO_PRINT 10
+#define MAX_INST_TO_PRINT         10
 #define FTRACE_COMPRESS_THRESHOLD 1
 #define MAX
 void do_trace(Decode *);
@@ -15,4 +15,3 @@ void trace_set_itrace_stdout(bool enable);
 void ftrace_flush();
 #endif
 #endif
-

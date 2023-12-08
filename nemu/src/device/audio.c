@@ -32,16 +32,11 @@ static int upd_delay;
 #define SBUF_WORK_AS_FIFO
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
-  switch(offset / sizeof(uint32_t)) {
-    case reg_freq:
-      break;
-    case reg_channels:
-      break;
-    case reg_samples:
-      break;
-    case reg_sbuf_size:
-      assert(!is_write);
-      break;
+  switch (offset / sizeof(uint32_t)) {
+    case reg_freq: break;
+    case reg_channels: break;
+    case reg_samples: break;
+    case reg_sbuf_size: assert(!is_write); break;
     case reg_init:
       if (is_write) {
         // init SDL audio
@@ -79,9 +74,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       }
       audio_base[reg_count] = used;
       break;
-    default:
-      printf("%d\n", offset);
-      assert(0);
+    default: printf("%d\n", offset); assert(0);
   }
 }
 

@@ -24,7 +24,7 @@ void xfree(void *p);
 // ----------- state -----------
 
 enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT, NEMU_INT };
-#define ABORT_INV 1
+#define ABORT_INV   1
 #define ABORT_MEMIO 2
 
 typedef struct {

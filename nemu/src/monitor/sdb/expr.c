@@ -82,34 +82,32 @@ enum {
 static struct rule {
   const char *regex;
   int token_type;
-} rules[] = {
-  {" +", TK_NOTYPE},  // spaces
-  {"\\*", TK_TIMES},  // times
-  {"/", TK_DIVIDE},   // divide
-  {"%", TK_MOD},      // modulos
-  {"\\+", TK_PLUS},   // plus
-  {"-", TK_MINUS},    // minus
-  {"<<", TK_LSHIFT},  // left shift
-  {"<=", TK_LEQ},     // less or equal
-  {"<", TK_LU},       // less than
-  {">>", TK_RSHIFT},  // right shift
-  {">=", TK_GEQ},     // greater or equal
-  {">", TK_GU},       // greater than
-  {"~", TK_BITNOT},   // bit note
-  {"\\^", TK_BITXOR}, // bit xor
-  {"==", TK_EQ},      // equal
-  {"!=", TK_NEQ},     // not equal
-  {"!", TK_NOT},      // not
-  {"&&", TK_AND},     // logical and
-  {"&", TK_BITAND},   // bit and
-  {"\\|\\|", TK_OR},  // logical or
-  {"\\|", TK_BITOR},  // bit or
-  {"[0-9]", TK_NUM},  // num
-  {"\\(", '('},       // lbrace
-  {"\\)", ')'},       // rbrace
-  {"\\$[a-z0-9$]+", TK_DOLLAR},
-  {"[_[:alnum:]]+", TK_SYM}
-};
+} rules[] = {{" +", TK_NOTYPE},  // spaces
+             {"\\*", TK_TIMES},  // times
+             {"/", TK_DIVIDE},   // divide
+             {"%", TK_MOD},      // modulos
+             {"\\+", TK_PLUS},   // plus
+             {"-", TK_MINUS},    // minus
+             {"<<", TK_LSHIFT},  // left shift
+             {"<=", TK_LEQ},     // less or equal
+             {"<", TK_LU},       // less than
+             {">>", TK_RSHIFT},  // right shift
+             {">=", TK_GEQ},     // greater or equal
+             {">", TK_GU},       // greater than
+             {"~", TK_BITNOT},   // bit note
+             {"\\^", TK_BITXOR}, // bit xor
+             {"==", TK_EQ},      // equal
+             {"!=", TK_NEQ},     // not equal
+             {"!", TK_NOT},      // not
+             {"&&", TK_AND},     // logical and
+             {"&", TK_BITAND},   // bit and
+             {"\\|\\|", TK_OR},  // logical or
+             {"\\|", TK_BITOR},  // bit or
+             {"[0-9]", TK_NUM},  // num
+             {"\\(", '('},       // lbrace
+             {"\\)", ')'},       // rbrace
+             {"\\$[a-z0-9$]+", TK_DOLLAR},
+             {"[_[:alnum:]]+", TK_SYM}};
 
 #define NR_REGEX ARRLEN(rules)
 
@@ -394,7 +392,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
       case TK_AND: res = lsrc && rsrc; break;
       case TK_OR: res = lsrc || rsrc; break;
       case TK_DEREF:
-deref:
+      deref:
         if (in_pmem(rsrc) && in_pmem(rsrc + sizeof res - 1)) {
           res = paddr_read(rsrc, sizeof res);
         } else {

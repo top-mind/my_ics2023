@@ -121,8 +121,7 @@ static int cmd_w(char *args) {
     return 0;
   }
   int n = create_watchpoint(args);
-  if (n > 0)
-    printf("Watchpoint %d: %s\n", n, args);
+  if (n > 0) printf("Watchpoint %d: %s\n", n, args);
   return 0;
 }
 static int cmd_d(char *args) {
@@ -360,7 +359,7 @@ void sdb_mainloop() {
     }
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
-finally:
+  finally:
     free(str);
   }
 }

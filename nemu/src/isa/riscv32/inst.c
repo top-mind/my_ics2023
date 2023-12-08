@@ -204,7 +204,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t dnpc);
 void ftrace_push(vaddr_t pc, vaddr_t dnpc);
 void isa_ras_update(Decode *s) {
 #define PUSH ftrace_push(s->pc, s->dnpc)
-#define POP ftrace_pop(s->pc, s->dnpc)
+#define POP  ftrace_pop(s->pc, s->dnpc)
 #undef INSTPAT_MATCH
 #define INSTPAT_MATCH(s, ...) __VA_ARGS__
   INSTPAT_START(ras);

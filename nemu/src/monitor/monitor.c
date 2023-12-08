@@ -70,9 +70,12 @@ static long load_img() {
 
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
-    {"batch", no_argument, NULL, 'b'},      {"log", required_argument, NULL, 'l'},
-    {"diff", required_argument, NULL, 'd'}, {"port", required_argument, NULL, 'p'},
-    {"help", no_argument, NULL, 'h'},       {"elf", required_argument, NULL, 'e'},
+    {"batch", no_argument, NULL, 'b'},
+    {"log", required_argument, NULL, 'l'},
+    {"diff", required_argument, NULL, 'd'},
+    {"port", required_argument, NULL, 'p'},
+    {"help", no_argument, NULL, 'h'},
+    {"elf", required_argument, NULL, 'e'},
     {0, 0, NULL, 0},
   };
   int o;
@@ -107,19 +110,19 @@ static int parse_args(int argc, char *argv[]) {
       case 'd': diff_so_file = optarg; break;
       case 'e': init_addelf(optarg); break;
       case 1:
-                img_file = optarg;
-                // if exists optarg:r.elf, then load it
-                {
-                  size_t len = strlen(optarg);
-                  // test if optarg ends with ".bin"
-                  if (len > 4 && strcmp(optarg + len - 4, ".bin") == 0) {
-                    char *relf = savestring(optarg);
-                    strcpy(relf+ len - 3, "elf");
-                    init_addelf(relf);
-                    free(relf);
-                  }
-                }
-                return 0;
+        img_file = optarg;
+        // if exists optarg:r.elf, then load it
+        {
+          size_t len = strlen(optarg);
+          // test if optarg ends with ".bin"
+          if (len > 4 && strcmp(optarg + len - 4, ".bin") == 0) {
+            char *relf = savestring(optarg);
+            strcpy(relf + len - 3, "elf");
+            init_addelf(relf);
+            free(relf);
+          }
+        }
+        return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-h,--help               show this help and exit\n");
@@ -167,18 +170,18 @@ void init_monitor(int argc, char *argv[]) {
 
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
 #ifndef CONFIG_ISA_loongarch32r
-// #define INIT(name) init_disasm(#name "-pc-linux-gnu")
-// #ifdef CONFIG_ISA_x86
-//   INIT(i686);
-// #elif defined(CONFIG_ISA_mips32)
-//   INIT(mipsel);
-// #elif defined(CONFIG_ISA_riscv)
-// #ifdef CONFIG_RV64
-//   INIT(riscv64);
-// #else
-//   INIT(riscv32);
-// #endif /* CONFIG_RV64 */
-// #endif /* isa-type */
+  // #define INIT(name) init_disasm(#name "-pc-linux-gnu")
+  // #ifdef CONFIG_ISA_x86
+  //   INIT(i686);
+  // #elif defined(CONFIG_ISA_mips32)
+  //   INIT(mipsel);
+  // #elif defined(CONFIG_ISA_riscv)
+  // #ifdef CONFIG_RV64
+  //   INIT(riscv64);
+  // #else
+  //   INIT(riscv32);
+  // #endif /* CONFIG_RV64 */
+  // #endif /* isa-type */
   // clang-format off
   init_disasm(MUXDEF(CONFIG_ISA_x86, "i686",
               MUXDEF(CONFIG_ISA_mips32, "mipsel",
