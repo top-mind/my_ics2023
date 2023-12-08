@@ -51,7 +51,7 @@ void sim_t::diff_init(int port) {
   state = p->get_state();
   printf("Before: %lx\n", state->pc);
   p->reset();
-  printf("After: %lx\n", state->pc);
+  printf("After: %lx %lx\n", state->pc, state->mstatus->read());
 }
 
 void sim_t::diff_step(uint64_t n) {
