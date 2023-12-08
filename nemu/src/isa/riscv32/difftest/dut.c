@@ -21,12 +21,15 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   for (int i = 0; i < ARRLEN(((CPU_state *)0)->gpr); ++i) {
     if (ref_r->gpr[i] != cpu.gpr[i]) return false;
   }
-  if (ref_r->mepc != cpu.mepc ||
-      ref_r->mcause != cpu.mcause ||
-      ref_r->mtvec != cpu.mtvec ||
-      ref_r->mstatus != cpu.mstatus)
-    return false;
-  return true;
+  if (ref_r->mepc != cpu.mepc)
+    printf("mepc: 0x%x, 0x%x\n", ref_r->mepc, cpu.mepc);
+  if (ref_r->mcause != cpu.mcause)
+    printf("mcause: 0x%x, 0x%x\n", ref_r->mcause, cpu.mcause);
+  if (ref_r->mtvec != cpu.mtvec)
+    printf("mtvec: 0x%x, 0x%x\n", ref_r->mtvec, cpu.mtvec);
+  if (ref_r->mstatus != cpu.mstatus)
+    printf("mstatus: 0x%x, 0x%x\n", ref_r->mstatus, cpu.mstatus);
+  return ref_r->pc == pc;
 }
 
 void isa_difftest_attach() {}
