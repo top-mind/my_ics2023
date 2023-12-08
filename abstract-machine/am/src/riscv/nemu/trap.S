@@ -78,4 +78,7 @@ __am_asm_trap:
   mret
 
 __am_asm_trap2:
+  csrr t0, mepc
+  addi t0, t0, 4
+  csrw mepc, t0
   mret
