@@ -20,6 +20,8 @@
 #include <cpu/decode.h>
 #include <stdint.h>
 
+#define PRIV_LOW 3
+
 #define R(i) gpr(i)
 #define Mr   vaddr_read
 #define Mw   vaddr_write
@@ -207,7 +209,8 @@ static int decode_exec(Decode *s) {
                                                     : (sword_t)src1 % (sword_t)src2);
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11 ", remu, R,
           R(rd) = src2 == 0 ? src1 : src1 % src2);
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(11, s->pc));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(11, s->pc),
+      cpu.mpie = cpu.mie, cpu.mie = 0, cpu.mpp = 3);
   // may call isa_raise_intr(3, s->pc) or NEMUINT based on sdb mode
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUINT(s->pc, R(10))); // x10 = a0
 
@@ -217,9 +220,9 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 101 ????? 11100 11", csrrwi, CSRwi, *csr = imm);
   INSTPAT("??????? ????? ????? 110 ????? 11100 11", csrrsi, CSRwi, *csr |= imm);
   INSTPAT("??????? ????? ????? 111 ????? 11100 11", csrrci, CSRwi, *csr &= ~imm);
-  // The exact behaviour is MPP = LOWEST, MIE = MPIE, MPIE = 1
+  // The exact behaviour is MPP = PREV_LOW, MIE = MPIE, MPIE = 1
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = cpu.mepc,
-          cpu.mstatus = 0x80);
+          cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
 
