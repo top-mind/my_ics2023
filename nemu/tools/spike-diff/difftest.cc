@@ -105,7 +105,9 @@ __EXPORT void difftest_regcpy(void* dut, bool direction) {
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
+  std::cout << "mstatus before: " << std::hex << state->mstatus->read() << std::endl;
   s->diff_step(n);
+  std::cout << "mstatus after: " << std::hex << state->mstatus->read() << std::endl;
 }
 
 __EXPORT void difftest_init(int port) {
