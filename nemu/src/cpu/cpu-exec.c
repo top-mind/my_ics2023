@@ -113,8 +113,6 @@ void cpu_exec(uint64_t n) {
         goto nemu_end;
 #elif defined(CONFIG_ISA_x86)
 #endif
-      } else {
-        cpu.pc = nemu_state.halt_pc;
       }
       break;
     case NEMU_ABORT:

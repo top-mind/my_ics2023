@@ -213,7 +213,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(11, s->pc),
       cpu.mpie = cpu.mie, cpu.mie = 0, cpu.mpp = 3);
   // may call isa_raise_intr(3, s->pc) or NEMUINT based on sdb mode
-  INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUINT(s->pc, R(10))); // x10 = a0
+  INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, s->dnpc = s->pc,
+          NEMUINT(s->pc, R(10))); // x10 = a0
 
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, CSRw, *csr = src1);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs, CSRw, *csr |= src1);
