@@ -39,7 +39,6 @@ f(30) f(31)
 
 .align 3
 .globl __am_asm_trap
-.globl __am_asm_trap2
 .type __am_asm_trap, @function
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
@@ -61,7 +60,7 @@ __am_asm_trap:
 
   mv a0, sp
   jal __am_irq_handle
-  la a0, __am_asm_trap2
+  la a0, __am_trap_nest
   csrw mtvec, a0
   ecall
   la a0, __am_asm_trap
@@ -78,11 +77,3 @@ __am_asm_trap:
   addi sp, sp, CONTEXT_SIZE
   mret
 .size __am_asm_trap, . - __am_asm_trap
-__am_asm_trap2:
-  li t0, 0x20
-  li t1, 0xa00003f8
-  sb t0, 0(t1)
-  csrr t0, mepc
-  addi t0, t0, 4
-  csrw mepc, t0
-  mret
