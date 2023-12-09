@@ -74,10 +74,7 @@ void sim_t::diff_set_regs(void* diff_context) {
     state->XPR.write(i, (sword_t)ctx->gpr[i]);
   }
   state->pc = ctx->pc;
-  std::cout << "mstatus 1 " << std::hex << state->mstatus->read() << std::endl;
-  std::cout << "mstatus ref " << std::hex << ctx->mstatus << std::endl;
   state->mstatus->write(0);
-  std::cout << "mstatus 2 " << std::hex << state->mstatus->read() << std::endl;
   state->mepc->write(ctx->mepc);
   state->mtvec->write(ctx->mtvec);
 }
