@@ -49,6 +49,7 @@ static state_t *state = NULL;
 void sim_t::diff_init(int port) {
   p = get_core("0");
   state = p->get_state();
+  std::cout << "mcause: " << state->mcause->read() << std::endl;
 }
 
 void sim_t::diff_step(uint64_t n) {
