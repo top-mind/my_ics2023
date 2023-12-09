@@ -75,12 +75,10 @@ void sim_t::diff_set_regs(void* diff_context) {
   }
   state->pc = ctx->pc;
   std::cout << "mstatus 1 " << std::hex << state->mstatus->read() << std::endl;
+  std::cout << "mstatus ref " << std::hex << ctx->mstatus << std::endl;
   state->mstatus->write(ctx->mstatus);
-  std::cout << "mstatus 2 " << std::hex << state->mstatus->read() << std::endl;
   state->mepc->write(ctx->mepc);
-  std::cout << "mstatus 3 " << std::hex << state->mstatus->read() << std::endl;
   state->mtvec->write(ctx->mtvec);
-  std::cout << "mstatus 4 " << std::hex << state->mstatus->read() << std::endl;
 }
 
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
