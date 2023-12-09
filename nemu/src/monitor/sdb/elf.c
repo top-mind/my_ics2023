@@ -3,6 +3,7 @@
 #include <common.h>
 #include <stdlib.h>
 #include "elf-def.h"
+#include "utils.h"
 
 #define EM_AVAILABLE EM_RISCV
 
@@ -76,7 +77,7 @@ void init_addelf(char *filename) {
     }
   }
   size_t nr_sym_read = nr_sym < ARRLEN(syms) ? nr_sym : ARRLEN(syms);
-  printf("Read %zu/%zu symbols from %s\n", nr_sym_read, nr_sym, filename);
+  printf(ANSI_FMT("Read %zu/%zu symbols from %s\n", ANSI_FG_BLUE), nr_sym_read, nr_sym, filename);
   nr_sym = nr_sym_read;
   qsort(syms, nr_sym, sizeof(Symbol), cmp);
   // for (int i = 0; i < nr_sym; i++)
