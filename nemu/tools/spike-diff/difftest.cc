@@ -74,9 +74,13 @@ void sim_t::diff_set_regs(void* diff_context) {
     state->XPR.write(i, (sword_t)ctx->gpr[i]);
   }
   state->pc = ctx->pc;
+  std::cout << "mstatus 1 " << std::hex << state->mstatus->read() << std::endl;
   state->mstatus->write(ctx->mstatus);
+  std::cout << "mstatus 2 " << std::hex << state->mstatus->read() << std::endl;
   state->mepc->write(ctx->mepc);
+  std::cout << "mstatus 3 " << std::hex << state->mstatus->read() << std::endl;
   state->mtvec->write(ctx->mtvec);
+  std::cout << "mstatus 4 " << std::hex << state->mstatus->read() << std::endl;
 }
 
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
@@ -98,9 +102,7 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 
 __EXPORT void difftest_regcpy(void* dut, bool direction) {
   if (direction == DIFFTEST_TO_REF) {
-    std::cout << "mstatus before: " << std::hex << state->mstatus->read() << std::endl;
     s->diff_set_regs(dut);
-    std::cout << "mstatus after: " << std::hex << state->mstatus->read() << std::endl;
   } else {
     s->diff_get_regs(dut);
   }
