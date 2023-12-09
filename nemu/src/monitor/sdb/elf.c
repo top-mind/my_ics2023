@@ -79,8 +79,8 @@ void init_addelf(char *filename) {
   printf("Read %zu/%zu symbols from %s\n", nr_sym_read, nr_sym, filename);
   nr_sym = nr_sym_read;
   qsort(syms, nr_sym, sizeof(Symbol), cmp);
-  for (int i = 0; i < nr_sym; i++)
-    printf("name='%s', %#lx, %ld\n", syms[i].name, (long)syms[i].st_value, (long)syms[i].st_value);
+  // for (int i = 0; i < nr_sym; i++)
+  //   printf("name='%s', %#lx, %ld\n", syms[i].name, (long)syms[i].st_value, (long)syms[i].st_value);
   fclose(f);
 }
 
