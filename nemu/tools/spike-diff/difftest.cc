@@ -97,19 +97,17 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 }
 
 __EXPORT void difftest_regcpy(void* dut, bool direction) {
-  std::cout << "mstatus before: " << std::hex << state->mstatus->read() << std::endl;
   if (direction == DIFFTEST_TO_REF) {
+    std::cout << "mstatus before: " << std::hex << state->mstatus->read() << std::endl;
     s->diff_set_regs(dut);
+    std::cout << "mstatus after: " << std::hex << state->mstatus->read() << std::endl;
   } else {
     s->diff_get_regs(dut);
   }
-  std::cout << "mstatus after: " << std::hex << state->mstatus->read() << std::endl;
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
-  std::cout << "mstatus before: " << std::hex << state->mstatus->read() << std::endl;
   s->diff_step(n);
-  std::cout << "mstatus after: " << std::hex << state->mstatus->read() << std::endl;
 }
 
 __EXPORT void difftest_init(int port) {
