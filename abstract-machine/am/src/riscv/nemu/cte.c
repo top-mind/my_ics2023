@@ -5,9 +5,9 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 void __am_trap_nest() {
-  unsigned mstatus;
-  asm volatile ("csrr %0, mstatus" : "=r"(mstatus));
-  printf("mstatus = %x\n", mstatus);
+  // unsigned mstatus;
+  // asm volatile ("csrr %0, mstatus" : "=r"(mstatus));
+  // printf("mstatus = %x\n", mstatus);
   asm volatile ("mret");
 }
 
