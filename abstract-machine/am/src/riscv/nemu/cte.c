@@ -8,6 +8,7 @@ void __am_trap_nest() {
   unsigned mstatus;
   asm volatile ("csrr %0, mstatus" : "=r"(mstatus));
   printf("mstatus = %x\n", mstatus);
+  asm volatile ("mret");
 }
 
 Context *__am_irq_handle(Context *c) {
