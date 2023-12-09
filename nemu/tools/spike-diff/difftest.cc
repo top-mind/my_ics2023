@@ -49,6 +49,7 @@ static state_t *state = NULL;
 void sim_t::diff_init(int port) {
   p = get_core("0");
   state = p->get_state();
+  p->reset();
   std::cout << "mstatus: " << std::hex << state->mstatus->read() << std::endl;
 }
 
