@@ -17,7 +17,6 @@ void do_syscall(Context *c) {
       c->GPRx = 0;
       break;
     case SYS_write:
-      Log("Write syscall");
       if (a[1] == 1 || a[1] == 2) {
         for (size_t i = 0; i < a[3]; i++)
           putch(*(char *)(a[2] + i));
