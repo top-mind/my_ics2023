@@ -3,7 +3,7 @@
 
 int main() {
   volatile int a = 10;
-  printf("%d\n", a);
+  printf("Hello World from Navy-apps for the %dth time!\n", a);
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
