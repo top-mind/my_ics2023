@@ -8,9 +8,12 @@ void do_syscall(Context *c) {
   a[3] = c->GPR4;
 
   switch (a[0]) {
+    case SYS_exit:
+      Log("Halt system with exit code = %d", a[1]);
+      halt(a[1]);
+      break;
     case SYS_yield:
       Log("Yield syscall");
-      yield();
       c->GPRx = 0;
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
