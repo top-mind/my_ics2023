@@ -11,13 +11,25 @@
 # define Elf_Shdr Elf32_Shdr
 #endif
 
+#if defined (__ISA_AM_NATIVE__)
+# define EXPECT_VALUE EM_X86_64
+#elif defined(__ISA_X86__)
+# define EXPECT_VALUE EM_386
+#elif defined(__ISA_MIPS32__)
+# define EXPECT_VALUE EM_MIPS
+#elif defined(__riscv)
+# define EXPECT_VALUE EM_RISCV
+#else
+#error Unsupported ISA
+#endif
+
 #include <ramdisk.h>
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof ehdr);
   assert(memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0);
   assert(ehdr.e_type == ET_EXEC);
-  // assert(ehdr.e_machine == EM_RISCV);
+  assert(ehdr.e_machine == EXPECT_VALUE);
   assert(ehdr.e_version == EV_CURRENT);
   // ramdisk_read(ehdr.e_phoff)
   // PN_XNUM
