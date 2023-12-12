@@ -96,7 +96,8 @@ int create_watchpoint(char *e) {
 void disable_breakpoints() {
   breakpoint_enable = false;
   FOR_BREAKPOINTS(bp) {
-    if (!bp->duplicate) host_write(guest_to_host(bp->addr), LEN_BREAK_INST, bp->raw_instr);
+    if (!bp->duplicate && host_read(guest_to_host(bp->addr), LEN_BREAK_INST) == breakpoint_instruction)
+      host_write(guest_to_host(bp->addr), LEN_BREAK_INST, bp->raw_instr);
   }
 }
 
