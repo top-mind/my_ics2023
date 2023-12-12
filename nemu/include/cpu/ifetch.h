@@ -26,9 +26,6 @@ static inline uint32_t inst_fetch0(vaddr_t *pc, int len) {
 }
 
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
-  if (((uintptr_t) *pc) == 0x830001dc) {
-    asm volatile ("int3");
-  }
   uint32_t inst = vaddr_ifetch(*pc, len);
   (*pc) += len;
   return inst;
