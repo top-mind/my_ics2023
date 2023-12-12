@@ -21,11 +21,10 @@ void do_syscall(Context *c) {
       if (a[1] == 1 || a[1] == 2) {
         for (size_t i = 0; i < a[3]; i++)
           putch(*(char *)(a[2] + i));
-        c->GPRx = 0;
+        c->GPRx = a[3];
       } else {
         c->GPRx = -1;
       }
-      c->GPRx = 0;
       break;
     case SYS_brk:
       Log("brk syscall with addr = %p", a[1]);
