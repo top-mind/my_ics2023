@@ -128,8 +128,10 @@ static inline void free_bp(bp_t *p) {
   // XXX All breakpoints should be disabled ???
   int size = sizeof((bp_t *)0)->raw_instr;
   if (host_read(guest_to_host(p->addr), size) != p->raw_instr) {
-    fprintf(stderr, ANSI_FMT("Breakpoint at " FMT_PADDR ": memory changed, breakpoint cannot work",
-                             ANSI_FG_RED), p->addr);
+    fprintf(stderr,
+            ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user programme write memory.\n",
+                     ANSI_FG_RED),
+            p->addr);
   }
 }
 
