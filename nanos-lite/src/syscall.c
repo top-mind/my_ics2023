@@ -24,8 +24,8 @@ void do_syscall(Context *c) {
         c->GPRx = 0;
       } else {
         c->GPRx = -1;
-        TODO();
       }
+      c->GPRx = 0;
       break;
     case SYS_brk:
       Log("brk syscall with addr = %p", a[1]);
