@@ -27,7 +27,7 @@ static inline uint32_t inst_fetch0(vaddr_t *pc, int len) {
 
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   if (((uintptr_t) *pc) == 0x830001dc) {
-    panic("pc = " FMT_PADDR, *pc);
+    asm volatile ("int3");
   }
   uint32_t inst = vaddr_ifetch(*pc, len);
   (*pc) += len;
