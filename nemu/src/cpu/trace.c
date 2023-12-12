@@ -148,7 +148,12 @@ void ftrace_set_stopat_push(bool enable) { ftrace_stopat_push = enable; }
  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
-  if (ftrace_stopat_push) nemu_state.state = NEMU_STOP;
+  if (ftrace_stopat_push) {
+    char *f_name;
+    elf_getname_and_offset(_pc, &f_name, NULL);
+    printf("Calling %s(" FMT_PADDR ")\n", f_name, dnpc);
+    nemu_state.state = NEMU_STOP;
+  }
 #ifdef CONFIG_FTRACE_COND
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
