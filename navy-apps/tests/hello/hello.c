@@ -2,9 +2,6 @@
 #include <stdio.h>
 
 int main() {
-  volatile int a = 100;
-  printf("hello %d\n", a);
-  return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
