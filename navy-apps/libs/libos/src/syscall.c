@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <time.h>
 #include "syscall.h"
+#include <errno.h>
 
 // helper macros
 #define _concat(x, y) x ## y
@@ -77,6 +78,7 @@ void *_sbrk(intptr_t increment) {
     program_break += increment;
     return (void *)old_program_break;
   }
+  errno = ENOMEM;
   return (void *)-1;
 }
 

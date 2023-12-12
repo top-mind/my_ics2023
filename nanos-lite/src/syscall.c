@@ -17,7 +17,7 @@ void do_syscall(Context *c) {
       c->GPRx = 0;
       break;
     case SYS_write:
-      // Log("Write syscall with fd = %d, buf = %p, len = %d", a[1], a[2], a[3]);
+      Log("Write syscall with fd = %d, buf = %p, len = %d", a[1], a[2], a[3]);
       if (a[1] == 1 || a[1] == 2) {
         for (size_t i = 0; i < a[3]; i++)
           putch(*(char *)(a[2] + i));
@@ -28,7 +28,7 @@ void do_syscall(Context *c) {
       break;
     case SYS_brk:
       Log("brk syscall with addr = %p", a[1]);
-      c->GPRx = -1;
+      c->GPRx = 0;
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
