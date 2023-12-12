@@ -24,6 +24,7 @@ void do_syscall(Context *c) {
         c->GPRx = 0;
       } else {
         c->GPRx = -1;
+        TODO();
       }
       break;
     case SYS_brk:
