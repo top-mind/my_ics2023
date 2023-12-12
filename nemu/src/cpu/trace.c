@@ -122,6 +122,7 @@ static bool ras_tailcall = false;
 static int ras_nr_repeat = 0;
 static paddr_t ras_lastpc = 0;
 
+
 void ftrace_flush() {
   if (ras_nr_repeat > 0) {
     if (ras_nr_repeat > FTRACE_COMPRESS_THRESHOLD)
@@ -138,11 +139,16 @@ void ftrace_flush() {
 }
 #endif
 
+static bool ftrace_stopat_push = false;
+
+void ftrace_set_stopat_push(bool enable) { ftrace_stopat_push = enable; }
+
 /* Often, we print message if we prepare a whole line to print.  * But as soon
  * as program stop inside a function, sdb tells us we go into, as desired.  *
  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
+  if (ftrace_stopat_push) nemu_state.state = NEMU_STOP;
 #ifdef CONFIG_FTRACE_COND
   bool need_minus_nr_repeat, need_print_old, need_print_lbrace, need_print_new;
   need_print_old = ras_tailcall && ras_nr_repeat > 1;
@@ -173,7 +179,7 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
  * 1. sdb detect the end of a function by detecting the return instruction.
  * 2. sdb get an ISA dependent return address when entering a function.
  * The choice may depend on the ISA.
- * Both are RISC-V compatible, we use method 1.
+ * We use method 1. TODO method 2 and xbreak (gdb)
  */
 size_t g_finish_depth; // if > 0, cmd finish is enabled
                        // stop when ras_depth == g_finish_depth
@@ -187,7 +193,9 @@ void ftrace_disable_finish() { g_finish_depth = 0; }
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
   if (g_finish_depth == ras_depth) {
-    printf("finish from " FMT_PADDR "\n", stk_func[ras_depth]);
+    char *f_name;
+    elf_getname_and_offset(pc, &f_name, NULL);
+    printf("finish from %s at " FMT_PADDR "\n", f_name, stk_func[ras_depth]);
     nemu_state.state = NEMU_STOP;
   }
   --ras_depth;

@@ -32,6 +32,7 @@ void trace_init();
 #ifdef CONFIG_FTRACE
 bool ftrace_enable_finish();
 bool ftrace_disable_finish();
+void ftrace_set_stopat_push(bool);
 #endif
 
 static char *prev_line_read = NULL;
@@ -136,6 +137,7 @@ static int cmd_d(char *args) {
   return 0;
 }
 static int cmd_finish(char *);
+static int cmd_nf(char *);
 
 static struct {
   const char *name;
@@ -173,6 +175,7 @@ static struct {
    cmd_d},
   {"bt", "Print backtrace of all stack frames", cmd_bt}, //XXX Copilot
   {"fini", "Finish current function", cmd_finish},
+  { "nf", "Execute untill entering a function", cmd_nf},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -317,7 +320,21 @@ static int cmd_finish(char *args) {
   else
     cpu_exec(-1);
   ftrace_disable_finish();
+#else
+  printf("Please enable ftrace\n");
+#endif
   return 0;
+}
+
+static int cmd_nf(char *args) {
+  if (!NOMORE(args)) {
+    printf("Usage: nf\n");
+    return 0;
+  }
+#ifdef CONFIG_FTRACE
+  ftrace_set_stopat_push(1);
+  cpu_exec(-1);
+  ftrace_set_stopat_push(0);
 #else
   printf("Please enable ftrace\n");
 #endif
