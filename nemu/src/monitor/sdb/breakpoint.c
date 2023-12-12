@@ -93,6 +93,8 @@ int create_watchpoint(char *e) {
   return nr_breakpoints;
 }
 
+// TODO detect memory write in trace_and_difftest()
+// See free_bp()
 void disable_breakpoints() {
   breakpoint_enable = false;
   FOR_BREAKPOINTS(bp) {
@@ -129,7 +131,7 @@ static inline void free_bp(bp_t *p) {
   int size = sizeof((bp_t *)0)->raw_instr;
   if (host_read(guest_to_host(p->addr), size) != p->raw_instr) {
     fprintf(stderr,
-            ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user programme write memory.\n",
+            ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user program take it over.\n",
                      ANSI_FG_RED),
             p->addr);
   }
