@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 int main() {
+  const int period = 500;
   uint32_t timeus;
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -11,9 +12,9 @@ int main() {
   while (1) {
     gettimeofday(&tv, NULL);
     uint32_t timeus_cur = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-    if ((timeus_cur - timeus) / 1000 > cnt) {
+    if ((timeus_cur - timeus) / period > cnt) {
       printf("Hello World!\n");
-      cnt = (timeus_cur - timeus) / 1000;
+      cnt = (timeus_cur - timeus) / period;
     }
   }
   return 0;
