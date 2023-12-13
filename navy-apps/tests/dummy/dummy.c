@@ -10,7 +10,5 @@
 extern int _syscall_(int, uintptr_t, uintptr_t, uintptr_t);
 
 int main() {
-  struct timeval a;
-  printf("%zd\n", sizeof a.tv_usec);
   return 0;
 }
