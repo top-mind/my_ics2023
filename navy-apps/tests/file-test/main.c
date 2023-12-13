@@ -3,8 +3,8 @@
 #include <string.h>
 
 int main() {
-  fprintf(stdin, "Hello World!\n");
-  return 1;
+  fprintf(stdout, "Hello World!\n");
+  return 0;
   FILE *fp = fopen("/share/files/num", "r+");
   assert(fp);
 
