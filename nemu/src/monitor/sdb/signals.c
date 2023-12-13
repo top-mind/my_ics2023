@@ -18,5 +18,6 @@ void sigint_handler(int sig) {
 
 void init_sigint() {
   atomic_init(&a_nemu_state, 0);
+  Log("init sigint");
   signal(SIGINT, sigint_handler);
 }
