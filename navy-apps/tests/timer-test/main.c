@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 int main() {
-  const int period = 500;
+  const int period = 2000;
   uint32_t timeus;
   struct timeval tv;
   gettimeofday(&tv, NULL);
