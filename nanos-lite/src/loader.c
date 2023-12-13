@@ -1,5 +1,6 @@
 #include <proc.h>
 #include <elf.h>
+#include <fs.h>
 
 #ifdef __LP64__
 # define Elf_Ehdr Elf64_Ehdr
@@ -23,27 +24,28 @@
 #error Unsupported ISA
 #endif
 
-#include <ramdisk.h>
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
-  ramdisk_read(&ehdr, 0, sizeof ehdr);
+  int fd = fs_open(filename, 0, 0);
+  fs_read(fd, &ehdr, sizeof ehdr);
   assert(memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0);
   assert(ehdr.e_type == ET_EXEC);
   assert(ehdr.e_machine == EXPECT_VALUE);
   assert(ehdr.e_version == EV_CURRENT);
-  // ramdisk_read(ehdr.e_phoff)
-  // PN_XNUM
   uint32_t nr_ph = ehdr.e_phnum;
   if (nr_ph == PN_XNUM) {
     Elf_Shdr shdr;
-    ramdisk_read(&shdr, ehdr.e_shoff, sizeof shdr);
+    fs_lseek(fd, ehdr.e_shoff, SEEK_SET);
+    fs_read(fd, &shdr, sizeof shdr);
     nr_ph = shdr.sh_info;
   }
   for (uint32_t i = 0; i < nr_ph; i ++) {
     Elf_Phdr phdr;
-    ramdisk_read(&phdr, ehdr.e_phoff + i * sizeof phdr, sizeof phdr);
+    fs_lseek(fd, ehdr.e_phoff + i * sizeof phdr, SEEK_SET);
+    fs_read(fd, &phdr, sizeof phdr);
     if (phdr.p_type == PT_LOAD) {
-      ramdisk_read((void *)phdr.p_vaddr, phdr.p_offset, phdr.p_filesz);
+      fs_lseek(fd, phdr.p_offset, SEEK_SET);
+      fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
       memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
     }
   }
