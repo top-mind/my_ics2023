@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 int main() {
   // FILE *fp = fopen("/share/files/num", "r+");
@@ -33,8 +34,8 @@ int main() {
   // }
 
   // fclose(fp);
-
-  // printf("PASS!!!\n");
+  printf("%d\n", strlen("PASS!!!\n"));
+  printf("PASS!!!\n");
 
   return 0;
 }
