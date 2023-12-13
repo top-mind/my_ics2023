@@ -72,10 +72,11 @@ uint64_t get_time();
       }                               \
     } while (0))
 
-#define _Log(...)           \
-  do {                      \
-    printf(__VA_ARGS__);    \
-    log_write(__VA_ARGS__); \
+#define _Log(...)                              \
+  do {                                         \
+    extern FILE *log_fp;                       \
+    if (log_fp != stdout) printf(__VA_ARGS__); \
+    log_write(__VA_ARGS__);                    \
   } while (0)
 
 #endif
