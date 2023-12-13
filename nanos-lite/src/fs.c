@@ -69,7 +69,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
     panic("fd %d is not open for read", fd);
     return -EBADF;
   }
-  if (fd != FD_STDIN) {
+  if (fd == FD_STDIN) {
     TODO();
     return 0;
   }
