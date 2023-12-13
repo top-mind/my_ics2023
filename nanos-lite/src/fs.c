@@ -81,6 +81,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
+  printf("fs_write: fd = %d, len = %d\n", fd, len);
   if(fd < 0 || fd >= ARRLEN(file_table)) {
     panic("fd %d out of range", fd);
     return -EBADF;
