@@ -46,6 +46,16 @@
 #error _syscall_ is not implemented
 #endif
 
+#define SYSTEM_CALL(...)                                                       \
+  ({                                                                           \
+    int ret = _syscall_(__VA_ARGS__);                                          \
+    if (ret < 0 && ret > -4096) {                                              \
+      errno = -ret;                                                            \
+      ret = -1;                                                                \
+    }                                                                          \
+    ret;                                                                       \
+  })
+
 intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   register intptr_t _gpr1 asm (GPR1) = type;
   register intptr_t _gpr2 asm (GPR2) = a0;
@@ -62,16 +72,16 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
+  return SYSTEM_CALL(SYS_open, (intptr_t)path, flags, mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
-  return _syscall_(SYS_write, fd, (intptr_t)buf, count);
+  return SYSTEM_CALL(SYS_write, fd, (intptr_t)buf, count);
 }
 
 void *_sbrk(intptr_t increment) {
   extern int end;
-  static intptr_t program_break = (intptr_t) &end;
+  static intptr_t program_break = (intptr_t)&end;
   if (_syscall_(SYS_brk, program_break + increment, 0, 0) == 0) {
     intptr_t old_program_break = program_break;
     program_break += increment;
