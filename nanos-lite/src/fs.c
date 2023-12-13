@@ -65,7 +65,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
     panic("fd %d out of range", fd);
     return -EBADF;
   }
-  if(fd != FD_STDOUT && fd != FD_STDERR) {
+  if(fd == FD_STDOUT || fd == FD_STDERR) {
     panic("fd %d is not open for read", fd);
     return -EBADF;
   }
