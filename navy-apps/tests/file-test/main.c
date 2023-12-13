@@ -35,5 +35,4 @@ int main() {
 
   fclose(fp);
   printf("PASS!!!\n");
-  return 0;
-}
+  return 0; }
