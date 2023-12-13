@@ -32,14 +32,21 @@ uint8_t *new_space(int size) {
   return p;
 }
 
+// XXX very bad code, should fall to pmem_read ? 
+static void out_of_bound(paddr_t addr) {
+  nemu_state.halt_pc = cpu.pc;
+  nemu_state.halt_ret = ABORT_MEMIO;
+  nemu_state.state = NEMU_ABORT;
+  printf(ANSI_FMT("address = " FMT_PADDR " do not falls in mmio space"
+                  "] at pc = " FMT_WORD,
+                  ANSI_FG_RED),
+         addr, cpu.pc);
+  puts("");
+}
+
 static void check_bound(IOMap *map, paddr_t addr) {
-  if (map == NULL) {
-    Assert(map != NULL, "address (" FMT_PADDR ") is out of bound at pc = " FMT_WORD, addr, cpu.pc);
-  } else {
-    Assert(addr <= map->high && addr >= map->low,
-           "address (" FMT_PADDR ") is out of bound {%s} [" FMT_PADDR ", " FMT_PADDR
-           "] at pc = " FMT_WORD,
-           addr, map->name, map->low, map->high, cpu.pc);
+  if (map == NULL || addr > map->high || addr < map->low) {
+    out_of_bound(addr);
   }
 }
 
