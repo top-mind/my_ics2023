@@ -34,3 +34,16 @@ static Finfo file_table[] __attribute__((used)) = {
 void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
+
+int fs_open(const char *pathname, int flags, int mode) {
+  for (int i = 0; i < ARRLEN(file_table); i++) {
+    if (strcmp(pathname, file_table[i].name) == 0) {
+      return i;
+    }
+  }
+  return 0;
+}
+
+size_t fs_read(int fd, void *buf, size_t len) {
+  return 0;
+}

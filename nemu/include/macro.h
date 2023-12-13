@@ -18,6 +18,7 @@
 
 #include <string.h>
 
+// universal macros start here
 // macro stringizing
 #define str_temp(x) #x
 #define str(x)      str_temp(x)
@@ -105,6 +106,8 @@
 #define likely(cond)   __builtin_expect(cond, 1)
 #define unlikely(cond) __builtin_expect(cond, 0)
 #endif
+
+// project-specific macros start here
 
 // for AM IOE
 #define io_read(reg)            \
