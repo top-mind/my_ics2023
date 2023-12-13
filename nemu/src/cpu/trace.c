@@ -200,7 +200,7 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (g_finish_depth == ras_depth) {
     char *f_name;
     elf_getname_and_offset(pc, &f_name, NULL);
-    printf("finish from %s at " FMT_PADDR "\n", f_name, stk_func[ras_depth]);
+    printf("finish from %s at " FMT_PADDR "\n", f_name, pc);
     nemu_state.state = NEMU_STOP;
   }
   --ras_depth;
