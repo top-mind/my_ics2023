@@ -78,7 +78,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   }
   // 处理cpu中其他寄存器如 mstatus
   //
-  // NOTE: 和 gdb 的一致性: (https://sourceware.org/gdb/download/onlinedocs/gdb/Registers.html)
+  // NOTE: 和 gdb 的一致性: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html
   //   GNU gdb: 除非有ABI名称冲突, 总是提供 4 个寄存器: pc sp fp ps
   //   pc 和 sp 都存在
   if (likely((strcmp(s, "pc") == 0))) {
@@ -106,9 +106,9 @@ word_t *isa_reg_str2ptr(const char *s) {
   }
   if (strcmp(s, "pc") == 0) {
     return &cpu.pc;
-  } else if (strcmp(s, "ps") || strcmp(s, "mstatus")) {
-    return &cpu.gpr[0]; // not implemented yet
-  } else if (strcmp(s, "fp")) {
+  } else if (strcmp(s, "ps") == 0 || strcmp(s, "mstatus") == 0) {
+    return &cpu.mcause;
+  } else if (strcmp(s, "fp") == 0) {
     return &cpu.gpr[8];
   }
   return NULL;
