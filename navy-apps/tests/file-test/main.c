@@ -4,7 +4,7 @@
 
 int main() {
   fprintf(stdin, "Hello World!\n");
-  return 0;
+  return 1;
   FILE *fp = fopen("/share/files/num", "r+");
   assert(fp);
 
