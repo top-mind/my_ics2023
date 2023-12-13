@@ -4,7 +4,7 @@
 #include <NDL.h>
 
 int main() {
-  const int period = 2000;
+  const int period = 500;
   uint32_t timeus = NDL_GetTicks();
   int cnt = 0;
   while (1) {
