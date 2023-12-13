@@ -84,12 +84,12 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   if (likely((strcmp(s, "pc") == 0))) {
     *success = true;
     return cpu.pc;
-  } else if (strcmp(s, "ps") || strcmp(s, "mstatus")) {
+  } else if (strcmp(s, "ps") == 0 || strcmp(s, "mstatus") == 0) {
     // nemu 里 ps 是 mstatus 的别名.
     *success = true;
     // mstatus not implemented, return 0
     return 0;
-  } else if (strcmp(s, "fp")) {
+  } else if (strcmp(s, "fp") == 0) {
     // rv abi规范指出 tHE PRESENCE OF A FRAME POINTER IS OPTIONAL. iF A FRAME POINTER EXISTS, IT
     // MUST RESIDE IN X8 (S0); THE REGISTER REMAINS CALLEE-SAVED.
     *success = true;
