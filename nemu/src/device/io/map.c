@@ -16,6 +16,7 @@
 #include <isa.h>
 #include <memory/host.h>
 #include <memory/vaddr.h>
+#include <memory/paddr.h>
 #include <device/map.h>
 
 #define IO_SPACE_MAX (2 * 1024 * 1024)
@@ -32,22 +33,8 @@ uint8_t *new_space(int size) {
   return p;
 }
 
-// XXX very bad code, should fall to pmem_read ? 
-static void out_of_bound(paddr_t addr) {
-  nemu_state.halt_pc = cpu.pc;
-  nemu_state.halt_ret = ABORT_MEMIO;
-  nemu_state.state = NEMU_ABORT;
-  printf(ANSI_FMT("address = " FMT_PADDR " do not falls in mmio space"
-                  "] at pc = " FMT_WORD,
-                  ANSI_FG_RED),
-         addr, cpu.pc);
-  puts("");
-}
-
-static void check_bound(IOMap *map, paddr_t addr) {
-  if (map == NULL || addr > map->high || addr < map->low) {
-    out_of_bound(addr);
-  }
+bool check_bound(IOMap *map, paddr_t addr) {
+  return map == NULL || addr > map->high || addr < map->low;
 }
 
 static void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
@@ -62,7 +49,10 @@ void init_map() {
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
-  check_bound(map, addr);
+  if (check_bound(map, addr)) {
+    out_of_bound(addr);
+    return 0;
+  }
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
   word_t ret = host_read(map->space + offset, len);
@@ -71,7 +61,9 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   assert(len >= 1 && len <= 8);
-  check_bound(map, addr);
+  if (check_bound(map, addr)) {
+    out_of_bound(addr);
+  }
   paddr_t offset = addr - map->low;
   host_write(map->space + offset, len, data);
   invoke_callback(map->callback, offset, len, true);

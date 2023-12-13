@@ -37,7 +37,7 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
-static void out_of_bound(paddr_t addr) {
+void out_of_bound(paddr_t addr) {
   nemu_state.halt_pc = cpu.pc;
   nemu_state.halt_ret = ABORT_MEMIO;
   nemu_state.state = NEMU_ABORT;

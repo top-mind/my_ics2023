@@ -32,4 +32,6 @@ static inline bool in_pmem(paddr_t addr) { return addr - CONFIG_MBASE < CONFIG_M
 word_t paddr_read(paddr_t addr, int len);
 void paddr_write(paddr_t addr, int len, word_t data);
 
+void out_of_bound(paddr_t addr);
+
 #endif
