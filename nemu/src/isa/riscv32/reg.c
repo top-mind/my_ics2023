@@ -63,6 +63,7 @@ void isa_reg_display() {
 // ***deprecated***
 // use isa_reg_str2ptr
 word_t isa_reg_str2val(const char *s, bool *success) {
+  panic("deprecated");
   // 这是为了 watchpoint 速度考虑的写法。
   // 现在已经弃用
   // 应该用 isa_reg_str2ptr
@@ -80,7 +81,6 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   //
   // NOTE: 和 gdb 的一致性: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html
   //   GNU gdb: 除非有ABI名称冲突, 总是提供 4 个寄存器: pc sp fp ps
-  //   pc 和 sp 都存在
   if (likely((strcmp(s, "pc") == 0))) {
     *success = true;
     return cpu.pc;
@@ -90,7 +90,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     // mstatus not implemented, return 0
     return 0;
   } else if (strcmp(s, "fp") == 0) {
-    // rv abi规范指出 tHE PRESENCE OF A FRAME POINTER IS OPTIONAL. iF A FRAME POINTER EXISTS, IT
+    // rv abi规范指出 THE PRESENCE OF A FRAME POINTER IS OPTIONAL. iF A FRAME POINTER EXISTS, IT
     // MUST RESIDE IN X8 (S0); THE REGISTER REMAINS CALLEE-SAVED.
     *success = true;
     return cpu.gpr[8];
