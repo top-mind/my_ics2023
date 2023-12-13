@@ -334,7 +334,9 @@ static int cmd_nf(char *args) {
   }
 #ifdef CONFIG_FTRACE
   ftrace_set_stopat_push(1);
+  ftrace_enable_finish();
   cpu_exec(-1);
+  ftrace_disable_finish();
   ftrace_set_stopat_push(0);
 #else
   printf("Please enable ftrace\n");
