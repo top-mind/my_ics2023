@@ -43,7 +43,7 @@ void do_syscall(Context *c) {
         tv->tv_sec = us / 1000000;
         tv->tv_usec = us % 1000000;
       }
-
+      c->GPRx = 0;
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
