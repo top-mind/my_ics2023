@@ -107,7 +107,7 @@ word_t *isa_reg_str2ptr(const char *s) {
   if (strcmp(s, "pc") == 0) {
     return &cpu.pc;
   } else if (strcmp(s, "ps") == 0 || strcmp(s, "mstatus") == 0) {
-    return &cpu.mcause;
+    return &cpu.mstatus;
   } else if (strcmp(s, "fp") == 0) {
     return &cpu.gpr[8];
   }
