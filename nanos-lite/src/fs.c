@@ -5,6 +5,8 @@
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
+size_t serial_write(const void *buf, size_t offset, size_t len);
+
 typedef struct {
   char *name;
   size_t size;
@@ -29,8 +31,8 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
-  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, invalid_write},
-  [FD_STDERR] = {"stderr", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
 #include "files.h"
 };
 
@@ -66,14 +68,8 @@ size_t fs_read(int fd, void *buf, size_t len) {
     panic("fd %d out of range", fd);
     return -EBADF;
   }
-  if(fd == FD_STDOUT || fd == FD_STDERR) {
-    panic("fd %d is not open for read", fd);
-    return -EBADF;
-  }
-  if (fd == FD_STDIN) {
-    TODO();
-    return 0;
-  }
+  if (file_table[fd].read)
+    return file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
   size_t t = len;
   if (file_table[fd].open_offset + len > file_table[fd].size) {
     t = file_table[fd].size - file_table[fd].open_offset;
@@ -89,17 +85,8 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     panic("fd %d out of range", fd);
     return -EBADF;
   }
-  if (fd == FD_STDOUT || fd == FD_STDERR) {
-    int i = 0;
-    for (; i < len; i++) {
-      putch(((char *)buf)[i]);
-    }
-    return i;
-  }
-  if (fd == FD_STDIN) {
-    panic("fd %d is not open for write", fd);
-    return -EBADF;
-  }
+  if (file_table[fd].write)
+    return file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
   size_t t = len;
   if (file_table[fd].open_offset + len > file_table[fd].size) {
     t = file_table[fd].size - file_table[fd].open_offset;
@@ -131,7 +118,8 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
   }
   if (file_table[fd].open_offset > file_table[fd].size) {
     panic("fs_lseek: seek beyond file size");
-    return -EINVAL;
+    return -ESPIPE;
   }
   return file_table[fd].open_offset;
 }
+
