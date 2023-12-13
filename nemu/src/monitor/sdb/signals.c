@@ -10,7 +10,7 @@ void sigint_handler(int sig) {
   // 0 -> exit(0)
   // 1 -> 2
   if (atomic_load(&a_nemu_state) == 0) {
-    exit(0);
+    printf("? \n");
   } else {
     atomic_store(&a_nemu_state, 2);
   }
