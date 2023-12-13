@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stdio.h>
+#include <time.h>
 
 #ifdef __ISA_NATIVE__
 #error can not support ISA=native
@@ -8,5 +10,7 @@
 extern int _syscall_(int, uintptr_t, uintptr_t, uintptr_t);
 
 int main() {
-  return _syscall_(SYS_yield, 0, 0, 0);
+  struct timeval a;
+  printf("%zd\n", sizeof a.tv_usec);
+  return 0;
 }

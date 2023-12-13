@@ -3,10 +3,6 @@
 #include <string.h>
 
 int main() {
-  int s;
-  scanf("%d", &s);
-  printf("%d\n", s);
-  return 0;
   FILE *fp = fopen("/share/files/num", "r+");
   assert(fp);
 
@@ -39,4 +35,5 @@ int main() {
 
   fclose(fp);
   printf("PASS!!!\n");
-  return 0; }
+  return 0;
+}
