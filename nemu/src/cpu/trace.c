@@ -150,7 +150,7 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
   if (ftrace_stopat_push) {
     char *f_name;
-    elf_getname_and_offset(_pc, &f_name, NULL);
+    elf_getname_and_offset(dnpc, &f_name, NULL);
     printf("Calling %s(" FMT_PADDR ")\n", f_name, dnpc);
     nemu_state.state = NEMU_STOP;
   }
