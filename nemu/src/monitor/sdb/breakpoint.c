@@ -174,7 +174,7 @@ found:
 
 #define SORTED_FOR_ALL(bp, wp, flag)                                                               \
   for (bp = bp_nil->next, wp = wp_nil->next, flag = bp->NO < wp->NO; bp != bp_nil || wp != wp_nil; \
-       flag ? (void*)(bp = bp->next): (wp = wp->next))
+       flag ? (void)(bp = bp->next):(wp = wp->next), flag = bp->NO < wp->NO)
 
 static inline void print_watchpoint(wp_t *wp) {
   printf("watchpoint %u, is `%s'\n", wp->NO, wp->expr);
