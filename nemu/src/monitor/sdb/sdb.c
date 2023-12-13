@@ -28,6 +28,7 @@
 static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
+void init_sigint();
 void trace_init();
 #ifdef CONFIG_FTRACE
 bool ftrace_enable_finish();
@@ -387,5 +388,6 @@ void init_sdb() {
   *prev_line_read = 0;
   init_regex();
   init_breakpoints();
+  init_sigint();
   MUXDEF(CONFIG_TRACE, trace_init(), );
 }
