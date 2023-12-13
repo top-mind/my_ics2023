@@ -177,7 +177,7 @@ found:
        flag ? (void)(bp = bp->next):(wp = wp->next), flag = bp->NO < wp->NO)
 
 static inline void print_watchpoint(wp_t *wp) {
-  printf("watchpoint %u, is `%s'\n", wp->NO, wp->expr);
+  printf("watchpoint %u `%s'\n", wp->NO, wp->expr);
 }
 
 void print_all_breakpoints() {
