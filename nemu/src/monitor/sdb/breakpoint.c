@@ -86,7 +86,10 @@ int create_breakpoint(char *e) {
 int create_watchpoint(char *e) {
   size_t nr_rpn;
   rpn_t *rpn = exprcomp(e, &nr_rpn);
-  if (rpn == NULL) return 0;
+  if (rpn == NULL) {
+    puts("");
+    return 0;
+  }
   eval_t ev = eval(rpn, nr_rpn);
   insert_before0(wp_t, wp_nil, .expr = savestring(e), .nr_rpn = nr_rpn, .rpn = rpn,
                  .old_value = ev);
