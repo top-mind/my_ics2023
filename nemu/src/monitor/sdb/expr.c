@@ -204,7 +204,7 @@ static bool make_token(char *e) {
             substr_start[substr_len] = '\0';
             sym = elf_find_symbol_byname(substr_start);
             if (!sym) {
-              printf("No symbol `%s'", substr_start);
+              printf("No symbol `%s'\n", substr_start);
               return false;
             }
             tokens[nr_token].sym = sym;
