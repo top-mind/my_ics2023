@@ -222,6 +222,10 @@ void free_all_breakpoints() {
   int flag;
   SORTED_FOR_ALL(bp, wp, flag) {
     if (flag)
+      printf("bp:" FMT_PADDR "\n", bp->addr);
+  }
+  SORTED_FOR_ALL(bp, wp, flag) {
+    if (flag)
       free_bp(bp);
     else
       free_wp(wp);
