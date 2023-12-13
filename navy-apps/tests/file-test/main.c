@@ -3,8 +3,10 @@
 #include <string.h>
 
 int main() {
-  freopen("/share/files/num", "w+", stdout);
-  return fprintf(stdout, "Hello World!\n");
+  int s;
+  scanf("%d", &s);
+  printf("%d\n", s);
+  return 0;
   FILE *fp = fopen("/share/files/num", "r+");
   assert(fp);
 
