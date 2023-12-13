@@ -20,6 +20,22 @@
 #include "trace.h"
 #include "utils.h"
 
+#ifndef CONFIG_TARGET_AM
+#include <stdatomic.h>
+  extern atomic_uchar a_nemu_state; 
+#define SIGINT_HANDLER_BEGIN \
+  do { \
+    atomic_store(&a_nemu_state, 1); \
+  } while (0)
+#define SIGINT_HANDLER_END \
+  do { \
+    atomic_store(&a_nemu_state, 0); \
+  } while (0)
+#else
+#define SIGINT_HANDLER_BEGIN
+#define SIGINT_HANDLER_END
+#endif
+
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
@@ -34,12 +50,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   watchpoints_notify();
 #endif
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  extern int sync_sigint;
-  if (sync_sigint) {
-    sync_sigint = 0;
-    puts("Ctrl-C");
-    nemu_state.state = NEMU_STOP;
-  }
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -55,6 +65,8 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst++;
     trace_and_difftest(&s, cpu.pc);
+    IFNDEF(CONFIG_TARGET_AM, if (atomic_load(&a_nemu_state) == 2) nemu_state.state = NEMU_STOP,
+           puts("Ctrl-C"));
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
@@ -99,7 +111,9 @@ void cpu_exec(uint64_t n) {
 
   uint64_t timer_start = get_time();
 
+  SIGINT_HANDLER_BEGIN;
   execute(n);
+  SIGINT_HANDLER_END;
 
   MUXDEF(CONFIG_FTRACE_COND, ftrace_flush(), );
 
