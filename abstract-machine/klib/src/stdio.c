@@ -176,16 +176,17 @@ struct outobj {
 
 int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
   int data = 0;
-#define OUTCH(ch) \
-  do { \
-    if (out->p) { \
-      if (out->size > 0) { \
-        *out->p++ = ch; \
-        out->size--; \
-      } \
-    } else { \
-      putch(ch); \
-    } \
+#define OUTCH(ch)                                                              \
+  do {                                                                         \
+    if (out->p) {                                                              \
+      if (out->size > 0) {                                                     \
+        *out->p++ = ch;                                                        \
+        out->size--;                                                           \
+      }                                                                        \
+    } else {                                                                   \
+      putch(ch);                                                               \
+    }                                                                          \
+    data++;                                                                    \
   } while (0)
 
   while (*fmt != '\0') {
@@ -210,13 +211,11 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
           OUTCH('6');
           OUTCH('4');
           OUTCH('8');
-          data += 11;
           break;
         }
         if (num < 0) {
           OUTCH('-');
           num = -num;
-          data++;
         }
         int len = 0;
         int tmp = num;
@@ -227,27 +226,23 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
         for (int i = len - 1; i >= 0; i--) {
           OUTCH(buf[i] + '0');
         }
-        data += len;
         break;
       }
       case 's': {
         char *str = va_arg(ap, char *);
         while (*str != '\0') {
           OUTCH(*str++);
-          data++;
         }
         break;
       }
       case 'c': {
         char ch = va_arg(ap, int);
         OUTCH(ch);
-        data++;
         break;
       }
       case 'p': {
         OUTCH('0');
         OUTCH('x');
-        data += 2;
         unsigned int num = va_arg(ap, unsigned int);
         int len = 0;
         unsigned int tmp = num;
@@ -262,7 +257,6 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
             OUTCH(buf[i] - 10 + 'a');
           }
         }
-        data += len;
         break;
       }
       case 'x': {
