@@ -186,7 +186,6 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
     } else { \
       putch(ch); \
     } \
-    data++; \
   } while (0)
 
   while (*fmt != '\0') {
@@ -196,6 +195,24 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
       switch (*fmt) {
       case 'd': {
         int num = va_arg(ap, int);
+        unsigned int unum = num;
+        if (unum == -unum) {
+          // int is int32_t
+          // -2147483648
+          OUTCH('-');
+          OUTCH('2');
+          OUTCH('1');
+          OUTCH('4');
+          OUTCH('7');
+          OUTCH('4');
+          OUTCH('8');
+          OUTCH('3');
+          OUTCH('6');
+          OUTCH('4');
+          OUTCH('8');
+          data += 11;
+          break;
+        }
         if (num < 0) {
           OUTCH('-');
           num = -num;
