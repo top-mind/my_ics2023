@@ -32,6 +32,9 @@ int atoi(const char* nptr) {
 static char *hbrk = NULL;
 
 void *malloc(size_t size) {
+#if defined(__ISA_NATIVE__)
+  return NULL;
+#endif
   if (hbrk == NULL) {
     hbrk = (char *)ROUNDUP(heap.start, 8);
   }
