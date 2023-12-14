@@ -186,6 +186,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
     } else { \
       putch(ch); \
     } \
+    data++; \
   } while (0)
 
   while (*fmt != '\0') {
