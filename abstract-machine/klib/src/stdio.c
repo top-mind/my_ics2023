@@ -182,9 +182,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
       if (out->size > 0) {                                                     \
         *out->p++ = ch;                                                        \
         out->size--;                                                           \
-      } else { \
-        out->p++; \
-      }        \
+      }                                                                        \
     } else {                                                                   \
       putch(ch);                                                               \
     }                                                                          \
@@ -233,7 +231,8 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
       case 's': {
         char *str = va_arg(ap, char *);
         while (*str != '\0') {
-          OUTCH(*str++);
+          OUTCH(*str);
+          str++;
         }
         break;
       }
