@@ -53,28 +53,27 @@ static int buf[4096];
  *   失败 - 负数
  */
 
+/* D
 typedef struct {
   char *str;
 } outtype;
-
-void io_putc(outtype *io, char ch) {
+static inline void io_putc(outtype *io, char ch) {
   if (io->str == NULL)
     putch(ch);
   else
     *io->str++ = ch;
 }
-
 int vioprintf_internel(const char *fmt, va_list ap, outtype *io) {
   int data = 0;
   while (*fmt != '\0') {
     if (*fmt == '%') {
-parse_loop:
+    parse_loop:
       fmt++;
       switch (*fmt) {
       case 'd': {
         int num = va_arg(ap, int);
         if (num < 0) {
-         io_putc(io, '-');
+          io_putc(io, '-');
           num = -num;
           data++;
         }
@@ -168,38 +167,161 @@ parse_loop:
   }
   return data;
 }
+*/
+
+struct outobj {
+  char *p;     // buffer
+  size_t size; // buffer size
+};
+
+int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
+  int data = 0;
+#define OUTCH(ch)                                                              \
+  do {                                                                         \
+    if (out->p) {                                                              \
+      if (out->size > 0) {                                                     \
+        *out->p++ = ch;                                                        \
+        out->size--;                                                           \
+      }                                                                        \
+    } else {                                                                   \
+      putch(ch);                                                               \
+    }                                                                          \
+    data++;                                                                    \
+  } while (0)
+  while (*fmt) {
+    if (*fmt == '%') {
+    parse_loop:
+      fmt++;
+      switch (*fmt) {
+      case 'd': {
+        int num = va_arg(ap, int);
+        if (num < 0) {
+          OUTCH('-');
+          num = -num;
+        }
+        int len = 0;
+        int tmp = num;
+        do {
+          buf[len++] = tmp % 10;
+          tmp /= 10;
+        } while (tmp);
+        for (int i = len - 1; i >= 0; i--) {
+          OUTCH(buf[i] + '0');
+        }
+        break;
+      }
+      case 's': {
+        char *str = va_arg(ap, char *);
+        while (*str != '\0') {
+          OUTCH(*str++);
+        }
+        break;
+      }
+      case 'c': {
+        char ch = va_arg(ap, int);
+        OUTCH(ch);
+        break;
+      }
+      case 'p': {
+        OUTCH('0');
+        OUTCH('x');
+        unsigned int num = va_arg(ap, unsigned int);
+        int len = 0;
+        unsigned int tmp = num;
+        do {
+          buf[len++] = tmp % 16;
+          tmp /= 16;
+        } while (tmp);
+        for (int i = len - 1; i >= 0; i--) {
+          if (buf[i] < 10) {
+            OUTCH(buf[i] + '0');
+          } else {
+            OUTCH(buf[i] - 10 + 'a');
+          }
+        }
+        break;
+      }
+      case 'x': {
+        unsigned int num = va_arg(ap, unsigned int);
+        int len = 0;
+        unsigned int tmp = num;
+        do {
+          buf[len++] = tmp % 16;
+          tmp /= 16;
+        } while (tmp);
+        for (int i = len - 1; i >= 0; i--) {
+          if (buf[i] < 10) {
+            OUTCH(buf[i] + '0');
+          } else {
+            OUTCH(buf[i] - 10 + 'a');
+          }
+        }
+        break;
+      }
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        goto parse_loop;
+      default: {
+        putch('`');
+        putstr(fmt);
+        putch('\'');
+        panic("Not implemented (printf flag, see above)");
+        break;
+      }
+      }
+    } else {
+      OUTCH(*fmt);
+    }
+  }
+  return data;
+}
 
 int printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  outtype io = {.str = NULL};
-  int res = vioprintf_internel(fmt, ap, &io);
+  struct outobj out = {.p = NULL};
+  int res = voprintf_internel(&out, fmt, ap);
   va_end(ap);
   return res;
 }
 
-int vsprintf(char *out, const char *fmt, va_list ap) {
-  outtype io = {.str = out};
-  int res = vioprintf_internel(fmt, ap, &io);
-  io_putc(&io, '\0');
+int vsprintf(char *str, const char *fmt, va_list ap) {
+  struct outobj out = {.p =str, .size = -1};
+  int res = voprintf_internel(&out, fmt, ap);
+  *out.p = 0;
   return res;
 }
 
-int sprintf(char *out, const char *fmt, ...) {
+int sprintf(char *str, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  int ret = vsprintf(out, fmt, ap);
+  int ret = vsprintf(str, fmt, ap);
   va_end(ap);
   return ret;
 }
 
-int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+int snprintf(char *str, size_t n, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  struct outobj out = {.p = str, .size = n > 0 ? n - 1 : 0};
+  int ret = voprintf_internel(&out, fmt, ap);
+  if (n > 0)
+    *out.p = 0;
+  va_end(ap);
+  return ret;
 }
 
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
   panic("Not implemented");
 }
 
 #endif
-// vim: encoding=utf-8
+// vim: fileencoding=utf-8
