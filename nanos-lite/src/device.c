@@ -14,6 +14,9 @@ static const char *keyname[256] __attribute__((used)) = {
   AM_KEYS(NAME)
 };
 
+static bool has_uart = 0;
+static bool has_key = 0;
+
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   size_t i;
   for (i = 0; i < len; i++)
@@ -22,6 +25,13 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
+  if (has_uart)
+    ; /* not implemented */
+  if (has_key) {
+    AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
+    if (ev.keycode != AM_KEY_NONE)
+      return snprintf(buf, len, "k%c %s", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
+  }
   return 0;
 }
 
@@ -36,4 +46,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 void init_device() {
   Log("Initializing devices...");
   ioe_init();
+  has_uart = io_read(AM_UART_CONFIG).present;
+  assert(!has_uart);
+  has_key = io_read(AM_INPUT_CONFIG).present;
 }
