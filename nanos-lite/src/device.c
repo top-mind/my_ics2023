@@ -49,4 +49,6 @@ void init_device() {
   has_uart = io_read(AM_UART_CONFIG).present;
   assert(!has_uart);
   has_key = io_read(AM_INPUT_CONFIG).present;
+  if (has_key)
+    Log("Input device has been detected!");
 }
