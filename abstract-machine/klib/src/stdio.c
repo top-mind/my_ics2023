@@ -183,7 +183,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
         *out->p++ = ch;                                                        \
         out->size--;                                                           \
       } else { \
-        data = -1; \
+        *out->p++ = ch; \
       }        \
     } else {                                                                   \
       putch(ch);                                                               \
