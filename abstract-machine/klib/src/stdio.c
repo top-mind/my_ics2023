@@ -257,8 +257,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
             break;
           }
         }
-        for (; i >= 0; i--)
-          OUTNUM(SHIFT(num, i));
+        for (; i >= 0; i--) OUTNUM(SHIFT(num, i));
 #undef OUTNUM
         break;
       }
