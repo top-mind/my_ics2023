@@ -246,6 +246,10 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
       case 'x': {
         unsigned int num = va_arg(ap, unsigned int);
         int i;
+        if (num == 0) {
+          OUTCH('0');
+          break;
+        }
         for (i = sizeof num * 2 - 1; i >= 0; i--) {
           if (SHIFT(num, i)) {
             OUTNUM(SHIFT(num, i));
