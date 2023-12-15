@@ -318,16 +318,16 @@ int sprintf(char *str, const char *fmt, ...) {
 int snprintf(char *str, size_t n, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  struct outobj out = {.p = str, .size = n > 0 ? n - 1 : 0};
-  int ret = voprintf_internel(&out, fmt, ap);
-  if (n > 0)
-    *out.p = 0;
+  int ret = vsnprintf(str, n, fmt, ap);
   va_end(ap);
   return ret;
 }
 
 int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  struct outobj out = {.p = str, .size = n > 0 ? n - 1 : 0};
+  int ret = voprintf_internel(&out, fmt, ap);
+  if (n > 0) *out.p = 0;
+  return ret;
 }
 
 #endif
