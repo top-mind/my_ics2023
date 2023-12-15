@@ -8,7 +8,7 @@ int main() {
   while (1) {
     char buf[11];
     int ret;
-    if (0 != (ret =  NDL_PollEvent(buf, sizeof(buf)))) {
+    if (0 != (ret = NDL_PollEvent(buf, sizeof(buf)))) {
       printf("receive event: %s len = %d, %d\n", buf, strlen(buf), ret);
       assert(strlen(buf) == ret);
       assert(ret < sizeof(buf));
