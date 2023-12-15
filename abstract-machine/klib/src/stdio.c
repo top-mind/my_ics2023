@@ -188,7 +188,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
     }                                                                          \
     data++;                                                                    \
   } while (0)
-#define OUTNUM(val) OUTCH(val > 10 ? val - 10 + 'a' : val + '0')
+#define OUTNUM(val) OUTCH(val >= 10 ? val - 10 + 'a' : val + '0')
   while (*fmt != '\0') {
     if (*fmt == '%') {
     parse_loop:
