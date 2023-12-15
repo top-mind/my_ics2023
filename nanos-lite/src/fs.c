@@ -106,7 +106,7 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
     return -EBADF;
   }
   if (file_table[fd].size == 0) {
-    panic("fs_lseek: this file is not seekable");
+    panic("fs_lseek: fd %d is not seekable", fd);
     return -ESPIPE;
   }
   switch (whence) {
