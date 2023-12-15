@@ -25,6 +25,10 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
+  char buf2[10];
+  int ret = snprintf(buf2, sizeof buf2, "k%c %s", 'd', "BACKSPACE");
+  printf("%s %d %d\n", buf2, strlen(buf2), ret);
+
   if (has_uart)
     ; /* not implemented */
   if (has_key) {
