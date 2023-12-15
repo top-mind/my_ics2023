@@ -256,9 +256,10 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
         unsigned int num = va_arg(ap, unsigned int);
         int i;
 #define SHIFT(a, b) (((a) >> (4 * (b))) & 0xf)
-        for (i = sizeof(num) - 1; i >= 0; i--) {
+        for (i = sizeof num * 2 - 1; i >= 0; i--) {
           if (SHIFT(num, i)) {
             OUTNUM(SHIFT(num, i));
+            --i;
             break;
           }
         }
