@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <assert.h>
 
 int main() {
   int fd = open("/dev/events", 0, 0);
