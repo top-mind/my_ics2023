@@ -29,8 +29,10 @@ size_t events_read(void *buf, size_t offset, size_t len) {
     ; /* not implemented */
   if (has_key) {
     AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
-    if (ev.keycode != AM_KEY_NONE)
-      return snprintf(buf, len, "k%c %s", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
+    if (ev.keycode != AM_KEY_NONE) {
+      int ret = snprintf(buf, len, "k%c %s", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
+      return ret > len - 1 ? len - 1 : ret;
+    }
   }
   return 0;
 }
