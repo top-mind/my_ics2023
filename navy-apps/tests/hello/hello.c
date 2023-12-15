@@ -1,7 +1,13 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
 
 int main() {
+  int fd = open("/dev/events", 0, 0);
+  if (fd < 0)
+    assert(0);
+  lseek(fd, 0, SEEK_SET);
+  return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
