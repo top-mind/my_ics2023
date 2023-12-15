@@ -238,21 +238,11 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
         OUTCH(ch);
         break;
       }
-#define OUTNUM(val) OUTCH(val >= 10 ? val - 10 + 'a' : val + '0')
-      case 'p': {
+      case 'p':
         OUTCH('0');
         OUTCH('x');
-        unsigned int num = va_arg(ap, unsigned int);
-        int len = 0;
-        unsigned int tmp = num;
-        do {
-          buf[len++] = tmp % 16;
-          tmp /= 16;
-        } while (tmp);
-        for (int i = len - 1; i >= 0; i--) OUTNUM(buf[i]);
-        break;
-      }
 #define SHIFT(a, b) (((a) >> (4 * (b))) & 0xf)
+#define OUTNUM(val) OUTCH(val >= 10 ? val - 10 + 'a' : val + '0')
       case 'x': {
         unsigned int num = va_arg(ap, unsigned int);
         int i;
