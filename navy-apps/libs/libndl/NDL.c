@@ -65,7 +65,8 @@ int NDL_Init(uint32_t flags) {
   } else {
     evtdev = open("/dev/events", 0);
     assert(evtdev != -1);
-    // fbdev = open("dev/fb", 0);
+    fbdev = open("/dev/fb", 0);
+    assert(fbdev != -1);
   }
   return 0;
 }
