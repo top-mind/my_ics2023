@@ -21,12 +21,12 @@ enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("This device does not support read");
-  return 0;
+  return -1;
 }
 
 size_t invalid_write(const void *buf, size_t offset, size_t len) {
-  panic("should not reach here");
-  return 0;
+  panic("This device does not support write");
+  return -1;
 }
 
 /* This is the information about all files in disk. */
@@ -104,6 +104,10 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
     panic("fd %d out of range", fd);
     return -EBADF;
+  }
+  if (file_table[fd].size == 0) {
+    panic("fs_lseek: this file is not seekable");
+    return -ESPIPE;
   }
   switch (whence) {
     case SEEK_SET:
