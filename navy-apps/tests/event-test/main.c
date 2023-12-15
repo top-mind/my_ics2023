@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <NDL.h>
+#include <assert.h>
+#include <string.h>
 
 int main() {
   NDL_Init(0);
