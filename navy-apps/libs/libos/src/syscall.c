@@ -80,7 +80,6 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 void *_sbrk(intptr_t increment) {
-  assert(0);
   extern int end;
   static intptr_t program_break = (intptr_t)&end;
   if (_syscall_(SYS_brk, program_break + increment, 0, 0) == 0) {
