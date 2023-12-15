@@ -68,7 +68,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
-    panic("fd %d out of range", fd);
+    panic("fd %d not exist", fd);
     return -EBADF;
   }
   if (file_table[fd].read)
@@ -85,7 +85,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
-    panic("fd %d out of range", fd);
+    panic("fd %d not exist", fd);
     return -EBADF;
   }
   if (file_table[fd].write)
@@ -102,11 +102,11 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 
 size_t fs_lseek(int fd, size_t offset, int whence) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
-    panic("fd %d out of range", fd);
+    panic("fd %d not exist", fd);
     return -EBADF;
   }
   if (file_table[fd].size == 0) {
-    panic("fs_lseek: fd %d is not seekable", fd);
+    panic("fs_lseek: fd %d(%s) is not seekable", fd, file_table[fd].name);
     return -ESPIPE;
   }
   switch (whence) {
