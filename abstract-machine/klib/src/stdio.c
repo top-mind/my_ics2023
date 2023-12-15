@@ -188,7 +188,7 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
     }                                                                          \
     data++;                                                                    \
   } while (0)
-
+#define OUTNUM(val) OUTCH(val > 10 ? val - 10 + 'a' : val + '0');
   while (*fmt != '\0') {
     if (*fmt == '%') {
     parse_loop:
@@ -249,30 +249,22 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
           buf[len++] = tmp % 16;
           tmp /= 16;
         } while (tmp);
-        for (int i = len - 1; i >= 0; i--) {
-          if (buf[i] < 10) {
-            OUTCH(buf[i] + '0');
-          } else {
-            OUTCH(buf[i] - 10 + 'a');
-          }
-        }
+        for (int i = len - 1; i >= 0; i--) OUTNUM(buf[i]);
         break;
       }
       case 'x': {
         unsigned int num = va_arg(ap, unsigned int);
-        int len = 0;
-        unsigned int tmp = num;
-        do {
-          buf[len++] = tmp % 16;
-          tmp /= 16;
-        } while (tmp);
-        for (int i = len - 1; i >= 0; i--) {
-          if (buf[i] < 10) {
-            OUTCH(buf[i] + '0');
-          } else {
-            OUTCH(buf[i] - 10 + 'a');
+        int i;
+#define SHIFT(a, b) (((a) >> (4 * b)) & 0xf)
+        for (i = sizeof(num) - 1; i >= 0; i--) {
+          if (SHIFT(num, i)) {
+            OUTNUM(SHIFT(num, i));
+            break;
           }
         }
+        for (; i >= 0; i--)
+          OUTNUM(SHIFT(num, i));
+#undef SHIFT
         break;
       }
       case '0':
