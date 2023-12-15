@@ -20,7 +20,7 @@ typedef struct {
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
-  panic("Try reading %p. This device does not support read", buf);
+  panic("This device does not support read");
   return 0;
 }
 
