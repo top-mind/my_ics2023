@@ -274,7 +274,8 @@ int voprintf_internel(struct outobj *out, const char *fmt, va_list ap) {
         putch('`');
         putstr(fmt);
         putch('\'');
-        panic("\nNot implemented (printf flag, see above)");
+        putch('\n');
+        panic("Not implemented (printf flag, see above)");
         break;
       }
       }
