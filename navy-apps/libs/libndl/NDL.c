@@ -82,6 +82,7 @@ void init_display() {
     if (1 == sscanf(tmp, " WIDTH : %d", &screen_w)) continue;
     if (1 == sscanf(tmp, " HEIGHT : %d", &screen_h)) continue;
     tmp += strspn(tmp, " \t");
+    if (tmp[0] == '#' || tmp[0] == '\0') continue;
     fprintf(stderr, "/proc/dispinfo syntax error near %s\n", tmp);
     assert(0);
   }
