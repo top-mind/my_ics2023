@@ -79,8 +79,9 @@ void init_display() {
   int nread = read(dispinfo, buf, sizeof(buf));
   assert(nread > 0 && nread < sizeof(buf));
   for (tmp = strtok(buf, "\n"); tmp; tmp = strtok(NULL, "\n")) {
-    if (1 == sscanf(tmp, "WIDTH : %d", &screen_w)) continue;
-    if (1 == sscanf(tmp, "HEIGHT : %d", &screen_h)) continue;
+    if (1 == sscanf(tmp, " WIDTH : %d", &screen_w)) continue;
+    if (1 == sscanf(tmp, " HEIGHT : %d", &screen_h)) continue;
+    tmp = strspn(tmp, " \t");
     fprintf(stderr, "/proc/dispinfo syntax error near %s\n", tmp);
     assert(0);
   }
