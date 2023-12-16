@@ -10,7 +10,6 @@ int main() {
   void *bmp = BMP_Load("/share/pictures/projectn.bmp", &w, &h);
   assert(bmp);
   printf("Open with %d x %d\n", w, h);
-  w = 800, h = 600;
   NDL_OpenCanvas(&w, &h);
   printf("Resize to %d x %d\n", w, h);
   NDL_DrawRect(bmp, 0, 0, w, h);

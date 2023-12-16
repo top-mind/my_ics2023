@@ -9,6 +9,8 @@ typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
 size_t dispinfo_read(void *buf, size_t offset, size_t len);
+size_t fb_write(const void *buf, size_t offset, size_t len);
+size_t get_fbsize();
 
 typedef struct {
   char *name;
@@ -19,9 +21,7 @@ typedef struct {
   size_t open_offset;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT, FD_DISPINFO};
-
-size_t invalid_read(void *buf, size_t offset, size_t len) {
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT, FD_DISPINFO}; size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("This device does not support read");
   return -1;
 }
@@ -31,19 +31,21 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
   return -1;
 }
 
-/* This is the information about all files in disk. */
+/* This is the information about all files in disk.
+ * The default write fall back function is seekable file write.
+ */
 static Finfo file_table[] __attribute__((used)) = {
     [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
     [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
     [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
-    [FD_FB] = {"/dev/fb", 0, 0, invalid_read, invalid_write},
+    [FD_FB] = {"/dev/fb", 0, 0, invalid_read, NULL},
     [FD_EVENT] = {"/dev/events", 0, 0, events_read, invalid_write},
     [FD_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
 #include "files.h"
 };
 
 void init_fs() {
-  // TODO: initialize the size of /dev/fb
+  file_table[FD_FB].size = get_fbsize();
 }
 
 /* As linux and glibc's specification, if the return value is between -4095 and -1,
@@ -86,6 +88,25 @@ size_t fs_read(int fd, void *buf, size_t len) {
   return ret;
 }
 
+static size_t seekable_write(int fd, const void *buf, size_t len) {
+  size_t t = len;
+  if (file_table[fd].open_offset + len > file_table[fd].size) {
+    t = file_table[fd].size - file_table[fd].open_offset;
+  }
+  size_t ret;
+  switch (fd) {
+    case FD_FB:
+      ret = fb_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, t);
+      break;
+    default:
+      ret = ramdisk_write(
+          buf, file_table[fd].disk_offset + file_table[fd].open_offset, t);
+  }
+  assert(ret == t);
+  file_table[fd].open_offset += ret;
+  return ret;
+}
+
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
     panic("fd %d not exist", fd);
@@ -93,14 +114,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   }
   if (file_table[fd].write)
     return file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
-  size_t t = len;
-  if (file_table[fd].open_offset + len > file_table[fd].size) {
-    t = file_table[fd].size - file_table[fd].open_offset;
-  }
-  size_t ret = ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, t);
-  assert(ret == t);
-  file_table[fd].open_offset += ret;
-  return ret;
+  return seekable_write(fd, buf, len);
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence) {

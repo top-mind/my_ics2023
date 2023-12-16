@@ -18,6 +18,7 @@ static bool has_uart = 0;
 static bool has_key = 0;
 
 static int screen_w, screen_h;
+static size_t screen_size;
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   size_t i;
@@ -43,7 +44,24 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
+  assert((offset & 3) == 0);
+  assert((len & 3) == 0);
+  assert(offset + len <= screen_size);
+  // check if write wraps around to next line
+  int x = offset / 4 % screen_w;
+  int y = offset / 4 / screen_w;
+  if (x + len / 4 <= screen_w) {
+    // fast path
+    io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len / 4, 1, 1);
+  } else {
+    // slow path
+    panic("Unaligned framebuffer write is not implemented");
+  }
   return 0;
+}
+
+int get_fbsize() {
+  return screen_size;
 }
 
 void init_device() {
@@ -57,5 +75,6 @@ void init_device() {
   AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
   screen_w = info.width;
   screen_h = info.height;
+  screen_size = screen_w * screen_h * sizeof(uint32_t);
   Log("Initializing Screen, size: %d x %d\n", screen_w, screen_h);
 }
