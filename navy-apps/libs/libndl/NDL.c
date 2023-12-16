@@ -89,7 +89,6 @@ void init_display() {
     fprintf(stderr, "/proc/dispinfo: syntax error near '%s'\n", tmp);
     assert(0);
   }
-  printf("NDL: init display %d x %d\n", screen_w, screen_h);
 }
 
 int NDL_Init(uint32_t flags) {
