@@ -18,7 +18,11 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return read(evtdev, buf, len);
+  int ret = read(evtdev, buf, len);
+  // to make it easy, panic when buffer is not enough
+  // this mean a event is lost
+  assert(ret != -1 && ret < len);
+  return ret;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -38,6 +42,8 @@ void NDL_OpenCanvas(int *w, int *h) {
       if (strcmp(buf, "mmap ok") == 0) break;
     }
     close(fbctl);
+  } else {
+    
   }
 }
 
@@ -58,19 +64,43 @@ int NDL_QueryAudio() {
   return 0;
 }
 
+void init_event() {
+  evtdev = open("/dev/events", 0);
+  assert(evtdev != -1);
+}
+
+void init_display() {
+  fbdev = open("/dev/fb", 0);
+  assert(fbdev != -1);
+  int dispinfo = open("/proc/dispinfo", 0);
+  assert(dispinfo != -1);
+  char buf[64];
+  char *tmp;
+  int nread = read(dispinfo, buf, sizeof(buf));
+  assert(nread > 0 && nread < sizeof(buf));
+  for (tmp = strtok(buf, "\n"); tmp; tmp = strtok(NULL, "\n")) {
+    if (1 == sscanf(tmp, "WIDTH : %d", &screen_w)) continue;
+    if (1 == sscanf(tmp, "HEIGHT : %d", &screen_h)) continue;
+    fprintf(stderr, "/proc/dispinfo syntax error near %s\n", tmp);
+    assert(0);
+  }
+  printf("NDL: init display %d x %d\n", screen_w, screen_h);
+}
+
 int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
-    // fbdev = 
   } else {
-    evtdev = open("/dev/events", 0);
-    assert(evtdev != -1);
-    fbdev = open("/dev/fb", 0);
-    assert(fbdev != -1);
+    init_event();
+    init_display();
   }
   return 0;
 }
 
 void NDL_Quit() {
-  close(evtdev);
+  if (getenv("NWM_APP")) {
+  } else {
+    close(evtdev);
+    close(fbdev);
+  }
 }

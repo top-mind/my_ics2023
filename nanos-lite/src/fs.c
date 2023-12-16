@@ -1,3 +1,4 @@
+#include "sys/_intsup.h"
 #include <fs.h>
 #include <ramdisk.h>
 #include <sys_errno.h>
@@ -7,6 +8,7 @@ typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
 size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
+size_t dispinfo_read(void *buf, size_t offset, size_t len);
 
 typedef struct {
   char *name;
@@ -17,7 +19,7 @@ typedef struct {
   size_t open_offset;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT, FD_DISPINFO};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("This device does not support read");
@@ -31,11 +33,12 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
-  [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
-  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
-  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
-  [FD_FB]     = {"/dev/fb", 0, 0, invalid_read, invalid_write},
-  [FD_EVENT]  = {"/dev/events", 0, 0, events_read, invalid_write},
+    [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
+    [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+    [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+    [FD_FB] = {"/dev/fb", 0, 0, invalid_read, invalid_write},
+    [FD_EVENT] = {"/dev/events", 0, 0, events_read, invalid_write},
+    [FD_DISPINFO] = {"/dev/dispinfo", 0, 0, dispinfo_read, invalid_write},
 #include "files.h"
 };
 
@@ -104,10 +107,6 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
   if(fd < 0 || fd >= ARRLEN(file_table)) {
     panic("fd %d not exist", fd);
     return -EBADF;
-  }
-  if (file_table[fd].size == 0) {
-    panic("fs_lseek: fd %d(%s) is not seekable", fd, file_table[fd].name);
-    return -ESPIPE;
   }
   switch (whence) {
     case SEEK_SET:
