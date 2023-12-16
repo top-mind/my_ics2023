@@ -44,19 +44,10 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  assert((offset & 3) == 0);
-  assert((len & 3) == 0);
-  assert(offset + len <= screen_size);
-  // check if write wraps around to next line
+  assert((offset & 3) == 0 && (len & 3) == 0);
   int x = offset / 4 % screen_w;
   int y = offset / 4 / screen_w;
-  if (x + len / 4 <= screen_w) {
-    // fast path
-    io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len / 4, 1, 1);
-  } else {
-    // slow path
-    panic("Unaligned framebuffer write is not implemented");
-  }
+  io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len / 4, 1, 1);
   return len;
 }
 
