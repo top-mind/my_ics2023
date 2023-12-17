@@ -38,6 +38,7 @@ int SDL_PollEvent(SDL_Event *ev) {
 int SDL_WaitEvent(SDL_Event *event) {
   while (SDL_PollEvent(event))
     ;
+  printf("%d\n",event->key.keysym.sym);
   return 1;
 }
 
