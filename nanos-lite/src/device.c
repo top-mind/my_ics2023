@@ -57,13 +57,10 @@ int get_fbsize() {
 
 void init_device() {
   Log("Initializing devices...");
-
   ioe_init();
-
   has_key = io_read(AM_INPUT_CONFIG).present;
   if (has_key)
     Log("Input device has been detected!");
-
   AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
   screen_w = info.width;
   screen_h = info.height;
