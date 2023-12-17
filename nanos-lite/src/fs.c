@@ -1,4 +1,3 @@
-#include "sys/_intsup.h"
 #include <fs.h>
 #include <ramdisk.h>
 #include <sys_errno.h>
