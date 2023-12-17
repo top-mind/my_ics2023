@@ -10,7 +10,8 @@ static const char *keyname[] = {
   _KEYS(keyname)
 };
 
-static inline uint8_t find_keyname(const char *name) {
+static inline uint8_t find_keyname(char *name) {
+  strtok(name, "\n");
   for (int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i ++) {
     if (strcmp(keyname[i], name) == 0) {
       return i;
@@ -29,7 +30,6 @@ int SDL_PollEvent(SDL_Event *ev) {
   char buf[32];
   int ret = NDL_PollEvent(buf, sizeof(buf));
   if (ret) {
-    printf("'%s'\n", buf);
     ev->type = buf[1] == 'u' ? SDL_KEYUP : SDL_KEYDOWN;
     ev->key.keysym.sym = find_keyname(buf + 3);
   }

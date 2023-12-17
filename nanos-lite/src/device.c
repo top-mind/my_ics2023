@@ -33,7 +33,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   if (has_key) {
     AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
     if (ev.keycode != AM_KEY_NONE) {
-      return snprintf(buf, len, "k%c %s", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
+      return snprintf(buf, len, "k%c %s\n", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
     }
   }
   return 0;
