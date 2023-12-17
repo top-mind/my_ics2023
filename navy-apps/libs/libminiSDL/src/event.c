@@ -12,7 +12,7 @@ static const char *keyname[] = {
 
 static inline uint8_t find_keyname(char *name) {
   strtok(name, "\n");
-  for (int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i ++) {
+  for (int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
     if (strcmp(keyname[i], name) == 0) {
       return i;
     }
