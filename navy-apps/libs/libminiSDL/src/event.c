@@ -29,6 +29,7 @@ int SDL_PollEvent(SDL_Event *ev) {
   char buf[32];
   int ret = NDL_PollEvent(buf, sizeof(buf));
   if (ret) {
+    printf("'%s'\n", buf);
     ev->type = buf[1] == 'u' ? SDL_KEYUP : SDL_KEYDOWN;
     ev->key.keysym.sym = find_keyname(buf + 3);
   }
