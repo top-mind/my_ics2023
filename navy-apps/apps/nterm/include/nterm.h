@@ -18,7 +18,7 @@ private:
   };
   static Pattern esc_seqs[];
 
-  char *buf, input[256], cooked[256];
+  char *buf, input[256], cooked[sizeof input + 1];
   uint8_t *color;
   bool *dirty;
   int inp_len;
