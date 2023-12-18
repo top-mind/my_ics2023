@@ -28,6 +28,11 @@ static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  if (dst->format->BitsPerPixel == 8) {
+    assert(src->format->palette->ncolors == 256);
+    assert(dst->format->palette->ncolors == 256);
+    memcpy(dst->format->palette->colors, dst->format->palette->colors, 256);
+  }
   // sx dx w
   // w: I(dr''. sr')
   // sx: sr ? srx : 0
@@ -45,9 +50,15 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   SDL_RectIntersect(dstrect, &r);
   int dw = dst->w, sw = src->w;
   for (int i = 0; i < dstrect->h; i++)
-    for (int j = 0; j < dstrect->w; j++)
-      ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+    for (int j = 0; j < dstrect->w; j++) {
+      if (dst->format->BitsPerPixel == 8) {
+        ((uint8_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+          ((uint8_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
+      } else {
+        ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
           ((uint32_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
+      }
+    }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
@@ -67,14 +78,15 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   assert(s->format->BitsPerPixel == 8 || s->format->BitsPerPixel == 32);
-  if (x | y | w | h == 0) {
+  if ((x | y | w | h) == 0) {
     w = s->w;
     h = s->h;
   }
   if (s->format->BitsPerPixel == 8) {
     NDL_DrawRectPalette(s->pixels, (uint32_t *)s->format->palette->colors, x, y, w, h);
-  } else
+  } else {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
+  }
 }
 
 // APIs below are already implemented.

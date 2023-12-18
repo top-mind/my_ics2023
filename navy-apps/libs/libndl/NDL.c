@@ -54,10 +54,7 @@ void NDL_DrawRectPalette(uint8_t *pixels, uint32_t *colors, int x, int y, int w,
   for (int i = 0; i < h; i++) {
     lseek(fbdev, (y + i) * screen_w * 4 + x * 4, SEEK_SET);
     for (int j = 0; j < w; j++) {
-      uint32_t color = colors[pixels[i * w + j]];
-      // SDL_color r, g, b, a -> a, r, g, b
-      color = (color >> 8) | (color << 24);
-      write(fbdev, &color, 4);
+      write(fbdev, &colors[pixels[(y + i) * canvas_w + x + j]], 4);
     }
   }
 }
