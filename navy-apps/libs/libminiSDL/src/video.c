@@ -1,33 +1,64 @@
 #include <NDL.h>
 #include <sdl-video.h>
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+#define SDL_CreateRectFromSurface(suf, rect)                                   \
+  SDL_Rect rect = {.x = 0, .y = 0, .w = suf->w, .h = suf->h}
+
+static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
+  if (dst == NULL) return src;
+  if (src == NULL) return dst;
+  int x = MAX(dst->x, src->x);
+  int y = MAX(dst->y, src->y);
+  int xt = MIN(src->x + src->w, dst->x + dst->w);
+  int yt = MIN(src->y + src->h, dst->y + dst->h);
+  dst->x = x;
+  dst->y = y;
+  dst->w = xt - x;
+  dst->h = yt - y;
+  return dst;
+}
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  // sx dx w
+  // w: I(dr''. sr')
+  // sx: sr ? srx : 0
+  // dx: dr ? drx : 0
+  
+  // srect
+  SDL_CreateRectFromSurface(src, srect);
+  SDL_RectIntersect(&srect, srcrect);
+  // dr
+  SDL_CreateRectFromSurface(dst, drect);
+  dstrect = SDL_RectIntersect(dstrect, &drect);
+  dstrect->w = dst->w - dstrect->x;
+  dstrect->h = dst->h - dstrect->y;
+  SDL_Rect r = {.x = dstrect->x, .y = dstrect->y, .w = srect.w, .h = srect.h};
+  SDL_RectIntersect(dstrect, &r);
+  int dw = dst->w, sw = src->w;
+  for (int i = 0; i < dstrect->h; i++)
+    for (int j = 0; j < dstrect->w; j++)
+      ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+          ((uint32_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
   assert(dst->format->BytesPerPixel == 4);
-  int i, j, w, h;
-  if (dstrect == NULL) {
-    i = 0;
-    j = 0;
-    w = dst->w;
-    h = dst->h;
-  } else {
-    i = dstrect->x;
-    j = dstrect->y;
-    w = i + dstrect->w > dst->w ? dst->w : i + dstrect->w;
-    h = j + dstrect->h > dst->h ? dst->h : j + dstrect->h;
-  }
-  for (; j < h; j ++) {
-    for (i = 0; i < w; i ++) {
-      ((uint32_t *)dst->pixels)[j * dst->w + i] = color;
-    }
-  }
+  int w = dst->w;
+  SDL_CreateRectFromSurface(dst, rect);
+  SDL_Rect *r = SDL_RectIntersect(dstrect, &rect);
+  for (int i = 0; i < r->h; i++)
+    for (int j = 0; j < r->w; j++)
+      ((uint32_t *)dst->pixels)[w * (r->y + i) + r->x + j] = color;
+        
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
