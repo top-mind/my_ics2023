@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <SDL.h>
+#include <string.h>
 
 char handle_key(SDL_Event *ev);
 
@@ -23,6 +24,17 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
+  char * tmp = strdup(cmd);
+  tmp = strtok(tmp, " \n");
+  if (strcmp(tmp, "echo") == 0) {
+    char *args = strtok(NULL, "");
+    if (args != NULL) {
+      args += strspn(args, " ");
+      term->write(args, strlen(args));
+    }
+  } else if (strcmp(tmp, "exit") == 0) {
+    exit(0);
+  }
 }
 
 void builtin_sh_run() {
@@ -35,7 +47,6 @@ void builtin_sh_run() {
       if (ev.type == SDL_KEYUP || ev.type == SDL_KEYDOWN) {
         const char *res = term->keypress(handle_key(&ev));
         if (res) {
-          printf("%s\n", res);
           sh_handle_cmd(res);
           sh_prompt();
         }
