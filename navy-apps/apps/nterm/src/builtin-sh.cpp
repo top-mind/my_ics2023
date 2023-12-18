@@ -26,6 +26,7 @@ static void sh_prompt() {
 static void sh_handle_cmd(const char *cmd) {
   char * tmp = strdup(cmd);
   tmp = strtok(tmp, " \n");
+  if (tmp == NULL) return;
   if (strcmp(tmp, "echo") == 0) {
     char *args = strtok(NULL, "");
     if (args != NULL) {
