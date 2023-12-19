@@ -68,7 +68,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
   SDL_Rect *r = SDL_RectIntersect(dstrect, &rect);
   for (int i = 0; i < r->h; i++)
     for (int j = 0; j < r->w; j++) {
-      if (dst->format->BitsPerPixel == 8)
+      if (dst->format->BitsPerPixel == 32)
         ((uint32_t *)dst->pixels)[w * (r->y + i) + r->x + j] = color;
       else
         ((uint8_t *)dst->pixels)[w * (r->y + i) + r->x + j] = color;
