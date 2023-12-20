@@ -47,7 +47,7 @@ void ioe_read (int reg, void *buf) {
           break;
       }
       if (find == ARRLEN(keynames)) {
-        fprintf(stderr, "Unknown event %s", buf);
+        fprintf(stderr, "Unknown event %s\n", buf);
         assert(0);
       }
       *((AM_INPUT_KEYBRD_T *)buf) =
