@@ -39,7 +39,9 @@ void ioe_read (int reg, void *buf) {
     case AM_INPUT_KEYBRD:
     {
       char buf[64];
-      if (0 == NDL_PollEvent(buf, sizeof buf)) break;
+      if (0 == NDL_PollEvent(buf, sizeof buf)) {
+        *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keycode = 0};
+      }
       bool keydown = buf[1] == 'd';
       int find;
       for (find = 0; find < ARRLEN(keynames); find++) {
