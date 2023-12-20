@@ -1,4 +1,3 @@
-#include "amdev.h"
 #include <am.h>
 #include <assert.h>
 #include <NDL.h>
