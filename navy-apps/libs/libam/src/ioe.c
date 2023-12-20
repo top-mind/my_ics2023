@@ -6,6 +6,7 @@ bool ioe_init() {
 }
 
 void ioe_read (int reg, void *buf) {
+  printf("reg = %d\n", reg);
   switch (reg) {
     case AM_TIMER_CONFIG:
       ((AM_TIMER_CONFIG_T *)buf)->present = 1;
