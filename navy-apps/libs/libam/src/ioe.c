@@ -55,6 +55,7 @@ void ioe_read (int reg, void *buf) {
       }
       *((AM_INPUT_KEYBRD_T *)buf) =
           (AM_INPUT_KEYBRD_T){.keydown = keydown, .keycode = find};
+      printf("%d\n", find);
       break;
     }
     default:
