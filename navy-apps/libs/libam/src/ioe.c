@@ -26,6 +26,7 @@ void ioe_read (int reg, void *buf) {
     IOE_QUICKSET(AM_TIMER_CONFIG, buf, .present = 1);
     IOE_QUICKSET(AM_GPU_CONFIG, buf, .present = 1, .height = h, .width = w);
     IOE_QUICKSET(AM_INPUT_CONFIG, buf, .present = 1);
+    IOE_QUICKSET(AM_TIMER_UPTIME, buf, .us = ((uint64_t) NDL_GetTicks()) * 1000);
     default:
       fprintf(stderr, "Unknown ioe read %d\n", reg);
       assert(0);
