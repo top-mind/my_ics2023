@@ -36,8 +36,6 @@ void ioe_read (int reg, void *buf) {
     IOE_QUICKSET(AM_GPU_CONFIG, buf, .present = 1, .height = h, .width = w);
     IOE_QUICKSET(AM_INPUT_CONFIG, buf, .present = 1);
     IOE_QUICKSET(AM_TIMER_UPTIME, buf, .us = ((uint64_t) NDL_GetTicks()) * 1000);
-    IOE_QUICKSET(AM_INPUT_KEYBRD, buf,.keycode = 0, .keydown = 0);
-    /*
     case AM_INPUT_KEYBRD:
     {
       char buf[64];
@@ -45,6 +43,7 @@ void ioe_read (int reg, void *buf) {
         *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keycode = 0};
         break;
       }
+      assert(0);
       bool keydown = buf[1] == 'd';
       int find;
       for (find = 0; find < ARRLEN(keynames); find++) {
@@ -61,7 +60,7 @@ void ioe_read (int reg, void *buf) {
       ((AM_INPUT_KEYBRD_T *)buf)->keycode = a;
       printf("%d\n", ((AM_INPUT_KEYBRD_T *)buf)->keycode);
       break;
-    } */
+    }
     default:
       fprintf(stderr, "Unknown ioe read %d\n", reg);
       assert(0);
