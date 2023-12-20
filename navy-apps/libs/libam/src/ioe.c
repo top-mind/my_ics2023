@@ -38,8 +38,8 @@ void ioe_read (int reg, void *buf) {
     IOE_QUICKSET(AM_TIMER_UPTIME, buf, .us = ((uint64_t) NDL_GetTicks()) * 1000);
     case AM_INPUT_KEYBRD:
     {
-      char buf[64];
-      if (0 == NDL_PollEvent(buf, sizeof buf)) {
+      char ebuf[64];
+      if (0 == NDL_PollEvent(ebuf, sizeof ebuf)) {
         *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keydown = 0, .keycode = 0};
         break;
       }
