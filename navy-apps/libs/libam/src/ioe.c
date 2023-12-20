@@ -1,4 +1,5 @@
 #include <am.h>
+#include "amdev.h"
 #include <assert.h>
 #include <NDL.h>
 
@@ -24,6 +25,7 @@ void ioe_read (int reg, void *buf) {
   switch (reg) {
     IOE_QUICKSET(AM_TIMER_CONFIG, buf, .present = 1);
     IOE_QUICKSET(AM_GPU_CONFIG, buf, .present = 1, .height = h, .width = w);
+    IOE_QUICKSET(AM_INPUT_CONFIG, buf, .present = 1);
     default:
       fprintf(stderr, "Unknown ioe read %d\n", reg);
       assert(0);
@@ -31,11 +33,11 @@ void ioe_read (int reg, void *buf) {
 }
 void ioe_write(int reg, void *buf) {
   switch (reg) {
-    case AM_GPU_FBDRAW: {
-      AM_GPU_FBDRAW_T *tmp = (AM_GPU_FBDRAW_T *)buf;
-      NDL_DrawRect(tmp->pixels, tmp->x, tmp->y, tmp->w, tmp->h);
-      break;
-                        }
+  case AM_GPU_FBDRAW: {
+    AM_GPU_FBDRAW_T *tmp = (AM_GPU_FBDRAW_T *)buf;
+    NDL_DrawRect(tmp->pixels, tmp->x, tmp->y, tmp->w, tmp->h);
+    break;
+  }
     default:
       fprintf(stderr, "Unknown ioe write %d\n", reg);
       assert(0);
