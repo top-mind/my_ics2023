@@ -25,10 +25,14 @@ void ioe_read (int reg, void *buf) {
     IOE_QUICKSET(AM_TIMER_CONFIG, buf, .present = 1);
     IOE_QUICKSET(AM_GPU_CONFIG, buf, .present = 1, .height = h, .width = w);
     default:
-      fprintf(stderr, "Unknown ioe port %d\n", reg);
+      fprintf(stderr, "Unknown ioe read %d\n", reg);
       assert(0);
   }
 }
 void ioe_write(int reg, void *buf) {
-  assert(0);
+  switch (reg) {
+    default:
+      fprintf(stderr, "Unknown ioe write %d\n", reg);
+      assert(0);
+  }
 }
