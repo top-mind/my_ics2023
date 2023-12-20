@@ -55,7 +55,9 @@ void ioe_read (int reg, void *buf) {
       }
       *((AM_INPUT_KEYBRD_T *)buf) =
           (AM_INPUT_KEYBRD_T){.keydown = keydown, .keycode = find};
-      printf("%d %d\n", keydown, find);
+      int volatile a = ((AM_INPUT_KEYBRD_T *)buf)->keycode;
+      ((AM_INPUT_KEYBRD_T *)buf)->keycode = a;
+      printf("%d\n", ((AM_INPUT_KEYBRD_T *)buf)->keycode);
       break;
     }
     default:
