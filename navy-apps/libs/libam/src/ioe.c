@@ -11,6 +11,8 @@ void ioe_read (int reg, void *buf) {
     case AM_TIMER_CONFIG:
       ((AM_TIMER_CONFIG_T *)buf)->present = 1;
       break;
+    case 8:
+      assert(0);
     defalut:
       fprintf(stderr, "Unknown ioe port %d\n", reg);
       assert(0);
