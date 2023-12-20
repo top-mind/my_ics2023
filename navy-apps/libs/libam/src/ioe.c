@@ -43,22 +43,18 @@ void ioe_read (int reg, void *buf) {
         *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keydown = 0, .keycode = 0};
         break;
       }
-      assert(0);
-      bool keydown = buf[1] == 'd';
+      bool keydown = ebuf[1] == 'd';
       int find;
       for (find = 0; find < ARRLEN(keynames); find++) {
         if (strncmp(keynames[find], buf + 3, strlen(keynames[find])) == 0)
           break;
       }
       if (find == ARRLEN(keynames)) {
-        fprintf(stderr, "Unknown event %s\n", buf);
+        fprintf(stderr, "Unknown event %s\n", ebuf);
         assert(0);
       }
       *((AM_INPUT_KEYBRD_T *)buf) =
           (AM_INPUT_KEYBRD_T){.keydown = keydown, .keycode = find};
-      int volatile a = ((AM_INPUT_KEYBRD_T *)buf)->keycode;
-      ((AM_INPUT_KEYBRD_T *)buf)->keycode = a;
-      printf("%d\n", ((AM_INPUT_KEYBRD_T *)buf)->keycode);
       break;
     }
     default:
