@@ -40,10 +40,9 @@ void ioe_read (int reg, void *buf) {
     {
       char buf[64];
       if (0 == NDL_PollEvent(buf, sizeof buf)) {
-        *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keycode = 0};
+        *((AM_INPUT_KEYBRD_T *)buf) = (AM_INPUT_KEYBRD_T){.keydown = 0, .keycode = 0};
         break;
       }
-      assert(0);
       bool keydown = buf[1] == 'd';
       int find;
       for (find = 0; find < ARRLEN(keynames); find++) {
