@@ -1,3 +1,4 @@
+#include "amdev.h"
 #include <am.h>
 #include <assert.h>
 #include <NDL.h>
@@ -31,6 +32,11 @@ void ioe_read (int reg, void *buf) {
 }
 void ioe_write(int reg, void *buf) {
   switch (reg) {
+    case AM_GPU_FBDRAW: {
+      AM_GPU_FBDRAW_T *tmp = (AM_GPU_FBDRAW_T *)buf;
+      NDL_DrawRect(tmp->pixels, tmp->x, tmp->y, tmp->w, tmp->h);
+      break;
+                        }
     default:
       fprintf(stderr, "Unknown ioe write %d\n", reg);
       assert(0);
