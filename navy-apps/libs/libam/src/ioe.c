@@ -46,7 +46,7 @@ void ioe_read (int reg, void *buf) {
       bool keydown = ebuf[1] == 'd';
       int find;
       for (find = 0; find < ARRLEN(keynames); find++) {
-        if (strncmp(keynames[find], buf + 3, strlen(keynames[find])) == 0)
+        if (strncmp(keynames[find], ebuf + 3, strlen(keynames[find])) == 0)
           break;
       }
       if (find == ARRLEN(keynames)) {
