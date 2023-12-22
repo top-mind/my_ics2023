@@ -11,7 +11,7 @@
 #define SDL_CreateRectFromSurface(suf, rect)                                   \
   SDL_Rect rect = {.x = 0, .y = 0, .w = suf->w, .h = suf->h}
 
-static uint32_t *pixels = NULL;
+uint32_t *gbPixels = NULL;
 
 static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
   if (dst == NULL) return src;
@@ -96,8 +96,8 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     }
     for (int i = 0; i < h; i++)
       for (int j = 0; j < w; j++)
-        pixels[i * w + j] = colorARGB[((uint8_t *)s->pixels)[(y + i) * s->w + x + j]];
-    NDL_DrawRect(pixels, x, y, w, h);
+        gbPixels[i * w + j] = colorARGB[((uint8_t *)s->pixels)[(y + i) * s->w + x + j]];
+    NDL_DrawRect(gbPixels, x, y, w, h);
   } else {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
   }
@@ -180,6 +180,7 @@ void SDL_FreeSurface(SDL_Surface *s) {
 
 SDL_Surface* SDL_SetVideoMode(int width, int height, int bpp, uint32_t flags) {
   if (flags & SDL_HWSURFACE) NDL_OpenCanvas(&width, &height);
+  gbPixels = malloc(width * height * 4);
   return SDL_CreateRGBSurface(flags, width, height, bpp,
       DEFAULT_RMASK, DEFAULT_GMASK, DEFAULT_BMASK, DEFAULT_AMASK);
 }

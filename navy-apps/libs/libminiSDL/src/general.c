@@ -1,4 +1,5 @@
 #include <NDL.h>
+#include <malloc.h>
 
 int SDL_Init(uint32_t flags) {
   return NDL_Init(flags);
@@ -6,6 +7,8 @@ int SDL_Init(uint32_t flags) {
 
 void SDL_Quit() {
   NDL_Quit();
+  extern uint32_t *gbPixels;
+  if (gbPixels) free(gbPixels);
 }
 
 char *SDL_GetError() {
