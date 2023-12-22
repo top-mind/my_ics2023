@@ -103,6 +103,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       for (int j = 0; j < w; j++)
         pixels[i * w + j] = colorARGB[((uint8_t *)s->pixels)[(y + i) * s->w + x + j]];
     NDL_DrawRect(pixels, x, y, w, h);
+    free(pixels);
   } else {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
   }
