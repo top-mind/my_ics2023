@@ -8,10 +8,12 @@ void do_syscall(Context *c) {
   a[3] = c->GPR4;
 
   switch (a[0]) {
-    case SYS_exit:
+    case SYS_exit: {
+      void *naive_uload(void *pcb, const char *filename);
       Log("Halt system with exit code = %d", a[1]);
-      halt(a[1]);
+      naive_uload(NULL, "/bin/menu");
       break;
+    }
     case SYS_yield:
       Log("Yield syscall");
       c->GPRx = 0;
