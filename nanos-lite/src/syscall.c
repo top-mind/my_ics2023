@@ -47,6 +47,7 @@ void do_syscall(Context *c) {
     case SYS_execve: {
       void *naive_uload(void * pcb, const char *filename);
       naive_uload(NULL, (char *)a[1]);
+      c->GPRx = -1;
       break;
     }
     default: panic("Unhandled syscall ID = %d", a[0]);
