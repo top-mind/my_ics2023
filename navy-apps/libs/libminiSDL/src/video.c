@@ -91,6 +91,8 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   }
   if (a) {
     printf("%p\n", s);
+    // int 3
+    asm volatile("int3");
   }
 }
 

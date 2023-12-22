@@ -1,3 +1,4 @@
+CFLAGS += -g
 REPO_PATH = repo
 ifeq ($(wildcard repo/include/palcommon.h),)
   $(shell mkdir -p $(NAVY_HOME)/fsimg/share/games)
