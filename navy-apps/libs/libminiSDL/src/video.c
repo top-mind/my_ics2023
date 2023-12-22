@@ -11,6 +11,8 @@
 #define SDL_CreateRectFromSurface(suf, rect)                                   \
   SDL_Rect rect = {.x = 0, .y = 0, .w = suf->w, .h = suf->h}
 
+static uint32_t *pixels = NULL;
+
 static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
   if (dst == NULL) return src;
   if (src == NULL) return dst;
@@ -77,12 +79,10 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
-  int a = 0;
   assert(s->format->BitsPerPixel == 8 || s->format->BitsPerPixel == 32);
   if ((x | y | w | h) == 0) {
     w = s->w;
     h = s->h;
-    a = 1;
   }
   if (s->format->BitsPerPixel == 8) {
     assert(s->format->palette->ncolors = 256);
@@ -94,16 +94,10 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       uint8_t a = s->format->palette->colors[i].a;
       colorARGB[i] = (a << 24) | (r << 16) | (g << 8) | b;
     }
-    uint32_t *pixels = (uint32_t *)malloc(sizeof(uint32_t) * w * h);
-    assert(pixels);
-    // sanity check
-    assert(x + w <= s->w);
-    assert(y + h <= s->h);
     for (int i = 0; i < h; i++)
       for (int j = 0; j < w; j++)
         pixels[i * w + j] = colorARGB[((uint8_t *)s->pixels)[(y + i) * s->w + x + j]];
     NDL_DrawRect(pixels, x, y, w, h);
-    free(pixels);
   } else {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
   }
