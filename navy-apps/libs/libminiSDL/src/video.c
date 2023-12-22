@@ -77,15 +77,20 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  int a = 0;
   assert(s->format->BitsPerPixel == 8 || s->format->BitsPerPixel == 32);
   if ((x | y | w | h) == 0) {
     w = s->w;
     h = s->h;
+    a = 1;
   }
   if (s->format->BitsPerPixel == 8) {
     NDL_DrawRectPalette(s->pixels, (uint32_t *)s->format->palette->colors, x, y, w, h);
   } else {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
+  }
+  if (a) {
+    while (1);
   }
 }
 
