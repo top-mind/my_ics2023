@@ -120,21 +120,17 @@ word_t *isa_reg_str2ptr(const char *s) {
 }
 
 bool isa_reg_load(FILE *fp) {
-  int i;
+  int i, ch;
   for (i = 0; i < NR_REG; i++) {
-    // if (fscanf(fp, "%*s0x%x", &cpu.gpr[i]) != 1) return 0;
-    // printf("%d %d\n", i, cpu.gpr[i]);
-    // XXX
-    assert(0 == fscanf(fp, "%*s"));
-    char buff[20];
-    assert(fgets(buff, 20, fp));
-    printf("%d %s\n", i, buff);
-    return 0;
-    // XXX
-    int ch;
     do {
       ch = fgetc(fp);
-    } while (ch != '\n' && ch != EOF);
+      if (ch == EOF) return false;
+    } while (!isspace(ch));
+    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) return false;
+    do {
+      ch = fgetc(fp);
+      if (ch == EOF) return false;
+    } while (ch != '\n');
   }
   if (i != NR_REG) { return 0; }
   return 1;
