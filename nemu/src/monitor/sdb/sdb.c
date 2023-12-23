@@ -383,7 +383,7 @@ static int cmd_save(char *args) {
   fprintf(fp, "%s\n", args);
   int fd = fileno(fp);
   int dup_stdin = dup(STDIN_FILENO);
-  printf("newfd = %d\n", (dup2(fd, STDOUT_FILENO)));
+  dup2(fd, STDOUT_FILENO);
   isa_reg_display();
   dup2(dup_stdin, STDOUT_FILENO);
   close(dup_stdin);
