@@ -21,6 +21,8 @@
 const char *regs[] = {"$0", "ra", "sp", "gp", "tp",  "t0",  "t1", "t2", "s0", "s1", "a0",
                       "a1", "a2", "a3", "a4", "a5",  "a6",  "a7", "s2", "s3", "s4", "s5",
                       "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"};
+const char *pc_csrs[] = {"pc", "mepc", "mstatus", "mcause", "mtvec"};
+#define PC_CSR(i) ((&cpu.pc)[i])
 
 #define NR_REG MUXDEF(CONFIG_RVE, 16, 32)
 void isa_reg_display() {
@@ -56,6 +58,9 @@ void isa_reg_display() {
     // t* s* a*    - hex - decimal
     // ps/mstatus  - hex - [flags]
     printf("%-15s0x%-8" PRIx32 "\t%" PRIu32 "\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
+  }
+  for (int i = 0; i < ARRLEN(pc_csrs); i++) {
+    printf("%-15s0x%-8" PRIx32 "\t%" PRIu32 "\n", pc_csrs[i], PC_CSR(i), PC_CSR(i));
   }
 }
 
