@@ -36,6 +36,8 @@ static void sh_handle_cmd(const char *cmd) {
   } else if (strcmp(tmp, "exit") == 0) {
     exit(0);
   }
+  setenv("PATH", "/bin", 0);
+  execvp(tmp, NULL);
 }
 
 void builtin_sh_run() {
