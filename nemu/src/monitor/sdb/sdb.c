@@ -433,7 +433,10 @@ static int cmd_load(char *args) {
     printf("ISA mismatch.");
     return 0;
   }
-  isa_reg_load(fp);
+  if (!isa_reg_load(fp)) {
+    printf("Bad file format.\n");
+    return 0;
+  }
   return 0;
 }
 
