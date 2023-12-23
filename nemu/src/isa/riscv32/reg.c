@@ -118,4 +118,17 @@ word_t *isa_reg_str2ptr(const char *s) {
   }
   return NULL;
 }
+
+bool isa_reg_load(FILE *fp) {
+  int i;
+  for (i = 0; i < NR_REG; i++) {
+    if (fscanf(fp, "%*s%x", &cpu.gpr[i]) == EOF) { return -1; }
+    int ch;
+    do {
+      ch = fgetc(fp);
+    } while (ch != '\n' && ch != EOF);
+  }
+  if (i != NR_REG) { return 0; }
+  return 1;
+}
 // vim: fenc=utf-8

@@ -34,6 +34,7 @@ void isa_reg_display();
 word_t *isa_reg_str2ptr(const char *name);
 // ***deprecated***
 __attribute__((deprecated)) word_t isa_reg_str2val(const char *name, bool *success);
+bool isa_reg_load(FILE *);
 
 // exec
 struct Decode;

@@ -415,7 +415,25 @@ static int cmd_save(char *args) {
 }
 
 static int cmd_load(char *args) {
-  printf("Not implemented\n");
+  if (NOMORE(args)) {
+    printf("Usage: load FILE\n");
+    return 0;
+  }
+  FILE *fp = fopen(args, "r");
+  if (fp == NULL) {
+    printf("Failed to open file %s: %s\n", args, strerror(errno));
+    return 0;
+  }
+  char isa[16];
+  if (NULL == fgets(isa, sizeof(isa), fp)) {
+    printf("Bad file format.\n");
+    return 0;
+  }
+  if (strcmp(isa, str(__GUEST_ISA__) "\n") != 0) {
+    printf("ISA mismatch.");
+    return 0;
+  }
+  isa_reg_load(fp);
   return 0;
 }
 
