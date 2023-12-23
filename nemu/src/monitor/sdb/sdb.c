@@ -394,6 +394,7 @@ static int cmd_save(char *args) {
   fclose(fp);
   fp = fopen("zlib", "w");
   void *dst = malloc(CONFIG_MSIZE);
+  assert(dst != NULL);
   uLongf dst_len = CONFIG_MSIZE;
   assert(Z_OK == compress(dst, &dst_len, guest_to_host(0), CONFIG_MSIZE));
   fwrite(dst, 1, dst_len, fp);
