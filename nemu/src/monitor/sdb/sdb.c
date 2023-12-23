@@ -393,9 +393,9 @@ static int cmd_save(char *args) {
   close(dup_stdout);
   fclose(fp);
   fp = fopen("zlib", "w");
-  void *dst = malloc(compressBound(CONFIG_MSIZE));
+  uLongf dst_len = compressBound(CONFIG_MSIZE);
+  void *dst = malloc(dst_len);
   assert(dst != NULL);
-  uLongf dst_len = CONFIG_MSIZE;
   if (compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION)) {
     printf("save: failed to compress memory\n");
     return 0;
