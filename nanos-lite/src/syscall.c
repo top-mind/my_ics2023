@@ -1,5 +1,6 @@
 #include <common.h>
 #include <fs.h>
+#include "sys/errno.h"
 #include "syscall.h"
 #include <sys/time.h>
 
@@ -48,8 +49,13 @@ void do_syscall(Context *c) {
       break;
     case SYS_execve: {
       void *naive_uload(void * pcb, const char *filename);
+      int fd = fs_open((char *)a[1], 0, 0);
+      if (fd < 0) {
+        c->GPRx = -ENOEXEC;
+        break;
+      }
       naive_uload(NULL, (char *)a[1]);
-      c->GPRx = -1;
+      c->GPRx = -EACCES;
       break;
     }
     default: panic("Unhandled syscall ID = %d", a[0]);
