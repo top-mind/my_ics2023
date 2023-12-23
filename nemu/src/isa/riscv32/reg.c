@@ -120,6 +120,10 @@ word_t *isa_reg_str2ptr(const char *s) {
 }
 
 bool isa_reg_load(FILE *fp) {
+  char buf[1024];
+  assert(NULL != fgets(buf, sizeof(buf), fp));
+  printf("reg load: %s\n", buf);
+  return 0;
   int i;
   for (i = 0; i < NR_REG; i++) {
     printf("%d %d\n", i, cpu.gpr[i]);
