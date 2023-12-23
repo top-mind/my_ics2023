@@ -134,7 +134,7 @@ bool isa_reg_load(FILE *fp) {
     do {
       ch = fgetc(fp);
       if (ch == EOF) {
-        printf("%d\n", i);
+        printf("i is %d\n", i);
         if (i == 37) {
           assert(0);
         }
