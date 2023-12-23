@@ -168,20 +168,8 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize the simple debugger. */
   init_sdb();
 
-#if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
+#ifdef LIBDISASM
 #ifndef CONFIG_ISA_loongarch32r
-  // #define INIT(name) init_disasm(#name "-pc-linux-gnu")
-  // #ifdef CONFIG_ISA_x86
-  //   INIT(i686);
-  // #elif defined(CONFIG_ISA_mips32)
-  //   INIT(mipsel);
-  // #elif defined(CONFIG_ISA_riscv)
-  // #ifdef CONFIG_RV64
-  //   INIT(riscv64);
-  // #else
-  //   INIT(riscv32);
-  // #endif /* CONFIG_RV64 */
-  // #endif /* isa-type */
   // clang-format off
   init_disasm(MUXDEF(CONFIG_ISA_x86, "i686",
               MUXDEF(CONFIG_ISA_mips32, "mipsel",
@@ -190,7 +178,7 @@ void init_monitor(int argc, char *argv[]) {
               "riscv32"),))) "-pc-linux-gnu");
   // clang-format on
 #endif /* CONFIG_ISA_loongarch32r */
-#endif /* ITRACE IQUEUE */
+#endif /* LIBDISASM */
 
   /* Display welcome message. */
   welcome();

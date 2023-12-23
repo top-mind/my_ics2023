@@ -19,6 +19,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <memory/paddr.h>
+#include <cpu/difftest.h>
 #include "sdb.h"
 #include <sys/types.h>
 #include <utils.h>
@@ -140,6 +141,54 @@ static int cmd_d(char *args) {
 static int cmd_finish(char *);
 static int cmd_nf(char *);
 
+static int cmd_attach(char *args) {
+  if (NOMORE(args)) {
+    difftest_attach();
+  } else {
+    printf("Usage: attach\n");
+  }
+  return 0;
+}
+
+static int cmd_detach(char *args) {
+  if (NOMORE(args)) {
+    difftest_detach();
+  } else {
+    printf("Usage: detach\n");
+  }
+  return 0;
+}
+
+static int cmd_save(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: save FILE\n");
+  } else {
+    FILE *fp = fopen(args, "w");
+    if (fp == NULL) {
+      printf("Failed to open file %s\n", args);
+    } else {
+      // isa_save_state(fp);
+      fclose(fp);
+    }
+  }
+  return 0;
+}
+
+static int cmd_load(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: load FILE\n");
+  } else {
+    FILE *fp = fopen(args, "r");
+    if (fp == NULL) {
+      printf("Failed to open file %s\n", args);
+    } else {
+      // isa_load_state(fp);
+      fclose(fp);
+    }
+  }
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -174,9 +223,13 @@ static struct {
    "Arguments are watchpoint numbers with spaces in between.\n"
    "To delete all watchpoints, give no argument.",
    cmd_d},
-  {"bt", "Print backtrace of all stack frames", cmd_bt}, //XXX Copilot
+  {"bt", "Print backtrace of all stack frames", cmd_bt},
   {"fini", "Finish current function", cmd_finish},
-  { "nf", "Execute untill entering a function", cmd_nf},
+  {"nf", "Execute untill entering a function", cmd_nf},
+  {"attach", "Enter difftest mode", cmd_attach},
+  {"detach", "Exit difftest mode", cmd_detach},
+  {"save", "Save the current state", cmd_save},
+  {"load", "Load the current state", cmd_load},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
