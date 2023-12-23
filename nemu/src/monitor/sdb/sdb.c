@@ -396,8 +396,9 @@ static int cmd_save(char *args) {
   void *dst = malloc(CONFIG_MSIZE);
   assert(dst != NULL);
   uLongf dst_len = CONFIG_MSIZE;
-  assert(Z_OK == compress(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE));
+  assert(Z_OK == compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION));
   fwrite(dst, 1, dst_len, fp);
+  free(dst);
   fclose(fp);
   return 0;
 }
