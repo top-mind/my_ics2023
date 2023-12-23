@@ -392,7 +392,15 @@ static int cmd_save(char *args) {
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
   fclose(fp);
-  fp = fopen("zlib", "w");
+  char *pathzlib = malloc(strlen(args) + 5);
+  strcpy(pathzlib, args);
+  strcat(pathzlib, ".zlib");
+  fp = fopen(pathzlib, "w");
+  free(pathzlib);
+  if (fp == NULL) {
+    printf("Failed to open file %s: %s\n", pathzlib, strerror(errno));
+    return 0;
+  }
   uLongf dst_len = compressBound(CONFIG_MSIZE);
   void *dst = malloc(dst_len);
   assert(dst != NULL);
