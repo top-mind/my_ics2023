@@ -380,7 +380,7 @@ static int cmd_save(char *args) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
     return 0;
   }
-  fprintf(fp, "%s\n", args);
+  fprintf(fp, "%s\n", str(__GUEST_ISA__));
   fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
