@@ -137,6 +137,8 @@ bool isa_reg_load(FILE *fp) {
         printf("i is %d\n", i);
         if (i == 37) {
           assert(0);
+        } else {
+          while (1);
         }
         assert(0);
         return false;
