@@ -126,7 +126,7 @@ bool isa_reg_load(FILE *fp) {
   for (i = 0; i < (NR_REG + NR_PC_CSR); i++) {
     printf("pre %d\n", i);
     assert(NR_REG + NR_PC_CSR == 37);
-    if (i >= (NR_REG + NR_PC_CSR)) {
+    if (i >= 37 ){
       printf("%d\n", i);
       assert(0);
       return false;
