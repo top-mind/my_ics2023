@@ -49,6 +49,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   void watchpoints_notify();
   watchpoints_notify();
 #endif
+  return;
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
