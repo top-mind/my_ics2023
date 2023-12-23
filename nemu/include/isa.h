@@ -33,7 +33,7 @@ extern CPU_state cpu;
 void isa_reg_display();
 word_t *isa_reg_str2ptr(const char *name);
 // ***deprecated***
-word_t isa_reg_str2val(const char *name, bool *success);
+__attribute__((deprecated)) word_t isa_reg_str2val(const char *name, bool *success);
 
 // exec
 struct Decode;
