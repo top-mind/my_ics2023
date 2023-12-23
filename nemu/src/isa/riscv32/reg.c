@@ -125,8 +125,11 @@ bool isa_reg_load(FILE *fp) {
     // if (fscanf(fp, "%*s0x%x", &cpu.gpr[i]) != 1) return 0;
     // printf("%d %d\n", i, cpu.gpr[i]);
     // XXX
-    int n = fscanf(fp, "%*s0x%x", &cpu.gpr[i]);
-    printf("%d %d\n", i, n);
+    assert(0 == fscanf(fp, "%*s"));
+    char buff[20];
+    assert(fgets(buff, 20, fp));
+    printf("%d %s\n", i, buff);
+    return 0;
     // XXX
     int ch;
     do {
