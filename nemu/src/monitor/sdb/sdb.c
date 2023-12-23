@@ -381,6 +381,7 @@ static int cmd_save(char *args) {
     return 0;
   }
   fprintf(fp, "%s\n", args);
+  fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
   dup2(fd, STDOUT_FILENO);
