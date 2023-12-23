@@ -152,7 +152,6 @@ bool isa_reg_load(FILE *fp) {
     while (ch != '\n' && ch != EOF);
     printf("%d %d\n", i, cpu.gpr[i]);
   }
-  assert(0);
   return i == NR_REG + NR_PC_CSR;
 }
 // vim: fenc=utf-8
