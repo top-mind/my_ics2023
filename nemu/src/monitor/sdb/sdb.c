@@ -13,15 +13,16 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <SDL2/SDL_touch.h>
 #include <errno.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <memory/paddr.h>
+#include <memory/host.h>
 #include <cpu/difftest.h>
 #include "sdb.h"
+#include <sys/types.h>
 #include <unistd.h>
 
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
@@ -383,12 +384,15 @@ static int cmd_save(char *args) {
   fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
+  fflush(stdout);
   dup2(fd, STDOUT_FILENO);
   isa_reg_display();
   fflush(stdout);
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
-
+  for (size_t i = CONFIG_MBASE; i != CONFIG_MBASE + CONFIG_MSIZE; i += 4) {
+    fprintf(fp, "%08x\n", host_read(guest_to_host(i), 4));
+  }
   fclose(fp);
   return 0;
 }
