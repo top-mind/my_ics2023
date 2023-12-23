@@ -126,9 +126,15 @@ bool isa_reg_load(FILE *fp) {
   for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
       ch = fgetc(fp);
-      if (ch == EOF) return false;
+      if (ch == EOF) {
+        assert(0);
+        return false;
+      }
     } while (!isspace(ch));
-    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) return false;
+    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) {
+      assert(0);
+      return false;
+    }
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
     printf("%d %d\n", i, cpu.gpr[i]);
