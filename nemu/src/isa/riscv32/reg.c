@@ -123,6 +123,7 @@ bool isa_reg_load(FILE *fp) {
   int i;
   for (i = 0; i < NR_REG; i++) {
     if (fscanf(fp, "%*s0x%x", &cpu.gpr[i]) != 1) return 0;
+    printf("%d %d\n", i, cpu.gpr[i]);
     int ch;
     do {
       ch = fgetc(fp);
