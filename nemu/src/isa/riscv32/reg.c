@@ -127,6 +127,7 @@ bool isa_reg_load(FILE *fp) {
     do {
       ch = fgetc(fp);
       if (ch == EOF) {
+        printf("%d\n", i);
         assert(0);
         return false;
       }
