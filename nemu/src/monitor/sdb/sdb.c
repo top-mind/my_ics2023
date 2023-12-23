@@ -381,12 +381,16 @@ static int cmd_save(char *args) {
   }
   fprintf(fp, "%s\n", str(__GUEST_ISA__));
   fflush(fp);
+  do {
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
   dup2(fd, STDOUT_FILENO);
   isa_reg_display();
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
+  } while (0);
+
+  fclose(fp);
   return 0;
 }
 
