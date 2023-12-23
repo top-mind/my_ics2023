@@ -393,10 +393,13 @@ static int cmd_save(char *args) {
   close(dup_stdout);
   fclose(fp);
   fp = fopen("zlib", "w");
-  void *dst = malloc(CONFIG_MSIZE);
+  void *dst = malloc(compressBound(CONFIG_MSIZE));
   assert(dst != NULL);
   uLongf dst_len = CONFIG_MSIZE;
-  assert(Z_OK == compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION));
+  if (compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION)) {
+    printf("save: failed to compress memory\n");
+    return 0;
+  }
   fwrite(dst, 1, dst_len, fp);
   free(dst);
   fclose(fp);
