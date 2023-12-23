@@ -24,6 +24,7 @@
 #include "sdb.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include <zlib.h>
 
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
 
@@ -390,9 +391,12 @@ static int cmd_save(char *args) {
   fflush(stdout);
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
-  for (size_t i = CONFIG_MBASE; i != CONFIG_MBASE + CONFIG_MSIZE; i += 4) {
-    fprintf(fp, "%08x\n", host_read(guest_to_host(i), 4));
-  }
+  fclose(fp);
+  fp = fopen("zlib", "w");
+  void *dst = malloc(CONFIG_MSIZE);
+  uLongf dst_len = CONFIG_MSIZE;
+  assert(Z_OK == compress(dst, &dst_len, guest_to_host(0), CONFIG_MSIZE));
+  fwrite(dst, 1, dst_len, fp);
   fclose(fp);
   return 0;
 }
