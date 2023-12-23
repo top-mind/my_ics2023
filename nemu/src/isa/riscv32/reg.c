@@ -122,8 +122,12 @@ word_t *isa_reg_str2ptr(const char *s) {
 bool isa_reg_load(FILE *fp) {
   int i;
   for (i = 0; i < NR_REG; i++) {
-    if (fscanf(fp, "%*s0x%x", &cpu.gpr[i]) != 1) return 0;
-    printf("%d %d\n", i, cpu.gpr[i]);
+    // if (fscanf(fp, "%*s0x%x", &cpu.gpr[i]) != 1) return 0;
+    // printf("%d %d\n", i, cpu.gpr[i]);
+    // XXX
+    int n = fscanf(fp, "%*s0x%x", &cpu.gpr[i]);
+    printf("%d %d\n", i, n);
+    // XXX
     int ch;
     do {
       ch = fgetc(fp);
