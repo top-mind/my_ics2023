@@ -22,7 +22,7 @@
 #include <cpu/difftest.h>
 #include "sdb.h"
 #include <sys/types.h>
-#include <utils.h>
+#include <unistd.h>
 
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
 
@@ -76,40 +76,11 @@ static int cmd_si(char *);
 static int cmd_info(char *);
 static int cmd_x(char *);
 static int cmd_bt(char *);
-static int cmd_p(char *args) {
-  if (NOMORE(args)) {
-    puts("Usage: p EXPR");
-    return 0;
-  }
-  // trick to print pc in hex
-  if (strcmp(args, "$pc") == 0) {
-    printf(FMT_PADDR, cpu.pc);
-    char *f_name;
-    Elf_Off f_off;
-    elf_getname_and_offset(cpu.pc, &f_name, &f_off);
-    if (ELF_OFFSET_VALID(f_off))
-      printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
-    else
-      printf("[%s]", f_name);
-    printf("\n");
-  } else {
-    eval_t result = expr(args);
-    if (result.type == EV_SUC) {
-      peval(result);
-      printf(" ");
-      printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
-      char *f_name;
-      Elf_Off f_off;
-      elf_getname_and_offset(result.value, &f_name, &f_off);
-      if (ELF_OFFSET_VALID(f_off)) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
-      printf("\n");
-    } else {
-      peval(result);
-      printf("\n");
-    }
-  }
-  return 0;
-}
+static int cmd_p(char *);
+static int cmd_finish(char *);
+static int cmd_nf(char *);
+static int cmd_save(char *);
+static int cmd_load(char *);
 static int cmd_b(char *args) {
   if (NOMORE(args)) {
     puts("Not impl. To developer: read gdb manual");
@@ -138,9 +109,6 @@ static int cmd_d(char *args) {
   if (!delete_breakpoint(n)) { printf("No breakpoint %d.\n", n); }
   return 0;
 }
-static int cmd_finish(char *);
-static int cmd_nf(char *);
-
 static int cmd_attach(char *args) {
   if (NOMORE(args)) {
     difftest_attach();
@@ -149,7 +117,6 @@ static int cmd_attach(char *args) {
   }
   return 0;
 }
-
 static int cmd_detach(char *args) {
   if (NOMORE(args)) {
     difftest_detach();
@@ -159,35 +126,6 @@ static int cmd_detach(char *args) {
   return 0;
 }
 
-static int cmd_save(char *args) {
-  if (NOMORE(args)) {
-    printf("Usage: save FILE\n");
-  } else {
-    FILE *fp = fopen(args, "w");
-    if (fp == NULL) {
-      printf("Failed to open file %s\n", args);
-    } else {
-      // isa_save_state(fp);
-      fclose(fp);
-    }
-  }
-  return 0;
-}
-
-static int cmd_load(char *args) {
-  if (NOMORE(args)) {
-    printf("Usage: load FILE\n");
-  } else {
-    FILE *fp = fopen(args, "r");
-    if (fp == NULL) {
-      printf("Failed to open file %s\n", args);
-    } else {
-      // isa_load_state(fp);
-      fclose(fp);
-    }
-  }
-  return 0;
-}
 
 static struct {
   const char *name;
@@ -311,6 +249,41 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static int cmd_p(char *args) {
+  if (NOMORE(args)) {
+    puts("Usage: p EXPR");
+    return 0;
+  }
+  // trick to print pc in hex
+  if (strcmp(args, "$pc") == 0) {
+    printf(FMT_PADDR, cpu.pc);
+    char *f_name;
+    Elf_Off f_off;
+    elf_getname_and_offset(cpu.pc, &f_name, &f_off);
+    if (ELF_OFFSET_VALID(f_off))
+      printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
+    else
+      printf("[%s]", f_name);
+    printf("\n");
+  } else {
+    eval_t result = expr(args);
+    if (result.type == EV_SUC) {
+      peval(result);
+      printf(" ");
+      printf("%" MUXDEF(CONFIG_ISA64, PRIu64, PRIu32), result.value);
+      char *f_name;
+      Elf_Off f_off;
+      elf_getname_and_offset(result.value, &f_name, &f_off);
+      if (ELF_OFFSET_VALID(f_off)) printf("[%s+%" MUXDEF(ELF64, PRIu64, PRIu32) "]", f_name, f_off);
+      printf("\n");
+    } else {
+      peval(result);
+      printf("\n");
+    }
+  }
+  return 0;
+}
+
 static int cmd_x(char *args) {
   char *arg1 = strtok(NULL, " ");
   char *arg2 = strtok(NULL, ""); // extract verbatim
@@ -394,6 +367,31 @@ static int cmd_nf(char *args) {
 #else
   printf("Please enable ftrace\n");
 #endif
+  return 0;
+}
+
+static int cmd_save(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: save FILE\n");
+    return 0;
+  }
+  FILE *fp = fopen(args, "w");
+  if (fp == NULL) {
+    printf("Failed to open file %s: %s\n", args, strerror(errno));
+    return 0;
+  }
+  fprintf(fp, "%s\n", args);
+  int fd = fileno(fp);
+  int dup_stdin = dup(STDIN_FILENO);
+  assert(dup2(fd, STDIN_FILENO) == STDIN_FILENO);
+  isa_reg_display();
+  dup2(dup_stdin, STDIN_FILENO);
+  close(dup_stdin);
+  return 0;
+}
+
+static int cmd_load(char *args) {
+  printf("Not implemented\n");
   return 0;
 }
 
