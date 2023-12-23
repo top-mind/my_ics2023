@@ -5,11 +5,9 @@
 #include <stdlib.h>
 
 void * b;
-extern int a;
 
 int main() {
   b = malloc(10);
-  printf("%d\n", a);
   return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
