@@ -168,7 +168,7 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize the simple debugger. */
   init_sdb();
 
-#ifdef LIBDISASM
+#ifdef CONFIG_LIBDISASM
 #ifndef CONFIG_ISA_loongarch32r
   // clang-format off
   init_disasm(MUXDEF(CONFIG_ISA_x86, "i686",
@@ -178,7 +178,7 @@ void init_monitor(int argc, char *argv[]) {
               "riscv32"),))) "-pc-linux-gnu");
   // clang-format on
 #endif /* CONFIG_ISA_loongarch32r */
-#endif /* LIBDISASM */
+#endif /* CONFIG_LIBDISASM */
 
   /* Display welcome message. */
   welcome();
