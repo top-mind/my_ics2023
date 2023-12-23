@@ -23,6 +23,7 @@ const char *regs[] = {"$0", "ra", "sp", "gp", "tp",  "t0",  "t1", "t2", "s0", "s
                       "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"};
 const char *pc_csrs[] = {"pc", "mepc", "mstatus", "mcause", "mtvec"};
 #define PC_CSR(i) ((&cpu.pc)[i])
+#define NR_PC_CSR ARRLEN(pc_csrs)
 
 #define NR_REG MUXDEF(CONFIG_RVE, 16, 32)
 void isa_reg_display() {
@@ -121,7 +122,7 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
-  for (i = 0; i < NR_REG; i++) {
+  for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
       ch = fgetc(fp);
       if (ch == EOF) return false;
