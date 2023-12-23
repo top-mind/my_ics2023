@@ -135,6 +135,9 @@ bool isa_reg_load(FILE *fp) {
       ch = fgetc(fp);
       if (ch == EOF) {
         printf("%d\n", i);
+        if (i == 37) {
+          assert(0);
+        }
         assert(0);
         return false;
       }
