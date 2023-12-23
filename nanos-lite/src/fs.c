@@ -63,8 +63,8 @@ int fs_open(const char *pathname, int flags, int mode) {
       return i;
     }
   }
-  panic("sfs cannot create file %s", pathname);
   if (flags & 0x0200) {
+    panic("sfs cannot create file %s", pathname);
     return -EACCES;
   }
   return -ENOENT;
