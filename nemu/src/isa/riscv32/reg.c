@@ -122,6 +122,7 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
+  printf("s: %d\n", NR_REG + NR_PC_CSR);
   for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
       ch = fgetc(fp);
@@ -134,7 +135,6 @@ bool isa_reg_load(FILE *fp) {
     } while (ch != '\n');
     printf("%d %d\n", i, cpu.gpr[i]);
   }
-  printf("s: %d %d\n", i, NR_REG + NR_PC_CSR);
   return i == NR_REG + NR_PC_CSR;
 }
 // vim: fenc=utf-8
