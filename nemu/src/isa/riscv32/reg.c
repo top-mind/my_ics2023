@@ -122,32 +122,12 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
-  printf("s: %d\n", (NR_REG + NR_PC_CSR));
-  for (i = 0; i < (NR_REG + NR_PC_CSR); i++) {
-    printf("pre %d\n", i);
-    assert(NR_REG + NR_PC_CSR == 37);
-    if (i >= 37 ){
-      printf("%d\n", i);
-      assert(0);
-      return false;
-    }
+  for (i = 0; i < 37; i++) {
     do {
       ch = fgetc(fp);
-      if (ch == EOF) {
-        printf("i is %d\n", i);
-        if (i == 37) {
-          assert(0);
-        } else {
-          while (1);
-        }
-        assert(0);
-        return false;
-      }
+      if (ch == EOF) return false;
     } while (!isspace(ch));
-    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) {
-      assert(0);
-      return false;
-    }
+    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) return false;
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
     printf("%d %d\n", i, cpu.gpr[i]);
