@@ -129,10 +129,8 @@ bool isa_reg_load(FILE *fp) {
       if (ch == EOF) return false;
     } while (!isspace(ch));
     if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) return false;
-    do {
-      ch = fgetc(fp);
-      if (ch == EOF) return false;
-    } while (ch != '\n');
+    do ch = fgetc(fp);
+    while (ch != '\n' && ch != EOF);
     printf("%d %d\n", i, cpu.gpr[i]);
   }
   return i == NR_REG + NR_PC_CSR;
