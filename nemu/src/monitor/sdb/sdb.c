@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <SDL2/SDL_touch.h>
 #include <errno.h>
 #include <isa.h>
 #include <cpu/cpu.h>
@@ -21,7 +22,6 @@
 #include <memory/paddr.h>
 #include <cpu/difftest.h>
 #include "sdb.h"
-#include <sys/types.h>
 #include <unistd.h>
 
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
@@ -381,14 +381,13 @@ static int cmd_save(char *args) {
   }
   fprintf(fp, "%s\n", str(__GUEST_ISA__));
   fflush(fp);
-  do {
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
   dup2(fd, STDOUT_FILENO);
   isa_reg_display();
+  fflush(stdout);
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
-  } while (0);
 
   fclose(fp);
   return 0;
