@@ -125,6 +125,11 @@ bool isa_reg_load(FILE *fp) {
   printf("s: %d\n", NR_REG + NR_PC_CSR);
   for (i = 0; i < (NR_REG + NR_PC_CSR); i++) {
     printf("pre %d\n", i);
+    if (i >= (NR_REG + NR_PC_CSR)) {
+      printf("%d\n", i);
+      assert(0);
+      return false;
+    }
     do {
       ch = fgetc(fp);
       if (ch == EOF) {
