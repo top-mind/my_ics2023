@@ -133,7 +133,6 @@ bool isa_reg_load(FILE *fp, riscv32_CPU_state *_this) {
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
   }
-  assert(0);
   return i == NR_REG + NR_PC_CSR;
 }
 // vim: fenc=utf-8
