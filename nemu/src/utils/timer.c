@@ -53,6 +53,10 @@ void sdb_set_start_time(uint64_t time) {
   boot_time = time;
 }
 
-uint64_t sdb_get_time() {
+uint64_t sdb_realtime() {
   return get_time_internal();
+}
+
+uint64_t sdb_get_start_time() {
+  return boot_time;
 }

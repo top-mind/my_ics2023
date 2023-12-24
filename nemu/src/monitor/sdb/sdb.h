@@ -66,5 +66,6 @@ void free_all_breakpoints();
          MUXDEF(CONFIG_ISA_mips32, 0x0005000d, MUXDEF(CONFIG_ISA_riscv, 0x00100073, )))
 #endif
 
-uint64_t sdb_get_time();
+uint64_t sdb_realtime();
 void sdb_set_start_time(uint64_t time);
+uint64_t sdb_get_start_time();
