@@ -484,7 +484,8 @@ static int cmd_load(char *args) {
   }
   free(src);
   memcpy(&cpu, &_state, sizeof(cpu));
-  sdb_set_start_time(boot_time);
+  if (boot_time != 0)
+    sdb_set_start_time(boot_time);
   return 0;
 }
 
