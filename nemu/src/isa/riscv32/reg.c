@@ -140,7 +140,6 @@ bool isa_reg_load(FILE *fp) {
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
     printf("%d: %d\n", __LINE__, a = i);
-    printf("%d %d\n", i, cpu.gpr[i]);
   }
   puts("GOOD");
   return i == NR_REG + NR_PC_CSR;
