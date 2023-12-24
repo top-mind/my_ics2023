@@ -486,7 +486,7 @@ static int cmd_load(char *args) {
   free(src);
   memcpy(&cpu, &_state, sizeof(cpu));
   if (time & 0x8000000000000000ull)
-    sdb_set_start_time(sdb_get_start_time() + time);
+    sdb_set_start_time(sdb_realtime() + time);
   else
     sdb_set_start_time(time);
   return 0;
