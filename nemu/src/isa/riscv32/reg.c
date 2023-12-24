@@ -122,7 +122,7 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
-  for (i = 0; i < 33; i++) {
+  for (i = 0; i < 37; i++) {
     volatile int a = i;
     printf("%d: %d\n", __LINE__, a = i);
     do {
