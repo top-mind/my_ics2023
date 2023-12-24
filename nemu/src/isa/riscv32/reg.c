@@ -122,24 +122,15 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
-  for (i = 0; i < 37; i++) {
-    volatile int a = i;
-    printf("%d: %d\n", __LINE__, a = i);
+  for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
-    printf("%d: %d\n", __LINE__, a = i);
       ch = fgetc(fp);
-    printf("%d: %d\n", __LINE__, a = i);
       if (ch == EOF) return false;
-    printf("%d: %d\n", __LINE__, a = i);
     } while (!isspace(ch));
-    printf("%d: %d\n", __LINE__, a = i);
     word_t *ptr = (word_t *) &cpu;
-    printf("%d: %d\n", __LINE__, a = i);
     if (fscanf(fp, "%x", &ptr[i]) != 1) return false;
-    printf("%d: %d\n", __LINE__, a = i);
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
-    printf("%d: %d\n", __LINE__, a = i);
   }
   puts("GOOD");
   return i == NR_REG + NR_PC_CSR;
