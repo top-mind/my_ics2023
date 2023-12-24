@@ -415,28 +415,69 @@ static int cmd_save(char *args) {
 }
 
 static int cmd_load(char *args) {
+  FILE *fp;
+  char isa[16];
+  CPU_state _state;
+  // sanity check
   if (NOMORE(args)) {
     printf("Usage: load FILE\n");
     return 0;
   }
-  FILE *fp = fopen(args, "r");
+  fp = fopen(args, "r");
   if (fp == NULL) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
     return 0;
   }
-  char isa[16];
   if (NULL == fgets(isa, sizeof(isa), fp)) {
+    fclose(fp);
     printf("Bad file format.\n");
     return 0;
   }
   if (strcmp(isa, str(__GUEST_ISA__) "\n") != 0) {
+    fclose(fp);
     printf("ISA mismatch.");
     return 0;
   }
-  if (!isa_reg_load(fp)) {
-    printf("Bad file format.\n");
+  // detach first
+  difftest_detach();
+  if (!isa_reg_load(fp, &_state)) {
+    fclose(fp);
+    printf("Can not load %s\n", args);
     return 0;
   }
+  fclose(fp);
+  
+  // load memory
+  char *pathzlib;
+  void *src;
+  uLongf src_len;
+  void *dst = guest_to_host(CONFIG_MBASE);
+  uLongf dst_len = CONFIG_MSIZE;
+
+  pathzlib = malloc(strlen(args) + 5);
+  strcpy(pathzlib, args);
+  strcat(pathzlib, ".zlib");
+  fp = fopen(pathzlib, "r");
+  free(pathzlib);
+  if (fp == NULL) {
+    printf("Failed to open file %s: %s\n", pathzlib, strerror(errno));
+    return 0;
+  }
+  fseek(fp, 0, SEEK_END);
+  src_len = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  src = malloc(src_len);
+  assert(fread(src, 1, src_len, fp) == src_len);
+  fclose(fp);
+  printf("Decompressing dump file %s.zlib...\n", args);
+  if (uncompress(dst, &dst_len, src, src_len)) {
+    free(src);
+    printf("load: failed to uncompress memory\n");
+    nemu_state.state = NEMU_END;
+    return 0;
+  }
+  free(src);
+  memcpy(&cpu, &_state, sizeof(cpu));
   return 0;
 }
 
@@ -481,9 +522,9 @@ void sdb_mainloop() {
 }
 
 void init_sdb() {
-  /* Compile the regular expressions. */
   prev_line_read = malloc(1);
   *prev_line_read = 0;
+  /* Compile the regular expressions. */
   init_regex();
   init_breakpoints();
   init_sigint();

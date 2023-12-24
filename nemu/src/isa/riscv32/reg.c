@@ -15,6 +15,7 @@
 
 #include <ctype.h>
 #include <isa.h>
+#include "isa-def.h"
 #include "local-include/reg.h"
 #include <common.h>
 
@@ -120,19 +121,19 @@ word_t *isa_reg_str2ptr(const char *s) {
   return NULL;
 }
 
-bool isa_reg_load(FILE *fp) {
+bool isa_reg_load(FILE *fp, riscv32_CPU_state *_this) {
   int i, ch;
+  word_t *ptr = (word_t *) &_this;
   for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
       ch = fgetc(fp);
       if (ch == EOF) return false;
     } while (!isspace(ch));
-    word_t *ptr = (word_t *) &cpu;
     if (fscanf(fp, "%x", &ptr[i]) != 1) return false;
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
   }
-  puts("GOOD");
+  assert(0);
   return i == NR_REG + NR_PC_CSR;
 }
 // vim: fenc=utf-8
