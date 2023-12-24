@@ -123,7 +123,7 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp, riscv32_CPU_state *_this) {
   int i, ch;
-  word_t *ptr = (word_t *) &_this;
+  word_t *ptr = (word_t *) _this;
   for (i = 0; i < NR_REG + NR_PC_CSR; i++) {
     do {
       ch = fgetc(fp);
