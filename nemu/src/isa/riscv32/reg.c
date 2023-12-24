@@ -122,7 +122,7 @@ word_t *isa_reg_str2ptr(const char *s) {
 
 bool isa_reg_load(FILE *fp) {
   int i, ch;
-  for (i = 0; i < 32; i++) {
+  for (i = 0; i < 36; i++) {
     volatile int a = i;
     printf("%d: %d\n", __LINE__, a = i);
     do {
@@ -142,6 +142,7 @@ bool isa_reg_load(FILE *fp) {
     printf("%d: %d\n", __LINE__, a = i);
     printf("%d %d\n", i, cpu.gpr[i]);
   }
+  puts("GOOD");
   return i == NR_REG + NR_PC_CSR;
 }
 // vim: fenc=utf-8
