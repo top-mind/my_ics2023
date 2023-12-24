@@ -23,7 +23,6 @@ void do_syscall(Context *c) {
       c->GPRx = fs_write(a[1], (void *) a[2], a[3]);
       break;
     case SYS_brk:
-      Log("brk syscall with addr = %p", a[1]);
       c->GPRx = 0;
       break;
     case SYS_read:

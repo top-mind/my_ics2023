@@ -59,7 +59,6 @@ int fs_open(const char *pathname, int flags, int mode) {
   for (int i = 0; i < ARRLEN(file_table); i++) {
     if (strcmp(pathname, file_table[i].name) == 0) {
       file_table[i].open_offset = 0;
-      Log("fs_open: open file %s with fd = %d", pathname, i);
       return i;
     }
   }
