@@ -381,7 +381,7 @@ static int cmd_save(char *args) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
     return 0;
   }
-  fprintf(fp, "%s\ntime = %" PRIu64, str(__GUEST_ISA__), sdb_get_time());
+  fprintf(fp, "%s\ntime = %" PRIu64 "\n", str(__GUEST_ISA__), sdb_get_time());
   fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
