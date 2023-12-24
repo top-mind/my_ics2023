@@ -127,7 +127,8 @@ bool isa_reg_load(FILE *fp) {
       ch = fgetc(fp);
       if (ch == EOF) return false;
     } while (!isspace(ch));
-    if (fscanf(fp, "%x", &cpu.gpr[i]) != 1) return false;
+    word_t *ptr = (word_t *) &cpu;
+    if (fscanf(fp, "%x", &ptr[i]) != 1) return false;
     do ch = fgetc(fp);
     while (ch != '\n' && ch != EOF);
     printf("%d %d\n", i, cpu.gpr[i]);
