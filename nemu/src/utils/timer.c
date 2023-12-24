@@ -48,3 +48,11 @@ uint64_t get_time() {
   uint64_t now = get_time_internal();
   return now - boot_time;
 }
+
+void sdb_set_start_time(uint64_t time) {
+  boot_time = time;
+}
+
+uint64_t sdb_get_time() {
+  return get_time_internal();
+}

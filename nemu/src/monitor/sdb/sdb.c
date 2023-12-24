@@ -381,7 +381,7 @@ static int cmd_save(char *args) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
     return 0;
   }
-  fprintf(fp, "%s\n", str(__GUEST_ISA__));
+  fprintf(fp, "%s\ntime = %" PRIu64, str(__GUEST_ISA__), sdb_get_time());
   fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
@@ -418,6 +418,7 @@ static int cmd_load(char *args) {
   FILE *fp;
   char isa[16];
   CPU_state _state;
+  uint64_t boot_time;
   // sanity check
   if (NOMORE(args)) {
     printf("Usage: load FILE\n");
@@ -436,6 +437,11 @@ static int cmd_load(char *args) {
   if (strcmp(isa, str(__GUEST_ISA__) "\n") != 0) {
     fclose(fp);
     printf("ISA mismatch.");
+    return 0;
+  }
+  if (fscanf(fp, "time = %" PRIu64 "\n", &boot_time) != 1) {
+    fclose(fp);
+    printf("Bad file format.\n");
     return 0;
   }
   // detach first
@@ -478,6 +484,7 @@ static int cmd_load(char *args) {
   }
   free(src);
   memcpy(&cpu, &_state, sizeof(cpu));
+  sdb_set_start_time(boot_time);
   return 0;
 }
 
