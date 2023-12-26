@@ -381,7 +381,7 @@ static int cmd_save(char *args) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
     return 0;
   }
-  fprintf(fp, "%s\ntime = %" PRIu64 "\n", str(__GUEST_ISA__), sdb_realtime());
+  fprintf(fp, "%s\ntime = %" PRIi64 "\n", str(__GUEST_ISA__), sdb_get_start_time() - sdb_realtime());
   fflush(fp);
   int fd = fileno(fp);
   int dup_stdout = dup(STDOUT_FILENO);
@@ -391,7 +391,7 @@ static int cmd_save(char *args) {
   fflush(stdout);
   dup2(dup_stdout, STDOUT_FILENO);
   close(dup_stdout);
-  fprintf(fp, "# if program don't work properly, try set time = %" PRIi64 "\n", sdb_get_start_time() - sdb_realtime());
+  fprintf(fp, "# if program don't work properly, try set time = %" PRIi64 "\n", sdb_realtime());
   fclose(fp);
   char *pathzlib = malloc(strlen(args) + 5);
   strcpy(pathzlib, args);
