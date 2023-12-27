@@ -24,12 +24,12 @@ static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 
 static bool is_audio_sbuf_idle = false;
-static int __attribute_used__ block_size;
+static int block_size;
 static uint32_t count_old;
 static int upd_delay;
 
 #define CONFIG_DELAY 10
-// #define SBUF_WORK_AS_FIFO
+#define SBUF_WORK_AS_FIFO
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch (offset / sizeof(uint32_t)) {

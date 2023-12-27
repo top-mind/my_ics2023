@@ -49,7 +49,7 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   }
 }
 */
-// #define SBUF_WORK_AS_FIFO
+#define SBUF_WORK_AS_FIFO
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   // solution 1, abandon sbuf
 #ifndef SBUF_WORK_AS_FIFO
