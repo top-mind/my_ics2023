@@ -61,7 +61,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       assert(is_audio_sbuf_idle);
       uint32_t used = SDL_GetQueuedAudioSize(1);
 
-      /*
       if (used > count_old)
         count_old = used;
       else {
@@ -73,7 +72,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
           upd_delay++;
         }
       }
-      */
       audio_base[reg_count] = used;
       break;
     default: printf("%d\n", offset); assert(0);
@@ -83,17 +81,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 static void audio_sbuf_handler(uint32_t offset, int len, bool is_write) {
   assert(is_write);
 #ifndef SBUF_WORK_AS_FIFO
-  static uint32_t start = 0;
-  if (start == 0) {
-    start = *(uint32_t *)sbuf;
-  } else {
-    uint32_t end = *(uint32_t *)sbuf;
-    if (0 != SDL_QueueAudio(1, (void *)guest_to_host(start), end - start)) {
-      printf("SDL: %s\n", SDL_GetError());
-      assert(0);
-    }
-    start = 0;
-  }
 #else
   if (offset == 0) {
     is_audio_sbuf_idle = true;
