@@ -99,14 +99,6 @@ menuconfig HAS_AUDIO
   default y
 
 if HAS_AUDIO
-config SB_ADDR
-  hex "Physical address of the audio stream buffer"
-  default 0xa1200000
-
-config SB_SIZE
-  hex "Size of the audio stream buffer"
-  default 0x10000
-
 config AUDIO_CTL_PORT
   depends on HAS_PORT_IO
   hex "Port address of the audio controller"

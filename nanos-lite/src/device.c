@@ -51,6 +51,14 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
+size_t sb_write(const void *buf, size_t offset, size_t len) {
+  // block device
+  io_write(AM_AUDIO_PLAY,
+           (Area){.start = (void *)buf, .end = (void *)buf + len});
+
+  return len;
+}
+
 int get_fbsize() {
   return screen_size;
 }
