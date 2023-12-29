@@ -60,7 +60,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       SDL_PauseAudioDevice(1, 0);
       break;
     case reg_count:
-      printf("audio: count = %d\n", PSEDOBUF_SIZE - SDL_GetQueuedAudioSize(1));
+      printf("audio: size =%d count = %d\n", audio_base[reg_sbuf_size], PSEDOBUF_SIZE - SDL_GetQueuedAudioSize(1));
       audio_base[reg_count] = PSEDOBUF_SIZE - SDL_GetQueuedAudioSize(1);
       break;
     case paddr_start_lo:
