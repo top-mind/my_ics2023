@@ -63,11 +63,10 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       uint32_t used = SDL_GetQueuedAudioSize(1);
 
       if (used > PSEDOBUF_SIZE) {
-        audio_base[reg_count] = 0;
+        audio_base[reg_count] = PSEDOBUF_SIZE;
       } else {
-        audio_base[reg_count] = PSEDOBUF_SIZE - used;
+        audio_base[reg_count] = used;
       }
-      printf("%d %d\n", used, audio_base[reg_count]);
       break;
     }
     case paddr_start_lo:
