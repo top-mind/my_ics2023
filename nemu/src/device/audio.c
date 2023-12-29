@@ -73,7 +73,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       printf("audio: start = %x, end = %x, len = %x\n", start, end, start - end);
       fflush(stdout);
       assert(in_pmem(start) && in_pmem(end));
-      SDL_QueueAudio(1, guest_to_host(0x802cc588), 0x10);
+      SDL_QueueAudio(1, guest_to_host(0x802cc588), 0xf000);
       break;
     }
     default:
