@@ -37,6 +37,12 @@ static uint32_t *audio_base = NULL;
 
 #define PSEDOBUF_SIZE 0x10000
 
+#if 1
+#define DELAY_NR 10
+static int delay_count = 0;
+static int old_used = 0;
+#endif
+
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / 4) {
     case reg_freq:
@@ -60,7 +66,12 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       SDL_PauseAudioDevice(1, 0);
       break;
     case reg_count: {
-      uint32_t used = SDL_GetQueuedAudioSize(1);
+      int used = old_used;
+      delay_count++;
+      if (delay_count == DELAY_NR) {
+        delay_count = 0;
+        old_used = used = SDL_GetQueuedAudioSize(1);
+      }
       audio_base[reg_count] = used;
       break;
     }
