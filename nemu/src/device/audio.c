@@ -13,10 +13,11 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include "memory/paddr.h"
+#include <SDL2/SDL_audio.h>
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
+#include "memory/paddr.h"
 
 enum {
   reg_freq,
@@ -25,14 +26,53 @@ enum {
   reg_sbuf_size,
   reg_init,
   reg_count,
-  paddr_start,
-  paddr_end,
+  paddr_start_lo,
+  paddr_start_hi,
+  paddr_end_lo,
+  paddr_end_hi,
   nr_reg
 };
 
 static uint32_t *audio_base = NULL;
 
+#define PSEDOBUF_SIZE 0x10000
+
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
+  switch(offset) {
+    case reg_freq:
+    case reg_channels:
+    case reg_samples:
+    case reg_sbuf_size:
+    case reg_init:
+      SDL_InitSubSystem(SDL_INIT_AUDIO);
+      SDL_AudioSpec spec = {
+        .freq = audio_base[reg_freq],
+        .channels = audio_base[reg_channels],
+        .samples = audio_base[reg_samples],
+        .format = AUDIO_S16SYS,
+        .callback = NULL,
+        .userdata = NULL,
+      };
+      Assert(0 == SDL_OpenAudio(&spec, NULL), );
+      SDL_PauseAudioDevice(1, 0);
+      break;
+    case reg_count:
+      audio_base[reg_count] = PSEDOBUF_SIZE - SDL_GetQueuedAudioSize(1);
+      break;
+    case paddr_start_lo:
+    case paddr_start_hi:
+    case paddr_end_lo: break;
+    case paddr_end_hi:
+    {
+      paddr_t start = *(paddr_t *) &audio_base[paddr_start_lo];
+      paddr_t end = *(paddr_t *) &audio_base[paddr_end_lo];
+      SDL_QueueAudio(1, guest_to_host(start), end - start);
+      break;
+    }
+    default:
+      panic("Unknown audio_io_handler call offset = %x, len = %d, is_write = %d\n", offset, len,
+            is_write);
+  }
 }
 
 void init_audio() {
@@ -44,5 +84,5 @@ void init_audio() {
   add_mmio_map("audio", CONFIG_AUDIO_CTL_MMIO, audio_base, space_size, audio_io_handler);
 #endif
   memset(audio_base, 0, space_size);
-  audio_base[reg_sbuf_size] = 0x7fffffff;
+  audio_base[reg_sbuf_size] = PSEDOBUF_SIZE;
 }

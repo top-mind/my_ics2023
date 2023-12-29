@@ -30,12 +30,13 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 }
 
 /* Block function
- * make [ctl->start, ctl->end) in sound buffer
+ * make sure [ctl->start, ctl->end) is appended in sound buffer
  */
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-#if W_TYPE_SIZE == 64
-
-#else
-
-#endif
+  uintptr_t start = (uintptr_t)ctl->buf.start;
+  uintptr_t end = (uintptr_t)ctl->buf.start;
+  outb(AUDIO_PLAY, start & 0xffffffff);
+  outb(AUDIO_PLAY + 4, ((uint64_t) start) >> 32);
+  outb(AUDIO_PLAY + 8, end & 0xffffffff);
+  outb(AUDIO_PLAY + 12, ((uint64_t) end) >> 32);
 }
