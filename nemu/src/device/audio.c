@@ -35,7 +35,7 @@ enum {
 
 static uint32_t *audio_base = NULL;
 
-#define PSEDOBUF_SIZE 0x10000
+#define PSEDOBUF_SIZE 0x10
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / 4) {
