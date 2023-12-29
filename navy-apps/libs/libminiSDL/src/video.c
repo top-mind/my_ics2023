@@ -1,3 +1,4 @@
+#include "sdl-audio.h"
 #include <NDL.h>
 #include <SDL.h>
 #include <assert.h>
@@ -79,6 +80,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  InvokeAudioCallback();
   assert(s->format->BitsPerPixel == 8 || s->format->BitsPerPixel == 32);
   if ((x | y | w | h) == 0) {
     w = s->w;
