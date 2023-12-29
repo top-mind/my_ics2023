@@ -37,9 +37,9 @@ static uint32_t *audio_base = NULL;
 
 #define PSEDOBUF_SIZE 0x10000
 
+// Do not change the value of AUDIO_DELAY
 #define AUDIO_DELAY 0
 #if AUDIO_DELAY != 0
-#error
 static int delay_count = 0;
 static int old_used = 0;
 #endif
