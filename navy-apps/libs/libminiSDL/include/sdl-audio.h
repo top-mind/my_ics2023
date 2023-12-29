@@ -11,6 +11,9 @@ typedef struct {
   void *userdata;
 } SDL_AudioSpec;
 
+// Simulate SDL audio callback
+extern int callback_period;
+
 #define AUDIO_U8 8
 #define AUDIO_S16 16
 #define AUDIO_S16SYS AUDIO_S16
