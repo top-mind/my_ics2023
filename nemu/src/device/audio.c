@@ -69,9 +69,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     {
       paddr_t start = *(paddr_t *) &audio_base[paddr_start_lo];
       paddr_t end = *(paddr_t *) &audio_base[paddr_end_lo];
-      printf("audio: start = %x, end = %x, len = %x\n", start, end, start - end);
-      fflush(stdout);
-      // SDL_QueueAudio(1, guest_to_host(0x8000000), 0x10);
+      // printf("audio: start = %x, end = %x, len = %x\n", start, end, start - end);
+      SDL_QueueAudio(1, guest_to_host(start), end - start);
       break;
     }
     default:
