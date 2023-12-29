@@ -35,7 +35,7 @@ enum {
 
 static uint32_t *audio_base = NULL;
 
-#define PSEDOBUF_SIZE 0x1000
+#define PSEDOBUF_SIZE 0x10000
 
 // Do not change the value of AUDIO_DELAY
 #define AUDIO_DELAY 0
@@ -64,10 +64,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       if (0 != SDL_OpenAudio(&spec, NULL)) {
         panic("Failed to open audio: %s\n", SDL_GetError());
       }
-      audio_base[reg_freq] = spec.freq;
-      audio_base[reg_channels] = spec.channels;
-      audio_base[reg_samples] = spec.samples;
-      printf("AUDIO BUF SIZE = %d\n", spec.size);
       SDL_PauseAudioDevice(1, 0);
       break;
     case reg_count: {

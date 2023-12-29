@@ -20,6 +20,8 @@ static bool has_key = 0;
 static int screen_w, screen_h;
 static size_t screen_size;
 
+static int sbsize = 0;
+
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   size_t i;
   for (i = 0; i < len; i++)
@@ -65,12 +67,7 @@ size_t sbctl_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sbctl_read(void *buf, size_t offset, size_t len) {
-  assert(len == 12);
-  AM_AUDIO_CTRL_T ctrl = io_read(AM_AUDIO_CTRL);
-  *(int *)buf = ctrl.freq;
-  *(int *)(buf + 4) = ctrl.channels;
-  *(int *)(buf + 8) = ctrl.samples;
-  return len;
+  return snprintf(buf, len, "%d", sbsize - io_read(AM_AUDIO_STATUS).count);
 }
 
 int get_fbsize() {
@@ -88,4 +85,6 @@ void init_device() {
   screen_h = info.height;
   screen_size = screen_w * screen_h * sizeof(uint32_t);
   Log("Initializing Screen, size: %d x %d\n", screen_w, screen_h);
+  sbsize = io_read(AM_AUDIO_CONFIG).bufsize;
+  Log("Initializing Audio, buffer size: %d\n", sbsize);
 }

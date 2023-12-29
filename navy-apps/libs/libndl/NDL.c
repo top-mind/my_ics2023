@@ -9,6 +9,8 @@
 
 static int evtdev = -1;
 static int fbdev = -1;
+static int fbsbctl = -1;
+static int fbsb = -1;
 static int screen_w = 0, screen_h = 0;
 static int canvas_w = 0, canvas_h = 0;
 
@@ -60,25 +62,29 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
+  int spec[3] = {freq, channels, samples};
+  write(fbsbctl, spec, sizeof(spec));
 }
 
 void NDL_CloseAudio() {
 }
 
 int NDL_PlayAudio(void *buf, int len) {
-  return 0;
+  return write(fbsb, buf, len);
 }
 
 int NDL_QueryAudio() {
-  return 0;
+  char buf[16];
+  read(fbsbctl, buf, sizeof(buf));
+  return atoi(buf);
 }
 
-void init_event() {
+static void init_event() {
   evtdev = open("/dev/events", 0);
   assert(evtdev != -1);
 }
 
-void init_display() {
+static void init_display() {
   fbdev = open("/dev/fb", 0);
   assert(fbdev != -1);
   int dispinfo = open("/proc/dispinfo", 0);
@@ -97,12 +103,20 @@ void init_display() {
   }
 }
 
+static void init_audio() {
+  fbsbctl = open("/dev/sbctl", 0);
+  assert(fbsbctl != -1);
+  fbsb = open("/dev/fbsb", 0);
+  assert(fbsb != -1);
+}
+
 int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   } else {
     init_event();
     init_display();
+    init_audio();
   }
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -115,5 +129,7 @@ void NDL_Quit() {
   } else {
     close(evtdev);
     close(fbdev);
+    close(fbsbctl);
+    close(fbsb);
   }
 }
