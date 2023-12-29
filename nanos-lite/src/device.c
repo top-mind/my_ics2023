@@ -52,10 +52,24 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sb_write(const void *buf, size_t offset, size_t len) {
-  // block device
   io_write(AM_AUDIO_PLAY,
            (Area){.start = (void *)buf, .end = (void *)buf + len});
 
+  return len;
+}
+
+size_t sbctl_write(const void *buf, size_t offset, size_t len) {
+  assert(len == 12);
+  io_write(AM_AUDIO_CTRL, .freq = *(int *)buf, .channels = *(int *)(buf + 4), .samples = *(int *)(buf + 8));
+  return len;
+}
+
+size_t sbctl_read(void *buf, size_t offset, size_t len) {
+  assert(len == 12);
+  AM_AUDIO_CTRL_T ctrl = io_read(AM_AUDIO_CTRL);
+  *(int *)buf = ctrl.freq;
+  *(int *)(buf + 4) = ctrl.channels;
+  *(int *)(buf + 8) = ctrl.samples;
   return len;
 }
 
