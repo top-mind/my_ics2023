@@ -53,7 +53,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         .callback = NULL,
         .userdata = NULL,
       };
-      Assert(0 == SDL_OpenAudio(&spec, NULL), );
+      if (0 != SDL_OpenAudio(&spec, NULL)) {
+        panic("Failed to open audio: %s\n", SDL_GetError());
+      }
       SDL_PauseAudioDevice(1, 0);
       break;
     case reg_count:
