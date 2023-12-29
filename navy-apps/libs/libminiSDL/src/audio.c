@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int callback_period, callback_size, callback_time;
+int callback_period, callback_size, callback_time, old_time;
 
 void (*callback)(void *userdata, uint8_t *stream, int len);
 void *userdata;
