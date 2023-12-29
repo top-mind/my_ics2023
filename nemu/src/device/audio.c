@@ -67,6 +67,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       } else {
         audio_base[reg_count] = PSEDOBUF_SIZE - used;
       }
+      printf("%d\n", audio_base[reg_count]);
       break;
     }
     case paddr_start_lo:
