@@ -66,11 +66,13 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       SDL_PauseAudioDevice(1, 0);
       break;
     case reg_count: {
-      int used = old_used;
-      delay_count++;
-      if (delay_count == DELAY_NR) {
-        delay_count = 0;
-        old_used = used = SDL_GetQueuedAudioSize(1);
+      int used = SDL_GetQueuedAudioSize(1);
+      if (old_used < used || delay_count == DELAY_NR) {
+          delay_count = 0;
+          old_used = used;
+      } else {
+        delay_count++;
+        used = old_used;
       }
       audio_base[reg_count] = used;
       break;
