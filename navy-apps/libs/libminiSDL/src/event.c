@@ -38,6 +38,11 @@ int SDL_PollEvent(SDL_Event *ev) {
     ev->key.keysym.sym = find_keyname(buf + 3);
     keystate[ev->key.keysym.sym] = ev->type == SDL_KEYDOWN;
   }
+  uint32_t time = NDL_GetTicks();
+  if (time - callback_time >= callback_period) {
+    CallbackHelper();
+    callback_time = time;
+  }
   return ret;
 }
 

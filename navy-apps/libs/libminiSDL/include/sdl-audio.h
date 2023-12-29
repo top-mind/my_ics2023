@@ -12,7 +12,8 @@ typedef struct {
 } SDL_AudioSpec;
 
 // Simulate SDL audio callback
-extern int callback_period;
+extern int callback_period, callback_size, callback_time;
+void CallbackHelper();
 
 #define AUDIO_U8 8
 #define AUDIO_S16 16
