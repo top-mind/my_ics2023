@@ -1,5 +1,5 @@
 #include <NDL.h>
-#include <sdl-video.h>
+#include <SDL.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -85,7 +85,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     h = s->h;
   }
   if (s->format->BitsPerPixel == 8) {
-    assert(s->format->palette->ncolors = 256);
+    assert(s->format->palette->ncolors == 256);
     uint32_t colorARGB[256];
     for (int i = 0; i < 256; i++) {
       uint8_t r = s->format->palette->colors[i].r;

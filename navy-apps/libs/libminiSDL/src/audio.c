@@ -10,13 +10,15 @@ void (*callback)(void *userdata, uint8_t *stream, int len);
 void *userdata;
 
 static uint8_t *audio_buf;
-static bool audio_playing;
-
+static bool audio_playing, flag_callback;
 
 void CallbackHelper() {
-  if (!audio_playing) return;
+  if (!audio_playing || flag_callback) return;
+  // forbid recursive callback
+  flag_callback = 1;
   callback(userdata, audio_buf, callback_size);
   NDL_PlayAudio(audio_buf, callback_size);
+  flag_callback = 0;
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
