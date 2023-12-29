@@ -35,7 +35,7 @@ enum {
 
 static uint32_t *audio_base = NULL;
 
-#define PSEDOBUF_SIZE 0x10000
+#define PSEDOBUF_SIZE 0x100000
 
 // Do not change the value of AUDIO_DELAY
 #define AUDIO_DELAY 0
