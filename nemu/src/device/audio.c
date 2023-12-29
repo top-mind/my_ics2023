@@ -75,7 +75,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     {
       paddr_t start = *(paddr_t *) &audio_base[paddr_start_lo];
       paddr_t end = *(paddr_t *) &audio_base[paddr_end_lo];
-      fflush(stdout);
+      while (SDL_GetQueuedAudioSize(1) + (end - start) > PSEDOBUF_SIZE) {
+        SDL_Delay(1);
+      }
       SDL_QueueAudio(1, guest_to_host(0x802cc588), end - start);
       break;
     }
