@@ -35,9 +35,8 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uintptr_t start = (uintptr_t)ctl->buf.start;
   uintptr_t end = (uintptr_t)ctl->buf.end;
-  printf("%x %x\n", start, end);
-  outb(AUDIO_PLAY, start & 0xffffffff);
-  outb(AUDIO_PLAY + 4, ((uint64_t) start) >> 32);
-  outb(AUDIO_PLAY + 8, end & 0xffffffff);
-  outb(AUDIO_PLAY + 12, ((uint64_t) end) >> 32);
+  outl(AUDIO_PLAY, start & 0xffffffff);
+  outl(AUDIO_PLAY + 4, ((uint64_t) start) >> 32);
+  outl(AUDIO_PLAY + 8, end & 0xffffffff);
+  outl(AUDIO_PLAY + 12, ((uint64_t) end) >> 32);
 }
