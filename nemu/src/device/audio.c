@@ -38,7 +38,7 @@ static uint32_t *audio_base = NULL;
 #define PSEDOBUF_SIZE 0x10000
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
-  switch(offset) {
+  switch(offset / 4) {
     case reg_freq:
     case reg_channels:
     case reg_samples:
