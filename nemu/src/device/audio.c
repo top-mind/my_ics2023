@@ -66,7 +66,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       } else {
         audio_base[reg_count] = used;
       }
-      printf("%x\n", audio_base[reg_count]);
+      printf("reg_cound: %x\n", audio_base[reg_count]);
       break;
     }
     case paddr_start_lo:
