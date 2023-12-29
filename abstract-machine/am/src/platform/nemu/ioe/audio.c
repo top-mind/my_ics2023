@@ -36,6 +36,7 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uintptr_t start = (uintptr_t)ctl->buf.start;
   uintptr_t end = (uintptr_t)ctl->buf.end;
   printf("ab: %x %x\n", start, end);
+  assert(0);
   outl(AUDIO_PLAY, start & 0xffffffff);
   outl(AUDIO_PLAY + 4, ((uint64_t) start) >> 32);
   outl(AUDIO_PLAY + 8, end & 0xffffffff);
