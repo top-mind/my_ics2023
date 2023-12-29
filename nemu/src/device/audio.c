@@ -43,6 +43,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     case reg_channels:
     case reg_samples:
     case reg_sbuf_size:
+      break;
     case reg_init:
       SDL_InitSubSystem(SDL_INIT_AUDIO);
       SDL_AudioSpec spec = {
