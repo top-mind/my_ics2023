@@ -19,7 +19,7 @@ void CallbackHelper();
 #define InvokeAudioCallback()                                                  \
   do {                                                                         \
     uint32_t time = NDL_GetTicks();                                            \
-    callback_time += (time - old_time) * 1000;                                        \
+    callback_time += (time - old_time);                                        \
     old_time = time;                                                           \
     if (callback_time >= callback_period) {                                    \
       CallbackHelper();                                                        \
