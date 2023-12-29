@@ -35,7 +35,7 @@ enum {
 
 static uint32_t *audio_base = NULL;
 
-#define PSEDOBUF_SIZE 0x1000
+#define PSEDOBUF_SIZE 0x10000
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   switch(offset / 4) {
@@ -61,11 +61,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       break;
     case reg_count: {
       uint32_t used = SDL_GetQueuedAudioSize(1);
-      if (used > PSEDOBUF_SIZE) {
-        audio_base[reg_count] = PSEDOBUF_SIZE;
-      } else {
-        audio_base[reg_count] = used;
-      }
+      audio_base[reg_count] = used;
       break;
     }
     case paddr_start_lo:
