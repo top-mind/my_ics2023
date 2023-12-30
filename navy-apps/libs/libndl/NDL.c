@@ -23,6 +23,7 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
+  if (buf == NULL) return 0;
   int ret = read(evtdev, buf, len);
   // to make it easy, panic when buffer is not enough
   // this mean a event is lost

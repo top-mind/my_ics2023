@@ -1,4 +1,5 @@
 .globl  _start
+.type _start, @function
 _start:
 
 #if defined(__ISA_AM_NATIVE__)
@@ -40,3 +41,4 @@ _start:
 #else
 #error Unsupported ISA
 #endif
+.size _start, .-_start

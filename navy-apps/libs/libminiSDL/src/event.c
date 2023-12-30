@@ -30,7 +30,9 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
-  assert(ev);
+  InvokeAudioCallback();
+  if (ev == NULL)
+    return 0;
   char buf[32];
   int ret = NDL_PollEvent(buf, sizeof(buf));
   if (ret) {
@@ -38,7 +40,6 @@ int SDL_PollEvent(SDL_Event *ev) {
     ev->key.keysym.sym = find_keyname(buf + 3);
     keystate[ev->key.keysym.sym] = ev->type == SDL_KEYDOWN;
   }
-  InvokeAudioCallback();
   return ret;
 }
 

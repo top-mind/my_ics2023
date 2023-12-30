@@ -148,7 +148,7 @@ void ftrace_set_stopat_push(bool enable) { ftrace_stopat_push = enable; }
  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
-  if (ftrace_stopat_push) {
+  if (ftrace_stopat_push && nemu_state.state == NEMU_RUNNING) {
     char *f_name;
     elf_getname_and_offset(dnpc, &f_name, NULL);
     printf("Calling %s(" FMT_PADDR ")\n", f_name, dnpc);
@@ -221,9 +221,9 @@ void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
 
 static inline void print_frame(size_t id) {
   char *f_name;
-  paddr_t pc = stk_func[id];
-  elf_getname_and_offset(pc, &f_name, NULL);
-  printf("# %zu " FMT_PADDR " in %s ()\n", ras_depth - id, pc, f_name);
+  paddr_t addr = stk_func[id];
+  elf_getname_and_offset(addr, &f_name, NULL);
+  printf("# %zu " FMT_PADDR " in %s ()\n", ras_depth - id, addr, f_name);
 }
 
 void backtrace() {
