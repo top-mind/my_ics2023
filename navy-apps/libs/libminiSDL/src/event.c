@@ -1,3 +1,4 @@
+#include "sdl-event.h"
 #include <NDL.h>
 #include <SDL.h>
 #include <assert.h>
@@ -37,6 +38,10 @@ int SDL_PollEvent(SDL_Event *ev) {
     ev->type = buf[1] == 'u' ? SDL_KEYUP : SDL_KEYDOWN;
     ev->key.keysym.sym = find_keyname(buf + 3);
     keystate[ev->key.keysym.sym] = ev->type == SDL_KEYDOWN;
+  } else {
+    ret = 1;
+    ev->type = SDL_KEYDOWN;
+    ev->key.keysym.sym = SDLK_NONE;
   }
   InvokeAudioCallback();
   return ret;

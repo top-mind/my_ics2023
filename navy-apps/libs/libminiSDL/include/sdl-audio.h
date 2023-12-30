@@ -23,7 +23,7 @@ void CallbackHelper();
     old_time = time;                                                           \
     if (callback_time >= callback_period) {                                    \
       CallbackHelper();                                                        \
-      callback_time = 0;                                        \
+      callback_time -= callback_period;                                        \
     }                                                                          \
   } while (0)
 
