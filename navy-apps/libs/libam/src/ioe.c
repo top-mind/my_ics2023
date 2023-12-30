@@ -36,6 +36,7 @@ void ioe_read (int reg, void *buf) {
     IOE_QUICKSET(AM_GPU_CONFIG, buf, .present = 1, .height = h, .width = w);
     IOE_QUICKSET(AM_INPUT_CONFIG, buf, .present = 1);
     IOE_QUICKSET(AM_TIMER_UPTIME, buf, .us = ((uint64_t) NDL_GetTicks()) * 1000);
+    IOE_QUICKSET(AM_AUDIO_CONFIG, buf, .present = false);
     case AM_INPUT_KEYBRD:
     {
       char ebuf[64];
