@@ -31,9 +31,9 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
     desired = obtained;
   }
   desired->size = callback_size =
-      desired->samples * desired->channels * sizeof(uint16_t);
+      desired->samples * desired->channels * sizeof(uint16_t) * 2;
   audio_buf = malloc(callback_size);
-  callback_period = 1 + 1000 * desired->samples / desired->freq;
+  callback_period = 1000 * desired->samples / desired->freq * 2;
   return 0;
 }
 
