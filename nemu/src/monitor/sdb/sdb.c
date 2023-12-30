@@ -489,6 +489,7 @@ static int cmd_load(char *args) {
     sdb_set_start_time(sdb_realtime() + time);
   else
     sdb_set_start_time(time);
+  nemu_state.state = NEMU_STOP;
   return 0;
 }
 
