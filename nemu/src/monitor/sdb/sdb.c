@@ -159,7 +159,7 @@ static int cmd_elf(char *args) {
   } else if (strcmp(subcmd, "clean") == 0) {
     cmd_elfclean(arg);
   } else {
-    printf("Unknown subcommand %s, try help elf.\n", subcmd);
+    printf("Unknown subcommand %s, try `elf'.\n", subcmd);
   }
   return 0;
 }
@@ -279,7 +279,7 @@ static int cmd_info(char *args) {
     } else if (strcmp(arg, "b") == 0) {
       print_all_breakpoints();
     } else {
-      printf("Unknown subcommand %s, try help info.\n", arg);
+      printf("Unknown subcommand %s, try `help info'.\n", arg);
     }
   }
 
