@@ -96,12 +96,14 @@ int create_watchpoint(char *e) {
   return nr_breakpoints;
 }
 
-// TODO detect memory write in trace_and_difftest()
+// TODO ???
 // See free_bp()
 void disable_breakpoints() {
   breakpoint_enable = false;
   FOR_BREAKPOINTS(bp) {
-    if (!bp->duplicate && host_read(guest_to_host(bp->addr), LEN_BREAK_INST) == breakpoint_instruction)
+    if (!bp->duplicate &&
+        /* TODO */
+        host_read(guest_to_host(bp->addr), LEN_BREAK_INST) == breakpoint_instruction)
       host_write(guest_to_host(bp->addr), LEN_BREAK_INST, bp->raw_instr);
   }
 }
@@ -130,14 +132,6 @@ void enable_breakpoints() {
 }
 
 static inline void free_bp(bp_t *p) {
-  // XXX All breakpoints should be disabled ???
-  int size = sizeof((bp_t *)0)->raw_instr;
-  if (host_read(guest_to_host(p->addr), size) != p->raw_instr) {
-    fprintf(stderr,
-            ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user program take it over.\n",
-                     ANSI_FG_RED),
-            p->addr);
-  }
 }
 
 static inline void free_wp(wp_t *p) {
@@ -220,18 +214,26 @@ void init_breakpoints() {
 }
 
 void free_all_breakpoints() {
-  bp_t *bp;
-  wp_t *wp;
-  int flag;
-  SORTED_FOR_ALL(bp, wp, flag) {
-    if (flag)
-      printf("bp:" FMT_PADDR "\n", bp->addr);
+  assert(!breakpoint_enable);
+  // TODO
+  FOR_BREAKPOINTS(p) {
+    int size = sizeof((bp_t *)0)->raw_instr;
+    if (host_read(guest_to_host(p->addr), size) != p->raw_instr) {
+      fprintf(stderr,
+              ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user program take it over.\n",
+                       ANSI_FG_RED),
+              p->addr);
+    }
   }
-  SORTED_FOR_ALL(bp, wp, flag) {
-    if (flag)
-      free_bp(bp);
-    else
-      free_wp(wp);
+  for (bp_t *p = bp_nil->next, *q; p != bp_nil; p = q) {
+    q = p->next;
+    free_bp(p);
+    free(p);
+  }
+  for (wp_t *p = wp_nil->next, *q; p != wp_nil; p = q) {
+    q = p->next;
+    free_wp(p);
+    free(p);
   }
   bp_nil->prev = bp_nil->next = bp_nil;
   wp_nil->prev = wp_nil->next = wp_nil;
