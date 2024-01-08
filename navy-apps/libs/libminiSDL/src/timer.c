@@ -15,6 +15,7 @@ int SDL_RemoveTimer(SDL_TimerID id) {
 }
 
 uint32_t SDL_GetTicks() {
+  printf("SDL_GetTicks\n");
   return NDL_GetTicks();
 }
 
