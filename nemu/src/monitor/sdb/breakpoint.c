@@ -220,7 +220,8 @@ void free_all_breakpoints() {
     int size = sizeof((bp_t *)0)->raw_instr;
     if (host_read(guest_to_host(p->addr), size) != p->raw_instr) {
       fprintf(stderr,
-              ANSI_FMT("Breakpoint at " FMT_PADDR " collapsed: user program take it over.\n",
+              ANSI_FMT("Warning: Breakpoint at " FMT_PADDR
+                       " collapsed: user program take it over.\n",
                        ANSI_FG_RED),
               p->addr);
     }
