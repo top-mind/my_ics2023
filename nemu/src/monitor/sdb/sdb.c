@@ -25,11 +25,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <zlib.h>
+#include <elf-def.h>
 
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
 
 static int is_batch_mode = false;
-void init_addelf(char *);
 void init_regex();
 void init_wp_pool();
 void init_sigint();
@@ -130,14 +130,22 @@ static int cmd_detach(char *args) {
 }
 static int cmd_elfadd(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: elf add FILE [.. FILE] \n");
+    printf("Usage: elf add FILE [range] \n");
     return 0;
   }
-  char *arg = strtok(args, " ");
-  while (arg != NULL) {
-    init_addelf(arg);
-    arg = strtok(NULL, " ");
+  char *filename = strtok(NULL, " ");
+  uint64_t res[3] = {0, -1, 0};
+  for (int i = 0; i < 3; i++) {
+    char *pnum = strtok(NULL, " ");
+    if (pnum == NULL) break;
+    char *endptr;
+    res[i] = strtoull(pnum, &endptr, 0);
+    if (*endptr != '\0') {
+      printf("Syntax error near '%s'\n", pnum);
+      return 0;
+    }
   }
+  elf_add(filename, res[0], res[1], res[2]);
   return 0;
 }
 static int cmd_elfclean(char *args) {
@@ -146,8 +154,6 @@ static int cmd_elfclean(char *args) {
 }
 static int cmd_elf(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: elf add FILE\n"
-           "           clean\n");
     return 0;
   }
   char *args_end = args + strlen(args);

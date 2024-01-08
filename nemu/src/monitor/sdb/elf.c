@@ -21,7 +21,14 @@ static int cmp(const void *a, const void *b) {
   return addra == addrb ? 0 : addra < addrb ? -1 : 1;
 }
 
-void init_addelf(char *filename) {
+void elf_clean() {
+  for (int i = 0; i < nr_sym; i++) {
+    free(syms[i].name);
+  }
+  nr_sym = 0;
+}
+
+void elf_add(char *filename, Elf_Addr low, Elf_Addr high, int flag) {
   FILE *f = fopen(filename, "r");
   if (f == NULL) {
     fprintf(stderr, ANSI_FMT("Unable to open `%s':\n%s\n", ANSI_FG_RED), filename, strerror(errno));
@@ -60,7 +67,9 @@ void init_addelf(char *filename) {
       for (Elf_Off _off = 0; _off < sh_size; _off += sizeof(sym)) {
         fseek(f, sh_off + _off, SEEK_SET);
         R(sym);
-        if (ELF_ST_TYPE(sym.st_info) == STT_FUNC || ELF_ST_TYPE(sym.st_info) == STT_OBJECT) {
+        if ((ELF_ST_TYPE(sym.st_info) == STT_FUNC ||
+             (!flag && ELF_ST_TYPE(sym.st_info) == STT_OBJECT)) &&
+            sym.st_value >= low && sym.st_value < high) {
           if (nr_sym >= ARRLEN(syms)) {
             nr_sym++;
             continue;
@@ -80,6 +89,8 @@ void init_addelf(char *filename) {
   goto _finish;
 __err_label: ;
   printf(ANSI_FMT("Error reading %s\n", ANSI_FG_RED), filename);
+  fclose(f);
+  return;
 _finish: ;
   size_t nr_sym_read = nr_sym < ARRLEN(syms) ? nr_sym : ARRLEN(syms);
   printf(ANSI_FMT("Read %zu/%zu symbols from %s\n", ANSI_FG_BLUE), nr_sym_read, nr_sym, filename);

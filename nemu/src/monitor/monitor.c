@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <elf-def.h>
 
 void init_rand();
 void init_log(const char *log_file);
@@ -23,7 +24,6 @@ void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
-void init_addelf(char *);
 
 static void welcome() {
   Log("Trace: %s",
@@ -108,7 +108,7 @@ static int parse_args(int argc, char *argv[]) {
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
-      case 'e': init_addelf(optarg); break;
+      case 'e': elf_add(optarg, 0, -1, 0); break;
       case 1:
         img_file = optarg;
         // if exists optarg:r.elf, then load it
@@ -118,7 +118,7 @@ static int parse_args(int argc, char *argv[]) {
           if (len > 4 && strcmp(optarg + len - 4, ".bin") == 0) {
             char *relf = savestring(optarg);
             strcpy(relf + len - 3, "elf");
-            init_addelf(relf);
+            elf_add(relf, 0, -1, 0);
             free(relf);
           }
         }
