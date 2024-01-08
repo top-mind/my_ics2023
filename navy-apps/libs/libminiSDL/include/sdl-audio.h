@@ -22,8 +22,11 @@ extern void AudioHelper();
     callback_time += (time - old_time);                                        \
     old_time = time;                                                           \
     if (callback_time >= callback_period) {                                    \
-      AudioHelper();                                                        \
+      AudioHelper();                                                           \
       callback_time -= callback_period;                                        \
+      if (callback_time >= callback_period) {                                  \
+        callback_time = 0;                                                     \
+      }                                                                        \
     }                                                                          \
   } while (0)
 
