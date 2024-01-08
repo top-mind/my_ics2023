@@ -14,7 +14,7 @@ typedef struct {
 // Simulate SDL audio callback
 
 extern int callback_period, callback_size, callback_time, old_time;
-void AudioHelper();
+extern void AudioHelper();
 
 #define InvokeAudioCallback()                                                  \
   do {                                                                         \
@@ -22,7 +22,7 @@ void AudioHelper();
     callback_time += (time - old_time);                                        \
     old_time = time;                                                           \
     if (callback_time >= callback_period) {                                    \
-      CallbackHelper();                                                        \
+      AudioHelper();                                                        \
       callback_time -= callback_period;                                        \
     }                                                                          \
   } while (0)
