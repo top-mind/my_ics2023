@@ -187,7 +187,7 @@ static int cmd_ex(char *args) {
   }
   FILE *fp = fopen(args, "r");
   if (fp == NULL) {
-    printf("Failed to open file %s: %s\n", args, strerror(errno));
+    printf("Failed to open file `%s': %s\n", args, strerror(errno));
     return 0;
   }
   script_fps[++nr_fp] = fp;
@@ -605,17 +605,18 @@ static char *file_gets() {
   assert(script_fps[nr_fp]);
   char *line_read = NULL;
   size_t n = 0;
-  if (getline(&line_read, &n, script_fps[nr_fp]) == -1) {
+  int ret;
+  if ((ret = getline(&line_read, &n, script_fps[nr_fp])) == -1) {
     free(line_read);
     fclose(script_fps[nr_fp]);
     if (nr_fp == 0) {
       getcmd = rl_gets;
-      return NULL;
     } else {
       nr_fp--;
-      return file_gets();
     }
+    return getcmd();
   }
+  if (line_read[ret - 1] == '\n') line_read[ret - 1] = '\0';
   return line_read;
 }
 
