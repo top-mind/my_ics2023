@@ -128,14 +128,37 @@ static int cmd_detach(char *args) {
   }
   return 0;
 }
-static int cmd_elf(char *args) {
+static int cmd_elfadd(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: elf FILE\n");
+    printf("Usage: elf add FILE [.. FILE] \n");
     return 0;
   }
-  char *arg;
-  while ((arg = strtok(NULL, " "))) {
+  char *arg = strtok(args, " ");
+  while (arg != NULL) {
     init_addelf(arg);
+    arg = strtok(NULL, " ");
+  }
+  return 0;
+}
+static int cmd_elfclean(char *args) {
+  return 0;
+}
+static int cmd_elf(char *args) {
+  char *args_end = args + strlen(args);
+  if (NOMORE(args)) {
+    printf("Usage: elf add FILE\n"
+           "           clean\n");
+    return 0;
+  }
+  char *subcmd = strtok(args, " ");
+  char *arg = subcmd + strlen(subcmd) + 1;
+  if (arg >= args_end) arg = NULL;
+  if (strcmp(subcmd, "add") == 0) {
+    cmd_elfadd(arg);
+  } else if (strcmp(subcmd, "clean") == 0) {
+    cmd_elfclean(arg);
+  } else {
+    printf("Unknown subcommand %s, try help elf.\n", subcmd);
   }
   return 0;
 }
