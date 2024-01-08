@@ -145,12 +145,12 @@ static int cmd_elfclean(char *args) {
   return 0;
 }
 static int cmd_elf(char *args) {
-  char *args_end = args + strlen(args);
   if (NOMORE(args)) {
     printf("Usage: elf add FILE\n"
            "           clean\n");
     return 0;
   }
+  char *args_end = args + strlen(args);
   char *subcmd = strtok(args, " ");
   char *arg = subcmd + strlen(subcmd) + 1;
   if (arg >= args_end) arg = NULL;
