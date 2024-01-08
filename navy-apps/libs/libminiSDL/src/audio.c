@@ -11,15 +11,15 @@ void (*callback)(void *userdata, uint8_t *stream, int len);
 void *userdata;
 
 static uint8_t *audio_buf;
-static bool audio_playing, flag_callback;
+static bool audio_playing, isAudioLocked;
 
-void CallbackHelper() {
-  if (!audio_playing || flag_callback) return;
+void AudioHelper() {
+  if (!audio_playing || isAudioLocked) return;
   // forbid recursive callback
-  flag_callback = 1;
+  isAudioLocked = 1;
   callback(userdata, audio_buf, callback_size);
   NDL_PlayAudio(audio_buf, callback_size);
-  flag_callback = 0;
+  isAudioLocked = 0;
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
@@ -113,11 +113,9 @@ void SDL_FreeWAV(uint8_t *audio_buf) {
 }
 
 void SDL_LockAudio() {
-  printf("SDL_LockAudio\n");
-  flag_callback = 1;
+  isAudioLocked = 1;
 }
 
 void SDL_UnlockAudio() {
-  printf("SDL_UnlockAudio\n");
-  flag_callback = 0;
+  isAudioLocked = 0;
 }
