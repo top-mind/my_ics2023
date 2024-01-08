@@ -113,9 +113,11 @@ void SDL_FreeWAV(uint8_t *audio_buf) {
 }
 
 void SDL_LockAudio() {
+  printf("SDL_LockAudio\n");
   flag_callback = 1;
 }
 
 void SDL_UnlockAudio() {
+  printf("SDL_UnlockAudio\n");
   flag_callback = 0;
 }
