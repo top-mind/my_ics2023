@@ -29,6 +29,7 @@
 #define NOMORE(args) (args == NULL || '\0' == args[strspn(args, " ")])
 
 static int is_batch_mode = false;
+void init_addelf(char *);
 void init_regex();
 void init_wp_pool();
 void init_sigint();
@@ -127,7 +128,14 @@ static int cmd_detach(char *args) {
   }
   return 0;
 }
-
+static int cmd_elf(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: elf FILE\n");
+    return 0;
+  }
+  init_addelf(args);
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -170,6 +178,7 @@ static struct {
   {"detach", "Exit difftest mode", cmd_detach},
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
+  {"elf", "Load an elf file", cmd_elf},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
