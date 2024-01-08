@@ -181,7 +181,7 @@ static int cmd_ex(char *args) {
     printf("Usage: ex FILE\n");
     return 0;
   }
-  if (nr_fp >= ARRLEN(script_fps) - 1) {
+  if (nr_fp >= ARRLEN(script_fps)) {
     printf("Too many files opened\n");
     return 0;
   }
@@ -190,7 +190,7 @@ static int cmd_ex(char *args) {
     printf("Failed to open file `%s': %s\n", args, strerror(errno));
     return 0;
   }
-  script_fps[++nr_fp] = fp;
+  script_fps[nr_fp++] = fp;
   getcmd = file_gets;
   return 0;
 }
@@ -603,17 +603,15 @@ void sdb_mainloop() {
 
 static char *file_gets() {
   printf("reading file %d\n", nr_fp);
-  assert(script_fps[nr_fp]);
+  assert(script_fps[nr_fp - 1]);
   char *line_read = NULL;
   size_t n = 0;
   int ret;
-  if ((ret = getline(&line_read, &n, script_fps[nr_fp])) == -1) {
+  if ((ret = getline(&line_read, &n, script_fps[nr_fp - 1])) == -1) {
     free(line_read);
-    fclose(script_fps[nr_fp]);
+    fclose(script_fps[nr_fp--]);
     if (nr_fp == 0) {
       getcmd = rl_gets;
-    } else {
-      nr_fp--;
     }
     return getcmd();
   }
