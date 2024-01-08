@@ -8,8 +8,8 @@
 #define EM_AVAILABLE EM_RISCV
 
 #define section_fseek(i) fseek(f, ehdr.e_shoff + sizeof(shdr) * (i), SEEK_SET)
-#define R(x)             THROW_IF(1 == fread(&x, sizeof(x), 1, f))
-#define THROW_IF(x)      if (x) goto __err_label
+#define R(x)             THROW_IFNOT(1 == fread(&x, sizeof(x), 1, f))
+#define THROW_IFNOT(x)      if (!(x)) goto __err_label
 
 static Symbol syms[32767];
 static size_t nr_sym;
@@ -29,8 +29,8 @@ void init_addelf(char *filename) {
   }
   Elf_Ehdr ehdr;
   R(ehdr);
-  THROW_IF(ehdr.e_ident[EI_CLASS] == ELFCLASS);
-  THROW_IF(ehdr.e_machine == EM_AVAILABLE);
+  THROW_IFNOT(ehdr.e_ident[EI_CLASS] == ELFCLASS);
+  THROW_IFNOT(ehdr.e_machine == EM_AVAILABLE);
 
   Elf_Word nr_sh = ehdr.e_shnum;
   Elf_Shdr shdr;
