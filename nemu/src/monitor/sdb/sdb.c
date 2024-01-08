@@ -602,7 +602,6 @@ void sdb_mainloop() {
 }
 
 static char *file_gets() {
-  printf("reading file %d\n", nr_fp);
   assert(script_fps[nr_fp - 1]);
   char *line_read = NULL;
   size_t n = 0;
