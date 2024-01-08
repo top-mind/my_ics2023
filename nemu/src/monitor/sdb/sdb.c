@@ -133,7 +133,10 @@ static int cmd_elf(char *args) {
     printf("Usage: elf FILE\n");
     return 0;
   }
-  init_addelf(args);
+  char *arg;
+  while ((arg = strtok(NULL, " "))) {
+    init_addelf(arg);
+  }
   return 0;
 }
 
