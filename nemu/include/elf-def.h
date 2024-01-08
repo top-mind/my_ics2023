@@ -40,4 +40,5 @@ void init_breakpoints();
 // load symbols from elf file with address range [low, high)
 // flag: 0 - load all symbols, 1 - load function symbols only
 void elf_add(char *name, Elf_Addr low, Elf_Addr high, int flag);
+void elf_clean();
 #endif

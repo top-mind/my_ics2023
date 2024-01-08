@@ -149,7 +149,7 @@ static int cmd_elfadd(char *args) {
   return 0;
 }
 static int cmd_elfclean(char *args) {
-  puts("Not implemented");
+  elf_clean();
   return 0;
 }
 static int cmd_elf(char *args) {
