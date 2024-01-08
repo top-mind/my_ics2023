@@ -8,7 +8,8 @@
 #define EM_AVAILABLE EM_RISCV
 
 #define section_fseek(i) fseek(f, ehdr.e_shoff + sizeof(shdr) * (i), SEEK_SET)
-#define R(x)             assert(1 == fread(&x, sizeof(x), 1, f))
+#define R(x)             THROW_IF(1 == fread(&x, sizeof(x), 1, f))
+#define THROW_IF(x)      if (x) goto __err_label
 
 static Symbol syms[32767];
 static size_t nr_sym;
@@ -28,8 +29,8 @@ void init_addelf(char *filename) {
   }
   Elf_Ehdr ehdr;
   R(ehdr);
-  Assert(ehdr.e_ident[EI_CLASS] == ELFCLASS, "Bad elf");
-  Assert(ehdr.e_machine == EM_AVAILABLE, "Bad elf");
+  THROW_IF(ehdr.e_ident[EI_CLASS] == ELFCLASS);
+  THROW_IF(ehdr.e_machine == EM_AVAILABLE);
 
   Elf_Word nr_sh = ehdr.e_shnum;
   Elf_Shdr shdr;
@@ -76,6 +77,10 @@ void init_addelf(char *filename) {
       break;
     }
   }
+  goto _finish;
+__err_label: ;
+  printf(ANSI_FMT("Error reading %s\n", ANSI_FG_RED), filename);
+_finish: ;
   size_t nr_sym_read = nr_sym < ARRLEN(syms) ? nr_sym : ARRLEN(syms);
   printf(ANSI_FMT("Read %zu/%zu symbols from %s\n", ANSI_FG_BLUE), nr_sym_read, nr_sym, filename);
   nr_sym = nr_sym_read;
