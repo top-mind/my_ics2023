@@ -56,6 +56,19 @@ static char *rl_gets() {
   return savestring(prev_line_read);
 }
 
+static FILE *script_fps[1000];
+static int nr_fp;
+
+static char *file_gets() {
+  assert(script_fps[nr_fp]);
+  char *line_read = NULL;
+  size_t n = 0;
+  assert(getline(&line_read, &n, script_fps[nr_fp]) > 0);
+  return line_read;
+}
+
+static char *(*getcmd)() = rl_gets;
+
 static int cmd_gdb(char *args) {
   asm volatile("int $3");
   return 0;
@@ -170,6 +183,24 @@ static int cmd_elf(char *args) {
   }
   return 0;
 }
+static int cmd_ex(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: ex FILE\n");
+    return 0;
+  }
+  if (nr_fp >= ARRLEN(script_fps) - 1) {
+    printf("Too many files opened\n");
+    return 0;
+  }
+  FILE *fp = fopen(args, "r");
+  if (fp == NULL) {
+    printf("Failed to open file %s: %s\n", args, strerror(errno));
+    return 0;
+  }
+  script_fps[++nr_fp] = fp;
+  getcmd = file_gets;
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -213,6 +244,7 @@ static struct {
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
   {"elf", "Manage elf files", cmd_elf},
+  {"ex", "Execute commands from file", cmd_ex},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -544,7 +576,7 @@ void sdb_mainloop() {
     return;
   }
 
-  for (char *str; (str = rl_gets()) != NULL;) {
+  for (char *str; ((str = getcmd()) != NULL) || (getcmd != rl_gets && (getcmd = rl_gets));) {
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
