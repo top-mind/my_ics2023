@@ -609,7 +609,7 @@ static char *file_gets() {
   int ret;
   if ((ret = getline(&line_read, &n, script_fps[nr_fp - 1])) == -1) {
     free(line_read);
-    fclose(script_fps[nr_fp--]);
+    fclose(script_fps[--nr_fp]);
     if (nr_fp == 0) {
       getcmd = rl_gets;
     }
