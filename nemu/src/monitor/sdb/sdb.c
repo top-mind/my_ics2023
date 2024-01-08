@@ -154,6 +154,7 @@ static int cmd_elfclean(char *args) {
 }
 static int cmd_elf(char *args) {
   if (NOMORE(args)) {
+    printf("elf add|clean\n");
     return 0;
   }
   char *args_end = args + strlen(args);
@@ -211,7 +212,7 @@ static struct {
   {"detach", "Exit difftest mode", cmd_detach},
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
-  {"elf", "Load an elf file", cmd_elf},
+  {"elf", "Manage elf files", cmd_elf},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
