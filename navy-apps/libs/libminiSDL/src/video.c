@@ -54,16 +54,17 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   printf("blitcount = %d\n", blitcount ++);
   if (blitcount >= 150) return;
   int dw = dst->w, sw = src->w;
-  for (int i = 0; i < dstrect->h; i++)
-    for (int j = 0; j < dstrect->w; j++) {
-      if (dst->format->BitsPerPixel == 8) {
-        ((uint8_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
-          ((uint8_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
-      } else {
-        ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
-          ((uint32_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
-      }
-    }
+  if (dst->format->BitsPerPixel == 8) {
+    for (int i = 0; i < dstrect->h; i++)
+      for (int j = 0; j < dstrect->w; j++)
+          ((uint8_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+            ((uint8_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
+  } else {
+    for (int i = 0; i < dstrect->h; i++)
+      for (int j = 0; j < dstrect->w; j++)
+          ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+            ((uint32_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
+  }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
