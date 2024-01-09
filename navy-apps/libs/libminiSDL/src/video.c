@@ -29,9 +29,11 @@ static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   static int frame_skip = 0;
-  if (frame_skip ++ > 2) {
+  if (frame_skip == 1) {
     frame_skip = 0;
     return;
+  } else {
+    frame_skip = 1;
   }
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
