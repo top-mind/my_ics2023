@@ -157,7 +157,13 @@ int elf_getid(vaddr_t);
 
 void trace_showSDLcallstate() {
   extern uint64_t g_nr_guest_inst;
-  if ((g_nr_guest_inst % 1000000) != 0) return;
+  static uint64_t last_nrinst = 0;
+  if (last_nrinst == 0) {
+    last_nrinst = g_nr_guest_inst;
+    return;
+  }
+  printf("%"PRIu64"\n", (g_nr_guest_inst - last_nrinst));
+  return;
   for (int i = 0; i < ARRLEN(sdlcallstates); i++) {
     if (sdlcallstates[i].cnt == 0) continue;
     char *name;
