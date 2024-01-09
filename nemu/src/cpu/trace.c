@@ -157,7 +157,7 @@ int elf_getid(vaddr_t);
 
 void trace_showSDLcallstate() {
   extern uint64_t g_nr_guest_inst;
-  if ((g_nr_guest_inst % 1000) != 0)
+  if ((g_nr_guest_inst % 1000000) != 0)
     return;
   printf("SDL call state:\n");
   return;
