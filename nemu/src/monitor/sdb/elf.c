@@ -132,9 +132,9 @@ const Symbol *elf_find_symbol_byname(char *name) {
 }
 
 // XXX
-int elf_getid(char *name) {
+int elf_getid(int addr) {
   for (size_t i = 0; i < nr_sym; i++) {
-    if (0 == strcmp(syms[i].name, name)) return i;
+    if (syms[i].st_value == addr) return i;
   }
   return -1;
 }
