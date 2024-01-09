@@ -44,7 +44,6 @@ void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_TRACE
   do_trace(_this);
-  trace_showSDLcallstate();
 #endif
 #ifndef CONFIG_TARGET_AM
   void watchpoints_notify();

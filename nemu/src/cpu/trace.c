@@ -10,7 +10,6 @@
  * See paddr.c and device.c(TBD) for more details.S
  */
 #include <common.h>
-#include <limits.h>
 #include <memory/paddr.h>
 #include "trace.h"
 #include <isa.h>
@@ -144,91 +143,11 @@ static bool ftrace_stopat_push = false;
 
 void ftrace_set_stopat_push(bool enable) { ftrace_stopat_push = enable; }
 
-struct {
-  vaddr_t addr;
-  int totaltime;
-  int cnt;
-  int max5interval[5];
-  int min5interval[5];
-  int starttime;
-} sdlcallstates[8192];
-
-int elf_getid(vaddr_t);
-
-void trace_showSDLcallstate() {
-  extern uint64_t g_nr_guest_inst;
-  if ((g_nr_guest_inst % 10000000) != 0)
-    return;
-  printf("SDL call state:\n");
-  for (int i = 0; i < ARRLEN(sdlcallstates); i++) {
-    if (sdlcallstates[i].cnt == 0) continue;
-    char *name;
-    elf_getname_and_offset(sdlcallstates[i].addr, &name, NULL);
-    printf("%s: %d times, %d avg, %d us, %d us, %d us, %d us, %d us\n", name, sdlcallstates[i].cnt,
-           sdlcallstates[i].totaltime / sdlcallstates[i].cnt, sdlcallstates[i].max5interval[0],
-           sdlcallstates[i].max5interval[1], sdlcallstates[i].max5interval[2],
-           sdlcallstates[i].max5interval[3], sdlcallstates[i].max5interval[4]);
-  }
-}
-
-uint64_t sdb_realtime();
-void sdb_set_start_time(uint64_t);
-
-void sdl_push(vaddr_t addr) {
-  uint64_t time = get_time();
-  char *name;
-  elf_getname_and_offset(addr, &name, NULL);
-  if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
-  int id = elf_getid(addr);
-  assert(id >= 0);
-  int interval = time - sdlcallstates[id].starttime;
-  sdlcallstates[id].starttime = time;
-  if (sdlcallstates[id].cnt == 0) {
-    memset(&sdlcallstates[id].min5interval, 0x3f, sizeof(sdlcallstates[id].min5interval));
-    sdlcallstates[id].addr = addr;
-    goto restore_time;
-  }
-  int *pmax = &sdlcallstates[id].max5interval[0];
-  int *pmin = &sdlcallstates[id].min5interval[0];
-  for (int i = 0; i < ARRLEN(sdlcallstates[id].max5interval); i++) {
-    if (interval > pmax[i]) {
-      for (int j = ARRLEN(sdlcallstates[id].max5interval) - 1; j > i; j--) pmax[j] = pmax[j - 1];
-      pmax[i] = interval;
-      break;
-    }
-  }
-  for (int i = 0; i < ARRLEN(sdlcallstates[id].min5interval); i++) {
-    if (interval < pmin[i]) {
-      for (int j = ARRLEN(sdlcallstates[id].min5interval) - 1; j > i; j--) pmin[j] = pmin[j - 1];
-      pmin[i] = interval;
-      break;
-    }
-  }
-restore_time:
-  sdb_set_start_time(sdb_realtime() - time);
-}
-
-void sdl_pop(vaddr_t addr) {
-  uint64_t time = get_time();
-  char *name;
-  Elf_Word offset;
-  elf_getname_and_offset(addr, &name, &offset);
-  if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
-  int id = elf_getid(addr);
-  assert(id >= 0);
-  if (sdlcallstates[id].starttime == 0) goto restore_time;
-  sdlcallstates[id].cnt++;
-  sdlcallstates[id].totaltime += time - sdlcallstates[id].starttime;
-restore_time:
-  sdb_set_start_time(sdb_realtime() - time);
-}
-
 /* Often, we print message if we prepare a whole line to print.  * But as soon
  * as program stop inside a function, sdb tells us we go into, as desired.  *
  * This may be modified when backtrace is available.  */
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc) {
   if (ras_depth < ARRLEN(stk_func)) stk_func[ras_depth] = _pc;
-  sdl_push(dnpc);
   if (ftrace_stopat_push && nemu_state.state == NEMU_RUNNING) {
     char *f_name;
     elf_getname_and_offset(dnpc, &f_name, NULL);
@@ -278,7 +197,6 @@ void ftrace_disable_finish() { g_finish_depth = 0; }
 
 void ftrace_pop(vaddr_t pc, vaddr_t _dnpc) {
   if (ras_depth == 0) return;
-  sdl_pop(pc);
   if (g_finish_depth == ras_depth) {
     char *f_name;
     elf_getname_and_offset(pc, &f_name, NULL);
