@@ -56,10 +56,13 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   int dw = dst->w, sw = src->w;
   if (dst->format->BitsPerPixel == 8) {
     for (int i = 0; i < dstrect->h; i++)
-      for (int j = 0; j < dstrect->w; j++)
-          ((uint8_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
-            ((uint8_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
+      memcpy(&dst->pixels[dw * (dstrect->y + i) + dstrect->x],
+             &src->pixels[sw * (srect.y + i) + srect.x], dstrect->w);
+      // for (int j = 0; j < dstrect->w; j++)
+      //     ((uint8_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
+      //       ((uint8_t *)src->pixels)[sw * (srect.y + i) + srect.x + j];
   } else {
+    assert(0);
     for (int i = 0; i < dstrect->h; i++)
       for (int j = 0; j < dstrect->w; j++)
           ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
