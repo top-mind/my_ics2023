@@ -157,7 +157,7 @@ int elf_getid(vaddr_t);
 
 void trace_showSDLcallstate() {
   extern uint64_t g_nr_guest_inst;
-  if (g_nr_guest_inst % 1000000 != 0) return;
+  if ((g_nr_guest_inst % 1000000) != 0) return;
   for (int i = 0; i < ARRLEN(sdlcallstates); i++) {
     if (sdlcallstates[i].cnt == 0) continue;
     char *name;
