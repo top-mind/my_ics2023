@@ -58,8 +58,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     int off_dst = dstrect->y * dw + dstrect->x;
     int off_src = srect.y * sw + srect.x;
     for (int i = 0; i < dstrect->h; i++, off_dst += dw, off_src += sw)
-      for (int j = 0; j < dstrect->w; j++, off_dst++, off_src++)
-        ((uint8_t *)dst->pixels)[off_dst] = ((uint8_t *)src->pixels)[off_src];
+      for (int j = 0; j < dstrect->w; j++)
+        ((uint8_t *)dst->pixels)[off_dst + j] = ((uint8_t *)src->pixels)[off_src + j];
   } else {
     assert(0);
     for (int i = 0; i < dstrect->h; i++)
