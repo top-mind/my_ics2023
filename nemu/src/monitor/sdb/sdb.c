@@ -56,7 +56,7 @@ static char *rl_gets() {
   return savestring(prev_line_read);
 }
 
-static FILE *script_fps[1000];
+static FILE *fp_scripts[1000];
 static int nr_fp;
 
 static char *(*getcmd)() = rl_gets;
@@ -181,7 +181,7 @@ static int cmd_ex(char *args) {
     printf("Usage: ex FILE\n");
     return 0;
   }
-  if (nr_fp >= ARRLEN(script_fps)) {
+  if (nr_fp >= ARRLEN(fp_scripts)) {
     printf("Too many files opened\n");
     return 0;
   }
@@ -190,7 +190,7 @@ static int cmd_ex(char *args) {
     printf("Failed to open file `%s': %s\n", args, strerror(errno));
     return 0;
   }
-  script_fps[nr_fp++] = fp;
+  fp_scripts[nr_fp++] = fp;
   getcmd = file_gets;
   return 0;
 }
@@ -602,13 +602,13 @@ void sdb_mainloop() {
 }
 
 static char *file_gets() {
-  assert(script_fps[nr_fp - 1]);
+  assert(fp_scripts[nr_fp - 1]);
   char *line_read = NULL;
   size_t n = 0;
   int ret;
-  if ((ret = getline(&line_read, &n, script_fps[nr_fp - 1])) == -1) {
+  if ((ret = getline(&line_read, &n, fp_scripts[nr_fp - 1])) == -1) {
     free(line_read);
-    fclose(script_fps[--nr_fp]);
+    fclose(fp_scripts[--nr_fp]);
     if (nr_fp == 0) {
       getcmd = rl_gets;
     }
