@@ -165,7 +165,7 @@ void sdl_push(vaddr_t addr) {
   uint64_t time = get_time();
   char *name;
   elf_getname_and_offset(addr, &name, NULL);
-  if (strncmp(name, "SDL_", 3) != 0) goto restore_time;
+  if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
   int id = elf_getid(addr);
   assert(id >= 0);
   int interval = time - sdlcallstates[id].starttime;
@@ -199,7 +199,7 @@ void sdl_pop(vaddr_t addr) {
   uint64_t time = get_time();
   char *name;
   elf_getname_and_offset(addr, &name, NULL);
-  if (strncmp(name, "SDL_", 3) != 0) goto restore_time;
+  if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
   int id = elf_getid(addr);
   assert(id >= 0);
   if (sdlcallstates[id].starttime == 0) goto restore_time;
