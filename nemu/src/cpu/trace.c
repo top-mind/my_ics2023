@@ -156,6 +156,17 @@ struct {
 int elf_getid(vaddr_t);
 
 void trace_showSDLcallstate() {
+  extern uint64_t g_nr_guest_inst;
+  if (g_nr_guest_inst % 1000000 != 0) return;
+  for (int i = 0; i < ARRLEN(sdlcallstates); i++) {
+    if (sdlcallstates[i].cnt == 0) continue;
+    char *name;
+    elf_getname_and_offset(sdlcallstates[i].addr, &name, NULL);
+    printf("%s: %d times, %d total, %d us, %d us, %d us, %d us, %d us\n", name, sdlcallstates[i].cnt,
+           sdlcallstates[i].totaltime, sdlcallstates[i].max5interval[0],
+           sdlcallstates[i].max5interval[1], sdlcallstates[i].max5interval[2],
+           sdlcallstates[i].max5interval[3], sdlcallstates[i].max5interval[4]);
+  }
 }
 
 uint64_t sdb_realtime();
