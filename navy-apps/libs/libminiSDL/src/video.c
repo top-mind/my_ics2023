@@ -28,7 +28,6 @@ static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
 }
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
-  return;
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
   if (dst->format->BitsPerPixel == 8) {
@@ -66,7 +65,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
-  return;
   assert(dst->format->BitsPerPixel == 8 || dst->format->BitsPerPixel == 32);
   int w = dst->w;
   SDL_CreateRectFromSurface(dst, rect);
@@ -82,7 +80,12 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
-  return;
+  static int cnt = 0;
+  if (cnt == 1) {
+    cnt = 0;
+    return;
+  } else
+    cnt = 1;
   assert(s->format->BitsPerPixel == 8 || s->format->BitsPerPixel == 32);
   if ((x | y | w | h) == 0) {
     w = s->w;
