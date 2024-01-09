@@ -51,8 +51,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   SDL_Rect r = {.x = dstrect->x, .y = dstrect->y, .w = srect.w, .h = srect.h};
   SDL_RectIntersect(dstrect, &r);
   static int blitcount = 0;
-  printf("blitcount = %d\n", blitcount ++);
-  if (blitcount >= 150) return;
+  //printf("blitcount = %d\n", blitcount ++);
+  //if (blitcount >= 150) return;
   int dw = dst->w, sw = src->w;
   if (dst->format->BitsPerPixel == 8) {
     for (int i = 0; i < dstrect->h; i++)
