@@ -130,3 +130,11 @@ const Symbol *elf_find_symbol_byname(char *name) {
   }
   return NULL;
 }
+
+// XXX
+int elf_getid(char *name) {
+  for (size_t i = 0; i < nr_sym; i++) {
+    if (0 == strcmp(syms[i].name, name)) return i;
+  }
+  return -1;
+}
