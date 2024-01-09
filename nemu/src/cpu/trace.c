@@ -162,8 +162,8 @@ void trace_showSDLcallstate() {
     last_nrinst = g_nr_guest_inst;
     return;
   }
-  last_nrinst = g_nr_guest_inst;
   printf("%"PRIu64"\n", (g_nr_guest_inst - last_nrinst));
+  last_nrinst = g_nr_guest_inst;
   return;
   for (int i = 0; i < ARRLEN(sdlcallstates); i++) {
     if (sdlcallstates[i].cnt == 0) continue;
