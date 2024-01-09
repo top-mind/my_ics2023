@@ -50,6 +50,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   dstrect->h = dst->h - dstrect->y;
   SDL_Rect r = {.x = dstrect->x, .y = dstrect->y, .w = srect.w, .h = srect.h};
   SDL_RectIntersect(dstrect, &r);
+  static int blitcount = 0;
+  printf("blitcount = %d\n", blitcount ++);
   int dw = dst->w, sw = src->w;
   for (int i = 0; i < dstrect->h; i++)
     for (int j = 0; j < dstrect->w; j++) {

@@ -26,6 +26,7 @@ static inline uint8_t find_keyname(char *name) {
 }
 
 int SDL_PushEvent(SDL_Event *ev) {
+  assert(0);
   return 0;
 }
 
