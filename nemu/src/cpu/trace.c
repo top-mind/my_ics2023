@@ -164,8 +164,8 @@ void trace_showSDLcallstate() {
     if (sdlcallstates[i].cnt == 0) continue;
     char *name;
     elf_getname_and_offset(sdlcallstates[i].addr, &name, NULL);
-    printf("%s: %d times, %d total, %d us, %d us, %d us, %d us, %d us\n", name, sdlcallstates[i].cnt,
-           sdlcallstates[i].totaltime, sdlcallstates[i].max5interval[0],
+    printf("%s: %d times, %d avg, %d us, %d us, %d us, %d us, %d us\n", name, sdlcallstates[i].cnt,
+           sdlcallstates[i].totaltime / sdlcallstates[i].cnt, sdlcallstates[i].max5interval[0],
            sdlcallstates[i].max5interval[1], sdlcallstates[i].max5interval[2],
            sdlcallstates[i].max5interval[3], sdlcallstates[i].max5interval[4]);
   }
@@ -215,10 +215,7 @@ void sdl_pop(vaddr_t addr) {
   elf_getname_and_offset(addr, &name, &offset);
   if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
   int id = elf_getid(addr);
-  if (id < 0) {
-    printf("Warning: SDL call %s+0x%x not found\n", name, offset);
-    panic("1");
-  }
+  assert(id >= 0);
   if (sdlcallstates[id].starttime == 0) goto restore_time;
   sdlcallstates[id].cnt++;
   sdlcallstates[id].totaltime += time - sdlcallstates[id].starttime;
