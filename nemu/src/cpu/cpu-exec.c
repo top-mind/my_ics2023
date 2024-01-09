@@ -50,7 +50,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   watchpoints_notify();
 #endif
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  void trace_showSDLcallstate();
   trace_showSDLcallstate();
 }
 
