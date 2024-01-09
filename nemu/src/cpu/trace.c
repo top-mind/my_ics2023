@@ -211,10 +211,14 @@ restore_time:
 void sdl_pop(vaddr_t addr) {
   uint64_t time = get_time();
   char *name;
-  elf_getname_and_offset(addr, &name, NULL);
+  Elf_Word offset;
+  elf_getname_and_offset(addr, &name, &offset);
   if (strncmp(name, "SDL_", 4) != 0) goto restore_time;
   int id = elf_getid(addr);
-  assert(id >= 0);
+  if (id < 0) {
+    printf("Warning: SDL call %s+0x%x not found\n", name, offset);
+    panic("1");
+  }
   if (sdlcallstates[id].starttime == 0) goto restore_time;
   sdlcallstates[id].cnt++;
   sdlcallstates[id].totaltime += time - sdlcallstates[id].starttime;
