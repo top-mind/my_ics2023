@@ -187,7 +187,6 @@ SDL_Surface* SDL_SetVideoMode(int width, int height, int bpp, uint32_t flags) {
 }
 
 void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
-  InvokeAudioCallback();
   assert(src && dst);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
   assert(dst->format->BitsPerPixel == 8);
