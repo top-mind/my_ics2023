@@ -134,7 +134,7 @@ const Symbol *elf_find_symbol_byname(char *name) {
 // XXX
 int elf_getid(int addr) {
   for (size_t i = 0; i < nr_sym; i++) {
-    if (syms[i].st_value == addr) return i;
+    if (syms[i].st_value + syms[i].st_size > addr) return i;
   }
   return -1;
 }
