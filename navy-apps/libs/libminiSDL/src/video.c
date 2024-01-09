@@ -28,13 +28,13 @@ static inline SDL_Rect *SDL_RectIntersect(SDL_Rect *dst, SDL_Rect *src) {
 }
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
-  assert(dst && src);
-  assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
-  if (dst->format->BitsPerPixel == 8) {
-    assert(src->format->palette->ncolors == 256);
-    assert(dst->format->palette->ncolors == 256);
-    memcpy(dst->format->palette->colors, dst->format->palette->colors, 256);
-  }
+  // assert(dst && src);
+  // assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  // if (dst->format->BitsPerPixel == 8) {
+  //   assert(src->format->palette->ncolors == 256);
+  //   assert(dst->format->palette->ncolors == 256);
+  //   memcpy(dst->format->palette->colors, dst->format->palette->colors, 256);
+  // }
   // sx dx w
   // w: I(dr''. sr')
   // sx: sr ? srx : 0
@@ -60,7 +60,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     for (int i = 0; i < dstrect->h; i++, off_dst += dw, off_src += sw)
       memcpy(&((uint8_t *)dst->pixels)[off_dst], &((uint8_t *)src->pixels)[off_src], dstrect->w);
   } else {
-    assert(0);
     for (int i = 0; i < dstrect->h; i++)
       for (int j = 0; j < dstrect->w; j++)
           ((uint32_t *)dst->pixels)[dw * (dstrect->y + i) + dstrect->x + j] =
