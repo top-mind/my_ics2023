@@ -85,8 +85,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     w = s->w;
     h = s->h;
   }
-  NDL_DrawRect(gbPixels, x, y, w, h);
-  return;
   if (s->format->BitsPerPixel == 8) {
     assert(s->format->palette->ncolors == 256);
     uint32_t colorARGB[256];
