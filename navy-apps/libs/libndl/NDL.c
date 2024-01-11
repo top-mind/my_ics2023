@@ -12,7 +12,7 @@ static int fbdev = -1;
 static int fdsbctl = -1;
 static int fdsb = -1;
 static int screen_w = 0, screen_h = 0;
-static int canvas_w = 0, canvas_h = 0;
+static int canvas_x = 0, canvas_y = 0;
 
 static uint32_t time_start = 0;
 
@@ -51,13 +51,14 @@ void NDL_OpenCanvas(int *w, int *h) {
   } else {
     if (*w == 0 || *w > screen_w) *w = screen_w;
     if (*h == 0 || *h > screen_h) *h = screen_h;
-    canvas_w = *w; canvas_h = *h;
+    canvas_x = (screen_w - *w) / 2;
+    canvas_y = (screen_h - *h) / 2;
   }
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   for (int i = 0; i < h; i++) {
-    lseek(fbdev, (y + i) * screen_w * 4 + x * 4, SEEK_SET);
+    lseek(fbdev, ((canvas_y + y + i) * screen_w + x + canvas_x) * 4, SEEK_SET);
     write(fbdev, &pixels[i * w], w * 4);
   }
 }
