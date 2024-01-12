@@ -694,7 +694,7 @@ void sdb_mainloop() {
 }
 
 static char *file_gets() {
-  assert(fp_scripts[nr_fp - 1]);
+  assert(nr_fp);
   char *line_read = NULL;
   size_t n = 0;
   int ret;
