@@ -263,7 +263,8 @@ static struct {
   {"elf",
    "Manage elf files\n"
    "elf a FILE [BEGIN [END [FUNCONLY?]]]\n"
-   "Load symbols with type in ST_FUNC and ST_OBJECT(if not specific FUNCONLY) from FILE in range "
+   "Add symbols in FILE to symbol table, with virtual address in range [BEGIN, END).\n"
+   "FUNCONLY is used to indicate whether to add all symbols or only functions.\n"
    "[BEGIN, END)\n"
    "elf d -- Clean all symbols(besides those in default file)",
    cmd_elf},
