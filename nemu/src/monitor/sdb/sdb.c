@@ -110,8 +110,8 @@ static int cmd_b(char *args) {
 }
 static int cmd_w(char *args) {
   if (NOMORE(args)) {
-    puts("Usage: w EXPR");
-    return 0;
+    puts("Argument required");
+    return 1;
   }
   int n = create_watchpoint(args);
   if (n > 0) printf("Watchpoint %d: %s\n", n, args);
@@ -119,6 +119,10 @@ static int cmd_w(char *args) {
 }
 static int cmd_d(char *args) {
   if (NOMORE(args)) {
+    if (getcmd == file_gets) {
+      free_all_breakpoints();
+      return 0;
+    }
     char *str = readline("Delete all watchpoints? (y|N) ");
     if (str[0] == 'y') free_all_breakpoints();
     free(str);
@@ -129,25 +133,17 @@ static int cmd_d(char *args) {
   return 0;
 }
 static int cmd_attach(char *args) {
-  if (NOMORE(args)) {
-    difftest_attach();
-  } else {
-    printf("Usage: attach\n");
-  }
+  difftest_attach();
   return 0;
 }
 static int cmd_detach(char *args) {
-  if (NOMORE(args)) {
-    difftest_detach();
-  } else {
-    printf("Usage: detach\n");
-  }
+  difftest_detach();
   return 0;
 }
 static int cmd_elfadd(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: elf add FILE [range]\n");
-    return 0;
+    printf("Require subcommand\n");
+    return 1;
   }
   char *filename = strtok(NULL, " ");
   uint64_t res[3] = {0, -1, 0};
@@ -158,7 +154,7 @@ static int cmd_elfadd(char *args) {
     res[i] = strtoull(pnum, &endptr, 0);
     if (*endptr != '\0') {
       printf("Syntax error near '%s'\n", pnum);
-      return 0;
+      return 1;
     }
   }
   elf_add(filename, res[0], res[1], res[2]);
@@ -178,18 +174,18 @@ static int cmd_elf(char *args) {
   char *arg = subcmd + strlen(subcmd) + 1;
   if (arg >= args_end) arg = NULL;
   if (strcmp(subcmd, "a") == 0) {
-    cmd_elfadd(arg);
+    return cmd_elfadd(arg);
   } else if (strcmp(subcmd, "d") == 0) {
-    cmd_elfclean(arg);
+    return cmd_elfclean(arg);
   } else {
     printf("Unknown subcommand %s, try `elf'.\n", subcmd);
   }
-  return 0;
+  return 1;
 }
 static int cmd_source(char *args) {
   if (NOMORE(args)) {
     printf("Usage: source FILE\n");
-    return 0;
+    return 1;
   }
   if (nr_fp >= ARRLEN(fp_scripts)) {
     printf("Too many files opened\n");
@@ -198,7 +194,7 @@ static int cmd_source(char *args) {
   FILE *fp = fopen(args, "r");
   if (fp == NULL) {
     printf("Failed to open file `%s': %s\n", args, strerror(errno));
-    return 0;
+    return 1;
   }
   filename_scripts[nr_fp] = strdup(args);
   lineno_scripts[nr_fp] = 0;
@@ -325,14 +321,14 @@ static int cmd_si(char *args) {
   char *arg_more = strtok(NULL, "");
   if (!NOMORE(arg_more)) {
     puts("Usage: si [N]");
-    return 0;
+    return 1;
   }
   if (arg_n != NULL) {
     n = strtoull(arg_n, &endptr, 0);
     // If no number parsed, default to 1
     if (*endptr != '\0') {
       printf("Invalid character '%c'.\n", *endptr);
-      return 0;
+      return 1;
     }
   }
   if (n > 0) {
@@ -356,7 +352,6 @@ static int cmd_info(char *args) {
   } else {
     if (strcmp(arg, "r") == 0) {
       isa_reg_display();
-      // #endif
     } else if (strcmp(arg, "w") == 0) {
       print_watchpoints();
     } else if (strcmp(arg, "h") == 0) {
@@ -366,6 +361,7 @@ static int cmd_info(char *args) {
       print_all_breakpoints();
     } else {
       printf("Unknown subcommand %s, try `help info'.\n", arg);
+      return 1;
     }
   }
 
@@ -413,13 +409,13 @@ static int cmd_x(char *args) {
   if (NOMORE(arg2)) {
     puts("Argument(s) required");
     puts("Usage: x N EXPR");
-    return 0;
+    return 1;
   }
   char *endptr;
   long long bytes = strtoull(arg1, &endptr, 0);
   if (*endptr != '\0') {
     printf("Invalid character '%c', require octal/decimal/hexadecimal.\n", *endptr);
-    return 0;
+    return 1;
   }
   if (errno == ERANGE) { puts("Numeric constant too large."); }
 
@@ -496,12 +492,12 @@ static int cmd_nf(char *args) {
 static int cmd_save(char *args) {
   if (NOMORE(args)) {
     printf("Usage: save FILE\n");
-    return 0;
+    return 1;
   }
   FILE *fp = fopen(args, "w");
   if (fp == NULL) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
-    return 0;
+    return 1;
   }
   fprintf(fp, "%s\ntime = %" PRIi64 "\n", str(__GUEST_ISA__), sdb_get_start_time() - sdb_realtime());
   fflush(fp);
@@ -522,14 +518,14 @@ static int cmd_save(char *args) {
   free(pathzlib);
   if (fp == NULL) {
     printf("Failed to open file %s: %s\n", pathzlib, strerror(errno));
-    return 0;
+    return 1;
   }
   uLongf dst_len = compressBound(CONFIG_MSIZE);
   void *dst = malloc(dst_len);
   assert(dst != NULL);
   if (compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION)) {
     printf("save: failed to compress memory\n");
-    return 0;
+    return 1;
   }
   fwrite(dst, 1, dst_len, fp);
   free(dst);
@@ -545,34 +541,34 @@ static int cmd_load(char *args) {
   // sanity check
   if (NOMORE(args)) {
     printf("Usage: load FILE\n");
-    return 0;
+    return 1;
   }
   fp = fopen(args, "r");
   if (fp == NULL) {
     printf("Failed to open file %s: %s\n", args, strerror(errno));
-    return 0;
+    return 1;
   }
   if (NULL == fgets(isa, sizeof(isa), fp)) {
     fclose(fp);
     printf("Bad file format.\n");
-    return 0;
+    return 1;
   }
   if (strcmp(isa, str(__GUEST_ISA__) "\n") != 0) {
     fclose(fp);
     printf("ISA mismatch.");
-    return 0;
+    return 1;
   }
   if (fscanf(fp, "time = %" PRIu64 "\n", &time) != 1) {
     fclose(fp);
     printf("Bad file format.\n");
-    return 0;
+    return 1;
   }
   // detach first
   difftest_detach();
   if (!isa_reg_load(fp, &_state)) {
     fclose(fp);
     printf("Can not load %s\n", args);
-    return 0;
+    return 1;
   }
   fclose(fp);
   
@@ -590,7 +586,7 @@ static int cmd_load(char *args) {
   free(pathzlib);
   if (fp == NULL) {
     printf("Failed to open file %s: %s\n", pathzlib, strerror(errno));
-    return 0;
+    return 1;
   }
   fseek(fp, 0, SEEK_END);
   src_len = ftell(fp);
@@ -601,9 +597,9 @@ static int cmd_load(char *args) {
   printf("Decompressing dump file %s.zlib...\n", args);
   if (uncompress(dst, &dst_len, src, src_len)) {
     free(src);
-    printf("load: failed to uncompress memory\n");
+    printf("load: failed to uncompress memory.\n");
     nemu_state.state = NEMU_END;
-    return 0;
+    return 1;
   }
   free(src);
   memcpy(&cpu, &_state, sizeof(cpu));
