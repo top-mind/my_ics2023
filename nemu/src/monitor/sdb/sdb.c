@@ -262,8 +262,9 @@ static struct {
   {"load", "Load the current state", cmd_load},
   {"elf",
    "Manage elf files\n"
-   "elf a -- Load symbols from FILE\n"
-   "elf d -- Clean all symbols(besides symbols in default file(s))",
+   "elf a FILE [BEGIN [END [FUNCONLY?]]]-- Load symbols ST_FUNC and ST_OBJECT(if not FUNCONLY) "
+   "from FILE from virtual address BEGIN to END (exclusive)\n"
+   "elf d -- Clean all symbols(besides those in default file)",
    cmd_elf},
   {"source",
    "Read commands from file.\n"
