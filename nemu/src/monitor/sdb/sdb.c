@@ -76,7 +76,6 @@ static int cmd_c(char *args) {
 }
 static int cmd_q(char *args) {
   free_all_breakpoints();
-  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 static int cmd_help(char *);
