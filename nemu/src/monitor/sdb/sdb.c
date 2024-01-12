@@ -44,7 +44,14 @@ void ftrace_set_stopat_push(bool);
 static char *rl_gets() {
   char *line_read = readline("(nemu) ");
   if (line_read == NULL) return NULL;
-  if (*line_read) {
+  int is_spaces = 1;
+  for (char *p = line_read; *p; p++) {
+    if (*p != ' ') {
+      is_spaces = 0;
+      break;
+    }
+  }
+  if (is_spaces) {
     add_history(line_read);
   } else {
     free(line_read);
