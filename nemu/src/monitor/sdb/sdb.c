@@ -225,8 +225,9 @@ static struct {
    "Argument N means step N times (or till program stops for another reason).",
    cmd_si},
   {"info",
-   "\tinfo r -- List of registers and their contents.\n"
-   "\tinfo w -- Status all watchpoints",
+   "Generic command for showing program and debugger states\n"
+   "info r -- List of registers and their contents.\n"
+   "info w -- Status all watchpoints",
    cmd_info},
   {"x",
    "Examine memory: x N EXPR\nEXPR is an expression for the memory address to examine.\n"
@@ -254,10 +255,14 @@ static struct {
   {"detach", "Exit difftest mode", cmd_detach},
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
-  {"elf", "Manage elf files", cmd_elf},
+  {"elf",
+   "Manage elf files\n"
+   "elf a -- Load symbols from FILE, FILE must have ELF\n"
+   "elf d -- Clean all symbols",
+   cmd_elf},
   {"source",
    "Read commands from file.\n"
-     /*TODO*/
+   /*TODO*/
    "Note that the file '.sdbinit' is read automatically in this way when sdb is started",
    cmd_source},
 };
