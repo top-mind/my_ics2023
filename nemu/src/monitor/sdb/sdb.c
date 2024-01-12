@@ -236,10 +236,12 @@ static struct {
    "N is a repeat count. The specified number of 4 bytes are printed in hexadecimal. If negative "
    "number is specified, memory is examined backward from the address.",
    cmd_x},
+  {"print", NULL, cmd_p},
+  {"inspect", NULL, cmd_p},
   {"p", "Print value of expression EXPR.\nUsage: p EXPR", cmd_p},
   {"b", "Set breakpoint", cmd_b},
   {"w",
-   "Set a watchpoint for EXPR.\nUsage: watch EXPR\n"
+   "Set a watchpoint for EXPR.\nUsage: w EXPR\n"
    "A watchpoint stops execution of your program whenever the value of an expression changes. This "
    "feature is disabled if build without WATCHPOINT_STOP",
    cmd_w},
