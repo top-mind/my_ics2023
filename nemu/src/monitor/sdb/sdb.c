@@ -288,6 +288,17 @@ static int cmd_help(char *args) {
       printf("%s\t-\t%.*s\n", cmd_table[i].name, nr_desc, strdesc);
     }
   } else {
+    char *arg = strtok(NULL, " ");
+    int found = match_command(arg);
+    if (found == NR_CMD) {
+      return 0;
+    }
+    while (found > 0 && cmd_table[found - 1].description == NULL) found--;
+    while (cmd_table[found].description == NULL) {
+      printf("%s, ", cmd_table[found].name);
+      found++;
+    }
+    printf("%s\n%s\n", cmd_table[found].name, cmd_table[found].description);
   }
 
   return 0;
@@ -632,7 +643,7 @@ end_match:
       getcmd = rl_gets;
     }
   }
-  return found;
+  return ambiguous ? NR_CMD : found;
 }
 
 void sdb_mainloop() {
