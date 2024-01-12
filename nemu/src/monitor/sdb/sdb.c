@@ -61,6 +61,7 @@ static char *rl_gets() {
 }
 
 static FILE *fp_scripts[1000];
+static char *filename_scripts[1000];
 static int lineno_scripts[1000];
 static int nr_fp;
 
@@ -180,7 +181,7 @@ static int cmd_elf(char *args) {
   }
   return 0;
 }
-static int cmd_ex(char *args) {
+static int cmd_source(char *args) {
   if (NOMORE(args)) {
     printf("Usage: ex FILE\n");
     return 0;
@@ -194,6 +195,7 @@ static int cmd_ex(char *args) {
     printf("Failed to open file `%s': %s\n", args, strerror(errno));
     return 0;
   }
+  filename_scripts[nr_fp] = strdup(args);
   lineno_scripts[nr_fp] = 0;
   fp_scripts[nr_fp++] = fp;
   getcmd = file_gets;
@@ -255,7 +257,7 @@ static struct {
    "Read commands from file.\n"
      /*TODO*/
    "Note that the file '.sdbinit' is read automatically in this way when sdb is started",
-   cmd_ex},
+   cmd_source},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -607,7 +609,7 @@ void sdb_mainloop() {
     sdl_clear_event_queue();
 #endif
 
-    int found = NR_CMD, ambiguous = -1;
+    int found = NR_CMD, ambiguous = 0;
     for (int i = 0; i < NR_CMD; i++) {
       if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
         if (cmd_table[i].name[cmdlen] == '\0') {
@@ -617,18 +619,34 @@ void sdb_mainloop() {
         if (found == NR_CMD) {
           found = i;
         } else {
-          ambiguous = i;
+          ambiguous = 1;
           goto end_match;
         }
       }
     }
   end_match:
-    if (found == NR_CMD || ambiguous != -1 || (ret = cmd_table[found].handler(args)) > 0) {
+    if (found == NR_CMD || ambiguous || (ret = cmd_table[found].handler(args)) > 0) {
+      if (ambiguous) {
+        printf("Ambiguous command %s: %s", cmd, cmd_table[found].name);
+        for (int i = found + 1; i < NR_CMD; i++) {
+          if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
+            printf(", %s", cmd_table[i].name);
+          }
+        }
+        printf(".\n");
+      } else if (found == NR_CMD) {
+        printf("Unknown command %s\n", cmd);
+      } else {
+        panic("Command %s return %d, which should always be 0(?)\n", cmd, ret);
+      }
+      // error occurs in script
       if (getcmd != rl_gets) {
         for (int i = 0; i < nr_fp; i++) {
-          // printf("In %s:%d:\n", NULL, lineno_scripts[i]);
-
+          printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
+          free(filename_scripts[i]);
+          fclose(fp_scripts[i]);
         }
+        nr_fp = 0;
         getcmd = rl_gets;
       }
     }
@@ -646,6 +664,7 @@ static char *file_gets() {
   if ((ret = getline(&line_read, &n, fp_scripts[nr_fp - 1])) == -1) {
     free(line_read);
     fclose(fp_scripts[--nr_fp]);
+    free(filename_scripts[nr_fp]);
     if (nr_fp == 0) {
       getcmd = rl_gets;
     }
