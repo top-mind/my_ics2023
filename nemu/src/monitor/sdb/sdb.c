@@ -70,7 +70,11 @@ static char *(*getcmd)() = rl_gets;
 static char *file_gets();
 
 static int cmd_gdb(char *args) {
-  raise(SIGUSR1);
+  if (NOMORE(args)) {
+    puts("Usage: DEBUG SIGNAL");
+    return 0;
+  }
+  raise(atoi(args));
   return 0;
 }
 static int cmd_c(char *args) {
@@ -218,7 +222,7 @@ static struct {
   int (*handler)(char *);
 } cmd_table[] = {
   {"help", "Display informations about all supported commands", cmd_help},
-  {"gdb", "Raise SIGUSR1", cmd_gdb},
+  {"DEBUG", "Raise signal", cmd_gdb},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
   {"si",
