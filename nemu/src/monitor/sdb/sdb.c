@@ -264,25 +264,21 @@ static struct {
 
 #define NR_CMD ARRLEN(cmd_table)
 
+int match_command(const char *cmd);
+
 static int cmd_help(char *args) {
   /* extract the first argument */
-  char *arg = strtok(NULL, " ");
-  int i;
-
-  if (arg == NULL) {
-    /* no argument given */
-    for (i = 0; i < NR_CMD; i++) {
-      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+  if (NOMORE(args)) {
+    // print help info for all commands
+    for (int i = 0; i < NR_CMD; i++) {
+      int nr_desc = 0;
+      const char *strdesc = cmd_table[i].description;
+      while (strdesc[nr_desc] && strdesc[nr_desc] != '\n') nr_desc++;
+      printf("%s\t-\t%.*s\n", cmd_table[i].name, nr_desc, strdesc);
     }
   } else {
-    for (i = 0; i < NR_CMD; i++) {
-      if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
-        return 0;
-      }
-    }
-    printf("Unknown command '%s'\n", arg);
   }
+
   return 0;
 }
 
