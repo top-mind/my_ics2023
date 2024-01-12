@@ -105,7 +105,7 @@ static int cmd_b(char *args) {
 }
 static int cmd_w(char *args) {
   if (NOMORE(args)) {
-    puts("Usage: watch EXPR");
+    puts("Usage: w EXPR");
     return 0;
   }
   int n = create_watchpoint(args);
@@ -141,7 +141,7 @@ static int cmd_detach(char *args) {
 }
 static int cmd_elfadd(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: elf add FILE [range] \n");
+    printf("Usage: elf add FILE [range]\n");
     return 0;
   }
   char *filename = strtok(NULL, " ");
@@ -183,7 +183,7 @@ static int cmd_elf(char *args) {
 }
 static int cmd_source(char *args) {
   if (NOMORE(args)) {
-    printf("Usage: ex FILE\n");
+    printf("Usage: source FILE\n");
     return 0;
   }
   if (nr_fp >= ARRLEN(fp_scripts)) {
