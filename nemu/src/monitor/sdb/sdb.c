@@ -293,12 +293,16 @@ static int cmd_help(char *args) {
     if (found == NR_CMD) {
       return 0;
     }
-    while (found > 0 && cmd_table[found - 1].description == NULL) found--;
-    while (cmd_table[found].description == NULL) {
-      printf("%s, ", cmd_table[found].name);
-      found++;
+    if (cmd_table[found].description == NULL ||
+        (found > 0 && cmd_table[found - 1].description == NULL)) {
+      while (found > 0 && cmd_table[found - 1].description == NULL) found--;
+      while (cmd_table[found].description == NULL) {
+        printf("%s, ", cmd_table[found].name);
+        found++;
+      }
+      printf("%s\n", cmd_table[found].name);
     }
-    printf("%s\n%s\n", cmd_table[found].name, cmd_table[found].description);
+    printf("%s\n", cmd_table[found].description);
   }
 
   return 0;
