@@ -653,7 +653,7 @@ void sdb_mainloop() {
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
-    int ret = 1;
+    int ret = 0;
     if (cmd == NULL) goto finally;
 
     /* treat the remaining string as the arguments,
@@ -670,7 +670,7 @@ void sdb_mainloop() {
     int found = match_command(cmd);
     if (found < NR_CMD)
       ret = cmd_table[found].handler(args);
-    if (ret > 0) {
+    if (found == NR_CMD || ret > 0) {
       // error occurs in script
       if (getcmd != rl_gets) {
         for (int i = 0; i < nr_fp; i++) {
