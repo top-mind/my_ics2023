@@ -22,6 +22,7 @@
 #include <memory/host.h>
 #include <cpu/difftest.h>
 #include "sdb.h"
+#include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <zlib.h>
@@ -69,11 +70,7 @@ static char *(*getcmd)() = rl_gets;
 static char *file_gets();
 
 static int cmd_gdb(char *args) {
-  if (NOMORE(args)) {
-    printf("Usage: gdb 3\n");
-    return 0;
-  }
-  asm volatile("int $3");
+  raise(SIGUSR1);
   return 0;
 }
 static int cmd_c(char *args) {
@@ -221,7 +218,7 @@ static struct {
   int (*handler)(char *);
 } cmd_table[] = {
   {"help", "Display informations about all supported commands", cmd_help},
-  {"gdb", "Generate a int 3 trap for gdb to catch", cmd_gdb},
+  {"gdb", "Raise SIGUSR1", cmd_gdb},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
   {"si",
