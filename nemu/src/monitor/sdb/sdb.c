@@ -636,7 +636,7 @@ int match_command(const char *cmd) {
       }
       printf(".\n");
     } else if (found == NR_CMD) {
-      printf("Unknown command %s\n", cmd);
+      printf("Unknown command `%s'\n", cmd);
     }
   }
   return ambiguous ? NR_CMD : found;
