@@ -69,6 +69,10 @@ static char *(*getcmd)() = rl_gets;
 static char *file_gets();
 
 static int cmd_gdb(char *args) {
+  if (NOMORE(args)) {
+    printf("Usage: gdb 3\n");
+    return 0;
+  }
   asm volatile("int $3");
   return 0;
 }
