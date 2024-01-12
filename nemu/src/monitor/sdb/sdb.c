@@ -245,9 +245,9 @@ static struct {
    "Arguments are watchpoint numbers with spaces in between.\n"
    "To delete all watchpoints, give no argument.",
    cmd_d},
-  {"bt", "Print backtrace of all stack frames", cmd_bt},
   {"backtrace", "Print backtrace of all stack frames", cmd_bt},
   {"where", "Print backtrace of all stack frames", cmd_bt},
+  {"bt", "Print backtrace of all stack frames", cmd_bt},
   {"finish", "Finish current function", cmd_finish},
   {"nf", "Execute untill entering a function", cmd_nf},
   {"attach", "Enter difftest mode", cmd_attach},
