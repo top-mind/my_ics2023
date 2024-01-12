@@ -296,9 +296,8 @@ static int cmd_help(char *args) {
   } else {
     char *arg = strtok(NULL, " ");
     int found = match_command(arg);
-    if (found == NR_CMD) {
-      return 0;
-    }
+    if (found == NR_CMD)
+      return 1;
     if (cmd_table[found].description == NULL ||
         (found > 0 && cmd_table[found - 1].description == NULL)) {
       while (found > 0 && cmd_table[found - 1].description == NULL) found--;
