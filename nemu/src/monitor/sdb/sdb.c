@@ -48,7 +48,8 @@ static char *rl_gets() {
     add_history(line_read);
   } else {
     free(line_read);
-    return previous_history()->line;
+    printf("%p\n", current_history()->line);
+    return strdup("");
   }
   return line_read;
 }
