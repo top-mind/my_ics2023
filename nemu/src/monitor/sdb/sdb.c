@@ -69,9 +69,9 @@ static int nr_fp;
 static char *(*getcmd)() = rl_gets;
 static char *file_gets();
 
-static int cmd_gdb(char *args) {
+static int cmd_Raise(char *args) {
   if (NOMORE(args)) {
-    puts("Usage: DEBUG SIGNAL");
+    puts("Usage: Raise SIGNAL");
     return 0;
   }
   raise(atoi(args));
@@ -222,7 +222,7 @@ static struct {
   int (*handler)(char *);
 } cmd_table[] = {
   {"help", "Display informations about all supported commands", cmd_help},
-  {"Raise", "Raise signal", cmd_gdb},
+  {"Raise", "Raise signal", cmd_Raise},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
   {"si",
