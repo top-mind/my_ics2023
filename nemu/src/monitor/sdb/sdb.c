@@ -48,7 +48,7 @@ static char *rl_gets() {
     add_history(line_read);
   } else {
     free(line_read);
-    for (int i = 0; i < history_length; i++) {
+    for (int i = history_base; i < history_length; i++) {
       char *s = history_get(i)->line;
       printf("%p %s\n", s, s == NULL ? "NULL" : s);
     }
