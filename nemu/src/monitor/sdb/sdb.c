@@ -40,23 +40,22 @@ bool ftrace_disable_finish();
 void ftrace_set_stopat_push(bool);
 #endif
 
-static char *prev_line_read = NULL;
-
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char *rl_gets() {
   char *line_read = readline("(nemu) ");
   if (line_read == NULL) return NULL;
   if (*line_read) {
-    xfree(prev_line_read);
-    prev_line_read = line_read;
     add_history(line_read);
   } else {
     free(line_read);
+    // line_read = savestring();
+    return NULL;
   }
-  return savestring(prev_line_read);
+  return line_read;
 }
 
 static FILE *fp_scripts[1000];
+static int lineno_scripts[1000];
 static int nr_fp;
 
 static char *(*getcmd)() = rl_gets;
@@ -190,6 +189,7 @@ static int cmd_ex(char *args) {
     printf("Failed to open file `%s': %s\n", args, strerror(errno));
     return 0;
   }
+  lineno_scripts[nr_fp] = 0;
   fp_scripts[nr_fp++] = fp;
   getcmd = file_gets;
   return 0;
@@ -602,7 +602,7 @@ void sdb_mainloop() {
     sdl_clear_event_queue();
 #endif
 
-    int found = NR_CMD;
+    int found = NR_CMD, ambiguous = -1;
     for (int i = 0; i < NR_CMD; i++) {
       if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
         if (cmd_table[i].name[cmdlen] == '\0') {
@@ -612,14 +612,20 @@ void sdb_mainloop() {
         if (found == NR_CMD) {
           found = i;
         } else {
-          found = -1;
+          ambiguous = i;
           goto end_match;
         }
       }
     }
   end_match:
-    if (found == NR_CMD || found == -1 || (ret = cmd_table[found].handler(args)) > 0) {
-      if (rl_gets() == NULL) break;
+    if (found == NR_CMD || ambiguous != -1 || (ret = cmd_table[found].handler(args)) > 0) {
+      if (getcmd != rl_gets) {
+        for (int i = 0; i < nr_fp; i++) {
+          // printf("In %s:%d:\n", NULL, lineno_scripts[i]);
+
+        }
+        getcmd = rl_gets;
+      }
     }
   finally:
     free(str);
@@ -640,13 +646,12 @@ static char *file_gets() {
     }
     return getcmd();
   }
+  lineno_scripts[nr_fp - 1]++;
   if (line_read[ret - 1] == '\n') line_read[ret - 1] = '\0';
   return line_read;
 }
 
 void init_sdb() {
-  prev_line_read = malloc(1);
-  *prev_line_read = 0;
   /* Compile the regular expressions. */
   init_regex();
   init_breakpoints();
