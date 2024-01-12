@@ -264,8 +264,8 @@ static struct {
    "Manage elf files\n"
    "elf a FILE [BEGIN [END [FUNCONLY]]]\n"
    "Add symbols in FILE to symbol table. If BEGIN and END are given, only symbols in the range "
-   "[BEGIN, END) are added.\n"
-   "FUNCONLY is used to indicate whether to add all symbols or only functions.\n"
+   "[BEGIN, END) are added. FUNCONLY is used to indicate whether to add all symbols or only "
+   "functions.\n"
    "elf d -- Clean all symbols(besides those in default file)",
    cmd_elf},
   {"source",
