@@ -195,6 +195,15 @@ static int cmd_ex(char *args) {
   return 0;
 }
 
+/* structure for a command
+ * name: the command name. A successful match happens when user types a string being a prefix of
+ * this name.
+ * description: the description of this command. The 'help' command will display this field.
+ * int handler(args): the function to handle this command.
+ *   args: the arguments passed to this command.
+ *   return: a negative value means the main loop should exit.
+ *           other values will be ignored.
+ */
 static struct {
   const char *name;
   const char *description;
@@ -237,7 +246,11 @@ static struct {
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
   {"elf", "Manage elf files", cmd_elf},
-  {"ex", "Execute commands from file", cmd_ex},
+  {"source",
+   "Read commands from file.\n"
+     /*TODO*/
+   "Note that the file '.sdbinit' is read automatically in this way when sdb is started",
+   cmd_ex},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -574,12 +587,14 @@ void sdb_mainloop() {
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
+    int ret = 0;
     if (cmd == NULL) goto finally;
 
     /* treat the remaining string as the arguments,
      * which may need further parsing
      */
-    char *args = cmd + strlen(cmd) + 1;
+    int cmdlen = strlen(cmd);
+    char *args = cmd + cmdlen + 1;
     if (args >= str_end) { args = NULL; }
 
 #ifdef CONFIG_DEVICE
@@ -587,17 +602,28 @@ void sdb_mainloop() {
     sdl_clear_event_queue();
 #endif
 
-    int i;
-    for (i = 0; i < NR_CMD; i++) {
-      if (strcmp(cmd, cmd_table[i].name) == 0) {
-        if (cmd_table[i].handler(args) < 0) { return; }
-        break;
+    int found = NR_CMD;
+    for (int i = 0; i < NR_CMD; i++) {
+      if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
+        if (cmd_table[i].name[cmdlen] == '\0') {
+          found = i;
+          break;
+        }
+        if (found == NR_CMD) {
+          found = i;
+        } else {
+          found = -1;
+          goto end_match;
+        }
       }
     }
-
-    if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
+  end_match:
+    if (found == NR_CMD || found == -1 || (ret = cmd_table[found].handler(args)) > 0) {
+      if (rl_gets() == NULL) break;
+    }
   finally:
     free(str);
+    if (ret < 0) break;
   }
 }
 
