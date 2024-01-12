@@ -262,10 +262,10 @@ static struct {
   {"load", "Load the current state", cmd_load},
   {"elf",
    "Manage elf files\n"
-   "elf a FILE [BEGIN [END [FUNCONLY?]]]\n"
-   "Add symbols in FILE to symbol table, with virtual address in range [BEGIN, END).\n"
+   "elf a FILE [BEGIN [END [FUNCONLY]]]\n"
+   "Add symbols in FILE to symbol table. If BEGIN and END are given, only symbols in the range "
+   "[BEGIN, END) are added.\n"
    "FUNCONLY is used to indicate whether to add all symbols or only functions.\n"
-   "[BEGIN, END)\n"
    "elf d -- Clean all symbols(besides those in default file)",
    cmd_elf},
   {"source",
