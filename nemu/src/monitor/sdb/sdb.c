@@ -222,7 +222,7 @@ static struct {
   int (*handler)(char *);
 } cmd_table[] = {
   {"help", "Display informations about all supported commands", cmd_help},
-  {"DEBUG", "Raise signal", cmd_gdb},
+  {"Raise", "Raise signal", cmd_gdb},
   {"c", "Continue the execution of the program", cmd_c},
   {"q", "Exit NEMU", cmd_q},
   {"si",
