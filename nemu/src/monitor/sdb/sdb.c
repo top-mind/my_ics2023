@@ -615,19 +615,15 @@ int match_command(const char *cmd) {
   int ambiguous = 0;
   for (int i = 0; i < NR_CMD; i++) {
     if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
-      if (cmd_table[i].name[cmdlen] == '\0') {
-        found = i;
-        break;
-      }
+      if (cmd_table[i].name[cmdlen] == '\0')
+        return i;
       if (found == NR_CMD) {
         found = i;
       } else {
         ambiguous = 1;
-        goto end_match;
       }
     }
   }
-end_match:
   if (found == NR_CMD || ambiguous) {
     if (ambiguous) {
       printf("Ambiguous command %s: %s", cmd, cmd_table[found].name);
@@ -637,16 +633,6 @@ end_match:
       printf(".\n");
     } else if (found == NR_CMD) {
       printf("Unknown command %s\n", cmd);
-    }
-    // error occurs in script
-    if (getcmd != rl_gets) {
-      for (int i = 0; i < nr_fp; i++) {
-        printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
-        free(filename_scripts[i]);
-        fclose(fp_scripts[i]);
-      }
-      nr_fp = 0;
-      getcmd = rl_gets;
     }
   }
   return ambiguous ? NR_CMD : found;
@@ -663,7 +649,7 @@ void sdb_mainloop() {
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
-    int ret = 0;
+    int ret = 1;
     if (cmd == NULL) goto finally;
 
     /* treat the remaining string as the arguments,
@@ -680,6 +666,18 @@ void sdb_mainloop() {
     int found = match_command(cmd);
     if (found < NR_CMD)
       ret = cmd_table[found].handler(args);
+    if (ret > 0) {
+      // error occurs in script
+      if (getcmd != rl_gets) {
+        for (int i = 0; i < nr_fp; i++) {
+          printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
+          free(filename_scripts[i]);
+          fclose(fp_scripts[i]);
+        }
+        nr_fp = 0;
+        getcmd = rl_gets;
+      }
+    }
   finally:
     free(str);
     if (ret < 0) break;
