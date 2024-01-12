@@ -165,16 +165,16 @@ static int cmd_elfclean(char *args) {
 }
 static int cmd_elf(char *args) {
   if (NOMORE(args)) {
-    printf("elf add|clean\n");
+    printf("elf a\nelf d\n");
     return 0;
   }
   char *args_end = args + strlen(args);
   char *subcmd = strtok(args, " ");
   char *arg = subcmd + strlen(subcmd) + 1;
   if (arg >= args_end) arg = NULL;
-  if (strcmp(subcmd, "add") == 0) {
+  if (strcmp(subcmd, "a") == 0) {
     cmd_elfadd(arg);
-  } else if (strcmp(subcmd, "clean") == 0) {
+  } else if (strcmp(subcmd, "d") == 0) {
     cmd_elfclean(arg);
   } else {
     printf("Unknown subcommand %s, try `elf'.\n", subcmd);
