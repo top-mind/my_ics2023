@@ -585,6 +585,49 @@ static int cmd_load(char *args) {
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
+int match_command(const char *cmd) {
+  int found = NR_CMD;
+  int cmdlen = strlen(cmd);
+  int ambiguous = 0;
+  for (int i = 0; i < NR_CMD; i++) {
+    if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
+      if (cmd_table[i].name[cmdlen] == '\0') {
+        found = i;
+        break;
+      }
+      if (found == NR_CMD) {
+        found = i;
+      } else {
+        ambiguous = 1;
+        goto end_match;
+      }
+    }
+  }
+end_match:
+  if (found == NR_CMD || ambiguous) {
+    if (ambiguous) {
+      printf("Ambiguous command %s: %s", cmd, cmd_table[found].name);
+      for (int i = found + 1; i < NR_CMD; i++) {
+        if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) { printf(", %s", cmd_table[i].name); }
+      }
+      printf(".\n");
+    } else if (found == NR_CMD) {
+      printf("Unknown command %s\n", cmd);
+    }
+    // error occurs in script
+    if (getcmd != rl_gets) {
+      for (int i = 0; i < nr_fp; i++) {
+        printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
+        free(filename_scripts[i]);
+        fclose(fp_scripts[i]);
+      }
+      nr_fp = 0;
+      getcmd = rl_gets;
+    }
+  }
+  return found;
+}
+
 void sdb_mainloop() {
   if (is_batch_mode) {
     cmd_c(NULL);
@@ -602,8 +645,7 @@ void sdb_mainloop() {
     /* treat the remaining string as the arguments,
      * which may need further parsing
      */
-    int cmdlen = strlen(cmd);
-    char *args = cmd + cmdlen + 1;
+    char *args = cmd + strlen(cmd) + 1;
     if (args >= str_end) { args = NULL; }
 
 #ifdef CONFIG_DEVICE
@@ -611,47 +653,9 @@ void sdb_mainloop() {
     sdl_clear_event_queue();
 #endif
 
-    int found = NR_CMD, ambiguous = 0;
-    for (int i = 0; i < NR_CMD; i++) {
-      if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
-        if (cmd_table[i].name[cmdlen] == '\0') {
-          found = i;
-          break;
-        }
-        if (found == NR_CMD) {
-          found = i;
-        } else {
-          ambiguous = 1;
-          goto end_match;
-        }
-      }
-    }
-  end_match:
-    if (found == NR_CMD || ambiguous || (ret = cmd_table[found].handler(args)) > 0) {
-      if (ambiguous) {
-        printf("Ambiguous command %s: %s", cmd, cmd_table[found].name);
-        for (int i = found + 1; i < NR_CMD; i++) {
-          if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) {
-            printf(", %s", cmd_table[i].name);
-          }
-        }
-        printf(".\n");
-      } else if (found == NR_CMD) {
-        printf("Unknown command %s\n", cmd);
-      } else {
-        panic("Command %s return %d, which should always be 0(?)\n", cmd, ret);
-      }
-      // error occurs in script
-      if (getcmd != rl_gets) {
-        for (int i = 0; i < nr_fp; i++) {
-          printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
-          free(filename_scripts[i]);
-          fclose(fp_scripts[i]);
-        }
-        nr_fp = 0;
-        getcmd = rl_gets;
-      }
-    }
+    int found = match_command(cmd);
+    if (found < NR_CMD)
+      ret = cmd_table[found].handler(args);
   finally:
     free(str);
     if (ret < 0) break;
