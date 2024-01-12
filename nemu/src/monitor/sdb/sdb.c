@@ -224,7 +224,8 @@ static struct {
    "Step one instruction exactly.\nUsage: si [N]\n"
    "Argument N means step N times (or till program stops for another reason).",
    cmd_si},
-  {"info",
+  {"info", NULL, cmd_info},
+  {"i",
    "Generic command for showing program and debugger states\n"
    "info r -- List of registers and their contents.\n"
    "info w -- Status all watchpoints\n"
@@ -269,7 +270,6 @@ static struct {
    /*TODO*/
    "Note that the file '.sdbinit' is read automatically in this way when sdb is started",
    cmd_source},
-  {"i", "a", cmd_gdb},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
