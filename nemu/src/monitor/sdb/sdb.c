@@ -673,10 +673,11 @@ void sdb_mainloop() {
       // error occurs in script
       if (getcmd != rl_gets) {
         for (int i = 0; i < nr_fp; i++) {
-          printf("in %s:%d:\n", filename_scripts[i], lineno_scripts[i]);
+          printf("%s:%d\n", filename_scripts[i], lineno_scripts[i]);
           free(filename_scripts[i]);
           fclose(fp_scripts[i]);
         }
+        printf("Script exited with error\n");
         nr_fp = 0;
         getcmd = rl_gets;
       }
