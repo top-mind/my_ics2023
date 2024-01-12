@@ -48,8 +48,7 @@ static char *rl_gets() {
     add_history(line_read);
   } else {
     free(line_read);
-    // line_read = savestring();
-    return NULL;
+    return previous_history()->line;
   }
   return line_read;
 }
