@@ -48,8 +48,8 @@ static char *rl_gets() {
     add_history(line_read);
   } else {
     free(line_read);
-    for (int i = history_base; i < history_length; i++) {
-      char *s = history_get(i)->line;
+    for (int i = 0; i < history_length; i++) {
+      char *s = history_get(i + history_base)->line;
       printf("%p %s\n", s, s == NULL ? "NULL" : s);
     }
     return strdup("");
