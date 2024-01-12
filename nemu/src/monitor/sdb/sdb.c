@@ -227,7 +227,9 @@ static struct {
   {"info",
    "Generic command for showing program and debugger states\n"
    "info r -- List of registers and their contents.\n"
-   "info w -- Status all watchpoints",
+   "info w -- Status all watchpoints\n"
+   "info b -- Status all breakpoints\n"
+   "info h -- History intructions",
    cmd_info},
   {"x",
    "Examine memory: x N EXPR\nEXPR is an expression for the memory address to examine.\n"
@@ -246,8 +248,8 @@ static struct {
    "Arguments are watchpoint numbers with spaces in between.\n"
    "To delete all watchpoints, give no argument.",
    cmd_d},
-  {"backtrace", "Print backtrace of all stack frames", cmd_bt},
-  {"where", "Print backtrace of all stack frames", cmd_bt},
+  {"backtrace", NULL, cmd_bt},
+  {"where", NULL, cmd_bt},
   {"bt", "Print backtrace of all stack frames", cmd_bt},
   {"finish", "Finish current function", cmd_finish},
   {"nf", "Execute untill entering a function", cmd_nf},
@@ -276,6 +278,10 @@ static int cmd_help(char *args) {
   if (NOMORE(args)) {
     // print help info for all commands
     for (int i = 0; i < NR_CMD; i++) {
+      if (cmd_table[i].description == NULL) {
+        printf("%s, ", cmd_table[i].name);
+        continue;
+      }
       int nr_desc = 0;
       const char *strdesc = cmd_table[i].description;
       while (strdesc[nr_desc] && strdesc[nr_desc] != '\n') nr_desc++;
