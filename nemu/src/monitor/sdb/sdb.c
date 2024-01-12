@@ -262,8 +262,8 @@ static struct {
   {"load", "Load the current state", cmd_load},
   {"elf",
    "Manage elf files\n"
-   "elf a -- Load symbols from FILE, FILE must have ELF\n"
-   "elf d -- Clean all symbols",
+   "elf a -- Load symbols from FILE\n"
+   "elf d -- Clean all symbols(besides symbols in default file(s))",
    cmd_elf},
   {"source",
    "Read commands from file.\n"
