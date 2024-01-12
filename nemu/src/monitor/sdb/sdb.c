@@ -629,13 +629,13 @@ int match_command(const char *cmd) {
   }
   if (found == NR_CMD || ambiguous) {
     if (ambiguous) {
-      printf("Ambiguous command %s: %s", cmd, cmd_table[found].name);
+      printf("Ambiguous command '%s': %s", cmd, cmd_table[found].name);
       for (int i = found + 1; i < NR_CMD; i++) {
         if (strncmp(cmd, cmd_table[i].name, cmdlen) == 0) { printf(", %s", cmd_table[i].name); }
       }
       printf(".\n");
     } else if (found == NR_CMD) {
-      printf("Unknown command `%s'\n", cmd);
+      printf("Unknown command '%s'\n", cmd);
     }
   }
   return ambiguous ? NR_CMD : found;
