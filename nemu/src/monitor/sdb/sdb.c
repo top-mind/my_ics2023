@@ -269,6 +269,7 @@ static struct {
    /*TODO*/
    "Note that the file '.sdbinit' is read automatically in this way when sdb is started",
    cmd_source},
+  {"i", "a", cmd_gdb},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
