@@ -270,7 +270,7 @@ static struct {
    "Add symbols in FILE to symbol table. If BEGIN and END are given, only symbols in the range "
    "[BEGIN, END) are added. FUNCONLY is used to indicate whether to add object symbols or only "
    "functions.\n"
-   "elf d -- Clean all symbols(besides those in default file)",
+   "elf d -- Clean all symbols",
    cmd_elf},
   {"source",
    "Read commands from file.\n"
@@ -717,4 +717,9 @@ void init_sdb() {
   init_breakpoints();
   init_sigint();
   MUXDEF(CONFIG_TRACE, trace_init(), );
+  FILE *f = fopen(".sdbinit", "r");
+  if (f != NULL) {
+    fclose(f);
+    cmd_source(".sdbinit");
+  }
 }
