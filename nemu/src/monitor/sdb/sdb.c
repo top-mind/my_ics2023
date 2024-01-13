@@ -441,17 +441,20 @@ static int cmd_x(char *args) {
   for (addr = addr_begin; addr < addr_end; addr += sizeof(word_t)) {
     if (0 == (15 & (addr - addr_begin))) {
       if (addr != addr_begin) putchar('\n');
-      printf(FMT_WORD ":", addr);
+      printf(FMT_WORD , addr);
+      char *name; Elf_Word off;
+      elf_getname_and_offset(addr, &name, &off);
+      if (ELF_OFFSET_VALID(off)) printf(" <%s+%" MUXDEF(ELF64, PRIu64, PRIu32) ">", name, off);
+      printf(":");
     }
     if (unlikely(!in_pmem(addr + sizeof(word_t) - 1) || !in_pmem(addr))) {
       printf("\tInvalid virtual address " FMT_PADDR, addr);
       break;
     }
     // little endian
-    printf("0x");
+    printf("\t0x");
     for (int i = sizeof(word_t) - 1; i >= 0; i--)
       printf("%02x", paddr_read(addr + i, 1));
-    printf("\t");
   }
   putchar('\n');
   return 0;
