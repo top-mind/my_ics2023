@@ -14,6 +14,8 @@
 #include "trace.h"
 #include <isa.h>
 #ifdef CONFIG_LIBDISASM
+/*
+ */
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
   char *p, *buf = p = malloc(nrbuf);
@@ -32,7 +34,7 @@ char *trace_disassemble(Decode *s) {
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, buf + nrbuf - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc),
-              (uint8_t *)&s->isa.inst.val, ilen);
+              inst, ilen);
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
