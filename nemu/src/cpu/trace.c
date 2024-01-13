@@ -14,8 +14,6 @@
 #include "trace.h"
 #include <isa.h>
 #ifdef CONFIG_LIBDISASM
-/*
- */
 char *trace_disassemble(Decode *s) {
   const int nrbuf = 128;
   char *p, *buf = p = malloc(nrbuf);
