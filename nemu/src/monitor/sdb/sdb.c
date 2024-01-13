@@ -448,6 +448,7 @@ static int cmd_x(char *args) {
       break;
     }
     // little endian
+    printf("0x");
     for (int i = sizeof(word_t) - 1; i >= 0; i--)
       printf("%02x", paddr_read(addr + i, 1));
     printf("\t");
