@@ -54,8 +54,11 @@ void do_itrace(Decode *s) {
     free(buf);
   }
 #elif defined(CONFIG_LIBDISASM)
-  if (g_itrace_stdout)
-    printf("%s\n", trace_disassemble(s));
+  if (g_itrace_stdout) {
+    char *trace = trace_disassemble(s);
+    printf("%s\n", trace);
+    free(trace);
+  }
 #endif
 }
 
