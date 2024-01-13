@@ -447,7 +447,7 @@ static int cmd_x(char *args) {
       printf("\tInvalid virtual address " FMT_PADDR, addr);
       break;
     }
-    for (int i = 0; i < sizeof(word_t); i++) {
+    for (int i = sizeof(word_t) - 1; i >= 0; i--) {
       printf("%02x", paddr_read(addr + i, 1));
     }
     printf("\t");
