@@ -203,14 +203,16 @@ static int cmd_source(char *args) {
   return 0;
 }
 
-/* structure for a command
- * name: the command name. A successful match happens when user types a string being a prefix of
- * this name.
- * description: the description of this command. The 'help' command will display this field.
+/* structure for commands
+ * name: the command name. Without ambiguity, users can use prefix of the name to call this command.
+ * description: the description of this command. 'help' command may use this field.
  * int handler(args): the function to handle this command.
  *   args: the arguments passed to this command.
- *   return: a negative value means the main loop should exit.
- *           other values will be ignored.
+ *   return: a negative value if quit
+ *           a positive value if error
+ *           0 if success.
+ * Note: For commands with alternative names, they should be placed in consecutive entries in the
+ * cmd_table. Only the description field of the last entry is set, the rest are NULL.
  */
 static struct {
   const char *name;
@@ -220,6 +222,7 @@ static struct {
   {"help", "Display informations about all supported commands", cmd_help},
   {"Raise", "Raise signal", cmd_Raise},
   {"c", "Continue the execution of the program", cmd_c},
+  {"exit", NULL, cmd_q},
   {"q", "Exit NEMU", cmd_q},
   {"si",
    "Step one instruction exactly.\nUsage: si [N]\n"
@@ -231,7 +234,7 @@ static struct {
    "info r -- List of registers and their contents.\n"
    "info w -- Status all watchpoints\n"
    "info b -- Status all breakpoints\n"
-   "info h -- History intructions",
+   "info h -- List intruction history",
    cmd_info},
   {"x",
    "Examine memory: x N EXPR\nEXPR is an expression for the memory address to examine.\n"
@@ -256,9 +259,9 @@ static struct {
   {"where", NULL, cmd_bt},
   {"bt", "Print backtrace of all stack frames", cmd_bt},
   {"finish", "Finish current function", cmd_finish},
-  {"nf", "Execute untill entering a function", cmd_nf},
-  {"attach", "Enter difftest mode", cmd_attach},
-  {"detach", "Exit difftest mode", cmd_detach},
+  {"nextf", "Execute untill entering a function", cmd_nf},
+  {"attach", "Enable difftest mode", cmd_attach},
+  {"detach", "Disable difftest mode", cmd_detach},
   {"save", "Save the current state", cmd_save},
   {"load", "Load the current state", cmd_load},
   {"elf",
