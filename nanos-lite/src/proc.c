@@ -19,18 +19,19 @@ void hello_fun(void *arg) {
   }
 }
 
-extern char *__mainargs;
+static void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
+  kcontext((Area){pcb, pcb + 1}, entry, arg);
+}
 
 void init_proc() {
-  switch_boot_pcb();
-
   Log("Initializing processes...");
-
-  // load program here
-  void *naive_uload(PCB *pcb, const char *filename);
-  naive_uload(NULL, __mainargs);
+  context_kload(&pcb[0], (void *)hello_fun, (void *)0x12345678);
+  context_kload(&pcb[1], (void *)hello_fun, (void *)0x9abcdef0);
+  switch_boot_pcb();
 }
 
 Context* schedule(Context *prev) {
-  return NULL;
+  current->cp = prev;
+  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  return current->cp;
 }
