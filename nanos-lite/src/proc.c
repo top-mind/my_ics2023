@@ -20,7 +20,7 @@ void hello_fun(void *arg) {
 }
 
 static void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
-  kcontext((Area){pcb, pcb + 1}, entry, arg);
+  pcb->cp = kcontext((Area){pcb, pcb + 1}, entry, arg);
 }
 
 void init_proc() {
