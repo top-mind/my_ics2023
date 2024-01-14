@@ -75,5 +75,5 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   c->GPRx = (uintptr_t) heap.end;
   c->mepc = (uintptr_t) entry;
   c->mstatus = 0x1800;
-  return NULL;
+  return c;
 }
