@@ -19,9 +19,9 @@ Context *__am_irq_handle(Context *c) {
       break;
     }
 
+    c->mepc += 4;
     c = user_handler(ev, c);
     assert(c != NULL);
-    c->mepc += 4;
   }
   return c;
 }
@@ -41,7 +41,7 @@ bool cte_init(Context *(*handler)(Event, Context *)) {
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *c = (Context *)kstack.end - 1;
   c->gpr[2] = (uintptr_t)c;
-  c->mepc = (uintptr_t)entry - 4;
+  c->mepc = (uintptr_t)entry;
   c->mstatus = 0x1800;
   c->GPR2 = (uintptr_t)arg;
   return c;
