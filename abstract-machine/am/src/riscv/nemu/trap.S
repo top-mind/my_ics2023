@@ -53,7 +53,7 @@ __am_asm_trap:
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
-  mv sp, t0
+  mv t0, sp
   addi t0, t0, CONTEXT_SIZE
   STORE t0, OFFSET_SP(sp)
 
