@@ -24,6 +24,10 @@
 #error Unsupported ISA
 #endif
 
+void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
+  pcb->cp = kcontext((Area){pcb, pcb + 1}, entry, arg);
+}
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
