@@ -30,7 +30,6 @@ void init_proc() {
   context_kload(&pcb[0], (void *)hello_fun, (void *)0x12345678);
   // context_kload(&pcb[1], (void *)hello_fun, (void *)0x9abcdef0);
   context_uload(&pcb[1], "/bin/pal");
-  assert(pcb[1].cp != NULL);
   switch_boot_pcb();
 }
 
