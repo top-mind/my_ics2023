@@ -21,7 +21,7 @@ Context *__am_irq_handle(Context *c) {
 
     c = user_handler(ev, c);
     assert(c != NULL);
-    printf("c->mepc = %x\n", c->mepc);
+    printf("c->mepc = %x, c = %p\n", c->mepc, c);
     c->mepc += 4;
   }
   return c;
