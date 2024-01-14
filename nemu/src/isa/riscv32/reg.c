@@ -111,6 +111,9 @@ word_t *isa_reg_str2ptr(const char *s) {
   for (int i = 0; i < NR_REG; i++) {
     if (strcmp(s, regs[i]) == 0) { return &cpu.gpr[i]; }
   }
+  for (int i = 0; i < NR_PC_CSR; i++) {
+    if (strcmp(s, pc_csrs[i]) == 0) { return &PC_CSR(i); }
+  }
   if (strcmp(s, "pc") == 0) {
     return &cpu.pc;
   } else if (strcmp(s, "ps") == 0 || strcmp(s, "mstatus") == 0) {
