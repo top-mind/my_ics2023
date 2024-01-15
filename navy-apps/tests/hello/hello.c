@@ -6,7 +6,9 @@
 
 void * b;
 
-int main() {
+int main(int argc, char *argv[]) {
+  printf("%d\n", argc);
+  return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
