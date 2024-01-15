@@ -7,7 +7,7 @@
 void * b;
 
 int main(int argc, char *argv[]) {
-  printf("%d\n", argc);
+  printf("%d %p\n", argc, argv);
   return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
