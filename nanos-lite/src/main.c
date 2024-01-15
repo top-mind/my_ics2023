@@ -30,6 +30,9 @@ int main(char *mainargs) {
   void *new_page(size_t);
   void *p = new_page(1);
   printf("%p\n", p);
+  for (int i = 0; i < 10; i++) {
+    printf("page(i): %p\n", new_page(i));
+  }
   return 0;
 
   init_proc();
