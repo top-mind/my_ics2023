@@ -27,6 +27,10 @@ int main(char *mainargs) {
 #endif
 
   init_fs();
+  void *new_page(size_t);
+  void *p = new_page(1);
+  printf("p\n", p);
+  return 0;
 
   init_proc();
 

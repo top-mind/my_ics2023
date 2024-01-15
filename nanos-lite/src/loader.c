@@ -62,7 +62,11 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
-void context_uload(PCB *pcb, const char *filename) {
+#define NR_PAGE 8
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   uintptr_t entry = loader(pcb, filename);
+
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
+  void *ustack_top = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
+  pcb->cp->GPRx = (uintptr_t)ustack_top;
 }
