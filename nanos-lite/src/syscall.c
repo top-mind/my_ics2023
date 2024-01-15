@@ -2,6 +2,7 @@
 #include <fs.h>
 #include "sys/errno.h"
 #include "syscall.h"
+#include <stdlib.h>
 #include <sys/time.h>
 
 void do_syscall(Context *c) {
@@ -10,9 +11,7 @@ void do_syscall(Context *c) {
 
   switch (a[0]) {
     case SYS_exit: {
-      void *naive_uload(void *pcb, const char *filename);
-      Log("Halt system with exit code = %d", a[1]);
-      naive_uload(NULL, "/bin/menu");
+      while (1);
       break;
     }
     case SYS_yield:
