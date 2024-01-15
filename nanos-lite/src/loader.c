@@ -1,6 +1,7 @@
 #include <proc.h>
 #include <elf.h>
 #include <fs.h>
+#include <stdint.h>
 
 #ifdef __LP64__
 # define Elf_Ehdr Elf64_Ehdr
@@ -28,14 +29,20 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
   pcb->cp = kcontext((Area){pcb, pcb + 1}, entry, arg);
 }
 
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
+#define fail_ifnot(cond) \
+  if (!(cond)) { \
+    return 0; \
+  }
+  fail_ifnot(fd >= 0);
   fs_read(fd, &ehdr, sizeof ehdr);
-  assert(memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0);
-  assert(ehdr.e_type == ET_EXEC);
-  assert(ehdr.e_machine == EXPECT_VALUE);
-  assert(ehdr.e_version == EV_CURRENT);
+  fail_ifnot(memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0);
+  fail_ifnot(ehdr.e_type == ET_EXEC);
+  fail_ifnot(ehdr.e_machine == EXPECT_VALUE);
+  fail_ifnot(ehdr.e_version == EV_CURRENT);
   uint32_t nr_ph = ehdr.e_phnum;
   if (nr_ph == PN_XNUM) {
     Elf_Shdr shdr;
@@ -65,6 +72,11 @@ void naive_uload(PCB *pcb, const char *filename) {
 #define NR_PAGE 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   uintptr_t entry = loader(pcb, filename);
+  if (!entry) {
+    pcb->cp = NULL;
+    Log("Failed to load %s", filename);
+    return;
+  }
   int argc, envc;
   void *sp;
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
@@ -79,16 +91,16 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     sp -= strlen(argv[i]) + 1;
     strcpy(sp, argv[i]);
   }
-  char **p = (char **)ROUNDDOWN(
+  uintptr_t *p = (uintptr_t *)ROUNDDOWN(
       sp - sizeof(void *) * (1 + argc + 1 + envc + 1), sizeof(void *));
-  p[0] = (void *)argc;
+  p[0] = (uintptr_t)argc;
   for (int i = 0; i < argc; i++) {
-    p[i + 1] = sp;
+    p[i + 1] = (uintptr_t)sp;
     sp += strlen(argv[i]) + 1;
   }
   p[argc + 1] = 0;
   for (int i = 0; i < envc; i++) {
-    p[argc + 2 + i] = sp;
+    p[argc + 2 + i] = (uintptr_t)sp;
     sp += strlen(envp[i]) + 1;
   }
   p[argc + 2 + envc] = 0;

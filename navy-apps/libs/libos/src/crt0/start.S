@@ -5,6 +5,8 @@ _start:
 #if defined(__ISA_AM_NATIVE__)
 
   movq $0, %rbp
+  movq %rax, %rsp
+  // movq %rsp, %rdi
   // (rsp + 8) should be multiple of 16 when
   // control is transfered to the function entry point.
   // See amd64 ABI manual for more details

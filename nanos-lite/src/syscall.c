@@ -4,6 +4,7 @@
 #include "syscall.h"
 #include <stdlib.h>
 #include <sys/time.h>
+#include <proc.h>
 
 void do_syscall(Context *c) {
   uintptr_t a[4]; a[0] = c->GPR1; a[1] = c->GPR2; a[2] = c->GPR3;
@@ -11,7 +12,10 @@ void do_syscall(Context *c) {
 
   switch (a[0]) {
     case SYS_exit: {
-      while (1);
+      context_uload(current, "/bin/menu", (char *const[]){"/bin/menu", NULL}, (char *[]){NULL});
+      switch_boot_pcb();
+      yield();
+      assert(0);
       break;
     }
     case SYS_yield:
@@ -45,17 +49,17 @@ void do_syscall(Context *c) {
       }
       c->GPRx = 0;
       break;
-    case SYS_execve: {
-      void *naive_uload(void * pcb, const char *filename);
-      int fd = fs_open((char *)a[1], 0, 0);
-      if (fd < 0) {
-        c->GPRx = -ENOEXEC;
-        break;
+    case SYS_execve:
+      // TODO free page first
+      context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
+      if (current->cp == NULL) {
+        c->GPRx = -EACCES;
+      } else {
+        switch_boot_pcb();
+        yield();
+        assert(0);
       }
-      naive_uload(NULL, (char *)a[1]);
-      c->GPRx = -EACCES;
       break;
-    }
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
