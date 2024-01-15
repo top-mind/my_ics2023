@@ -6,8 +6,8 @@
 
 void * b;
 
-int main(int argc, char *argv[]) {
-  printf("%d %s %s\n", argc, argv[0], argv[1]);
+int main(int argc, char *argv[], char *envp[]) {
+  printf("%d %s %s\n", argc, argv[0], argv[1], envp[0]);
   while (1);
   return 0;
   write(1, "Hello World!\n", 13);
