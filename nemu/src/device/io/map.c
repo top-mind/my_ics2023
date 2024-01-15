@@ -63,6 +63,7 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   assert(len >= 1 && len <= 8);
   if (check_bound(map, addr)) {
     out_of_bound(addr);
+    return;
   }
   paddr_t offset = addr - map->low;
   host_write(map->space + offset, len, data);
