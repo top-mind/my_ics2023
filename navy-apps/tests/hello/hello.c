@@ -7,7 +7,14 @@
 void * b;
 
 int main(int argc, char *argv[], char *envp[]) {
-  printf("%d %s %s %s\n", argc, argv[0], argv[1], envp[0]);
+  printf("%d\n", argc);
+  for (int i = 0; i < argc; i++) {
+    printf("arg%d: '%s'\n", i, argv[i]);
+  }
+  while (*envp) {
+    printf("%s\n", *envp);
+    envp ++;
+  }
   while (1);
   return 0;
   write(1, "Hello World!\n", 13);
