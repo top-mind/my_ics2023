@@ -69,15 +69,15 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   void *sp;
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
   sp = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-  for (argc = 0; argv[argc]; argc++);
-  for (int i = argc - 1; i >= 0; i--) {
-    sp -= strlen(argv[i]) + 1;
-    strcpy(sp, argv[i]);
-  }
   for (envc = 0; envp[envc]; envc++);
   for (int i = envc - 1; i >= 0; i--) {
     sp -= strlen(envp[i]) + 1;
     strcpy(sp, envp[i]);
+  }
+  for (argc = 0; argv[argc]; argc++);
+  for (int i = argc - 1; i >= 0; i--) {
+    sp -= strlen(argv[i]) + 1;
+    strcpy(sp, argv[i]);
   }
   char **p = (char **)ROUNDDOWN(
       sp - sizeof(void *) * (1 + argc + 1 + envc + 1), sizeof(void *));
