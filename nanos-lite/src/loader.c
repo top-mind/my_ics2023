@@ -65,28 +65,28 @@ void naive_uload(PCB *pcb, const char *filename) {
 #define NR_PAGE 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   uintptr_t entry = loader(pcb, filename);
-  int argc, envc;
+  // int argc, envc;
   void *usp;
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
   usp = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-  for (argc = 0; argv[argc]; argc++) {
-    usp -= strlen(argv[argc]) + 1;
-    strcpy(usp, argv[argc]);
-  }
-  for (envc = 0; envp[envc]; envc++) {
-    usp -= strlen(envp[envc]) + 1;
-    strcpy(usp, envp[envc]);
-  }
-  usp = (void *)ROUNDDOWN(usp, sizeof(void *));
-  for (int i = envc; i >= 0; i--) {
-    usp -= sizeof(char *);
-    *(char **)usp = envp[i];
-  }
-  for (int i = argc; i >= 0; i--) {
-    usp -= sizeof(char *);
-    *(char **)usp = argv[i];
-  }
-  usp -= sizeof(uintptr_t);
-  *(uintptr_t *)usp = argc;
+  // for (argc = 0; argv[argc]; argc++) {
+  //   usp -= strlen(argv[argc]) + 1;
+  //   strcpy(usp, argv[argc]);
+  // }
+  // for (envc = 0; envp[envc]; envc++) {
+  //   usp -= strlen(envp[envc]) + 1;
+  //   strcpy(usp, envp[envc]);
+  // }
+  // usp = (void *)ROUNDDOWN(usp, sizeof(void *));
+  // for (int i = envc; i >= 0; i--) {
+  //   usp -= sizeof(char *);
+  //   *(char **)usp = envp[i];
+  // }
+  // for (int i = argc; i >= 0; i--) {
+  //   usp -= sizeof(char *);
+  //   *(char **)usp = argv[i];
+  // }
+  // usp -= sizeof(uintptr_t);
+  // *(uintptr_t *)usp = argc;
   pcb->cp->GPRx = (uintptr_t)usp;
 }
