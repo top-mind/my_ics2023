@@ -94,7 +94,7 @@ static int parse_args(int argc, char *argv[]) {
    *
    * optind 变量指示下一个被处理的参数在 argv 中的下标, 初始为 1.
    *
-   * 若有，getopt 返回下一个选项，更新 optind 和静态链接变量 nextchar。下一次调用
+   * 若有，getopt 返回下一个选项，更新 optind 和 内部变量 nextchar。下一次调用
    * 可以恢复扫描后续的选项或argv参数。(译者注：当 optind 在两次调用之间被改变时，
    * nextchar 失去作用)
    *

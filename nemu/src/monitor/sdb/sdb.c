@@ -531,9 +531,10 @@ static int cmd_save(char *args) {
     return 1;
   }
   uLongf dst_len = compressBound(CONFIG_MSIZE);
-  void *dst = malloc(dst_len);
-  assert(dst != NULL);
+  void *dst = xmalloc(dst_len);
   if (compress2(dst, &dst_len, guest_to_host(CONFIG_MBASE), CONFIG_MSIZE, Z_BEST_COMPRESSION)) {
+    free(dst);
+    fclose(fp);
     printf("save: failed to compress memory\n");
     return 1;
   }
