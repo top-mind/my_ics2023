@@ -7,11 +7,6 @@
 void * b;
 
 int main(int argc, char *argv[], char *envp[]) {
-  printf("a=%s\n", getenv("a"));
-  printf("b=%s\n", getenv("b"));
-  printf("PATH=%s\n", getenv("PATH"));
-  while (1);
-  return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
