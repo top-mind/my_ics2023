@@ -52,7 +52,8 @@ void do_syscall(Context *c) {
     case SYS_execve:
       context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
       if (current->cp == NULL) {
-        c->GPRx = -ENOENT;
+        extern int nanos_errno;
+        c->GPRx = -nanos_errno;
       } else {
         // TODO free page
         switch_boot_pcb();

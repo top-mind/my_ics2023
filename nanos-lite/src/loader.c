@@ -1,3 +1,4 @@
+#include <sys/errno.h>
 #include <proc.h>
 #include <elf.h>
 #include <fs.h>
@@ -28,21 +29,23 @@
 void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
   pcb->cp = kcontext((Area){pcb, pcb + 1}, entry, arg);
 }
-
+int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
-#define fail_ifnot(cond) \
-  if (!(cond)) { \
-    return 0; \
+  if(fd < 0) {
+    nanos_errno = ENOENT;
+    return 0;
   }
-  fail_ifnot(fd >= 0);
   fs_read(fd, &ehdr, sizeof ehdr);
-  fail_ifnot(memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0);
-  fail_ifnot(ehdr.e_type == ET_EXEC);
-  fail_ifnot(ehdr.e_machine == EXPECT_VALUE);
-  fail_ifnot(ehdr.e_version == EV_CURRENT);
+  if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0
+      || ehdr.e_type != ET_EXEC
+      || ehdr.e_machine != EXPECT_VALUE
+      || ehdr.e_version != EV_CURRENT) {
+    nanos_errno = ENOEXEC;
+    return 0;
+  }
   uint32_t nr_ph = ehdr.e_phnum;
   if (nr_ph == PN_XNUM) {
     Elf_Shdr shdr;
@@ -103,7 +106,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     void free_page(void *);
     free_page(page);
     pcb->cp = NULL;
-    Log("Failed to load %s", filename);
     return;
   }
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
