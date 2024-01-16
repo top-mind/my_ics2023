@@ -227,7 +227,9 @@ static int decode_exec(Decode *s) {
           cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
-
+  if (nemu_state.state == NEMU_ABORT) {
+    printf("Abort at pc = 0x%08x\n", s->pc);
+  }
   R(0) = 0; // reset $zero to 0
   cpu.mstatus &= MSTATUS_MASK; // reset WARL bits
 
