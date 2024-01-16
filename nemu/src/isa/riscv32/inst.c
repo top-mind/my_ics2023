@@ -64,15 +64,13 @@ enum {
   } while (0)
 #define csr()                                 \
   do {                                        \
-    bool flag = 0;                            \
     switch (BITS(i, 31, 20)) {                \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
       case 0x341: *csr = &cpu.mepc; break;    \
       case 0x342: *csr = &cpu.mcause; break;  \
-      default: INV(s->pc); flag = 1;          \
+      default: INV(s->pc); *csr = &R(0);          \
     }                                         \
-    if (!flag) R(*rd) = **csr;                \
   } while (0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, word_t **csr,
