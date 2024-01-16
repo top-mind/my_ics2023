@@ -227,6 +227,7 @@ static int decode_exec(Decode *s) {
           cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
   // INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INV(s->pc);
+  while (1);
   INSTPAT_END();
   R(0) = 0; // reset $zero to 0
   cpu.mstatus &= MSTATUS_MASK; // reset WARL bits
