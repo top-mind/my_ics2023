@@ -37,7 +37,7 @@ static void sh_handle_cmd(const char *cmd) {
     exit(0);
   }
   setenv("PATH", "/bin", 0);
-  const int max_argc = 5;
+  const int max_argc = 16;
   char *argv[max_argc];
   argv[0] = tmp;
   int i;
