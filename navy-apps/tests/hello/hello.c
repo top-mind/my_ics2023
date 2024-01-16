@@ -6,7 +6,7 @@
 
 void * b;
 
-char *exe_argv[] = {"/bin/pal", "--skip", NULL};
+char *exe_argv[] = {NULL};
 
 int main(int argc, char *argv[], char *envp[]) {
   printf("Hello World!\n");
