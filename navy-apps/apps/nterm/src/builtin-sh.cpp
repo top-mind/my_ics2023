@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <SDL.h>
 #include <string.h>
-#include <errono.h>
+#include <errno.h>
 
 char handle_key(SDL_Event *ev);
 
