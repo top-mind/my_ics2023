@@ -28,15 +28,8 @@ static void sh_handle_cmd(const char *cmd) {
   char * tmp = strdup(cmd);
   tmp = strtok(tmp, " \n");
   if (tmp == NULL) return;
-  if (strcmp(tmp, "echo") == 0) {
-    char *args = strtok(NULL, "");
-    if (args != NULL) {
-      args += strspn(args, " ");
-      term->write(args, strlen(args));
-    }
-  } else if (strcmp(tmp, "exit") == 0) {
+  if (strcmp(tmp, "exit") == 0)
     exit(0);
-  }
   setenv("PATH", "/bin:/usr/bin", 0);
   const int max_argc = 16;
   char *argv[max_argc];
@@ -51,7 +44,7 @@ static void sh_handle_cmd(const char *cmd) {
     return;
   }
   execvp(tmp, argv);
-  perror("execvp fail");
+  sh_printf("%s: %s\n", tmp, strerror(errno));
 }
 
 void builtin_sh_run() {
