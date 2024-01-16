@@ -72,6 +72,7 @@ void naive_uload(PCB *pcb, const char *filename) {
 
 #define NR_PAGE 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  uintptr_t entry = loader(pcb, filename);
   int argc, envc;
   void *sp;
   sp = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
@@ -99,7 +100,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   }
   p[argc + 2 + envc] = 0;
   // loader may destroy pcb, must be called last
-  uintptr_t entry = loader(pcb, filename);
   if (!entry) {
     pcb->cp = NULL;
     Log("Failed to load %s", filename);
