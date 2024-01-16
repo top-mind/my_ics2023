@@ -226,10 +226,10 @@ static int decode_exec(Decode *s) {
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = cpu.mepc,
           cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
-  INSTPAT_END();
   if (nemu_state.state == NEMU_ABORT) {
     while (1);
   }
+  INSTPAT_END();
   R(0) = 0; // reset $zero to 0
   cpu.mstatus &= MSTATUS_MASK; // reset WARL bits
 
