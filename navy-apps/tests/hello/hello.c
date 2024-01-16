@@ -10,7 +10,10 @@ char *exe_argv[] = {NULL};
 
 int main(int argc, char *argv[], char *envp[]) {
   printf("Hello World!\n");
-  execve("/bin/nterm", exe_argv, envp);
+  printf("argc = %d\n", argc);
+  for (int i = 0; i < argc; i ++) {
+    printf("argv[%d] = %s\n", i, argv[i]);
+  }
   return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
