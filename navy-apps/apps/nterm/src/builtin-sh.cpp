@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <SDL.h>
 #include <string.h>
+#include <errono.h>
 
 char handle_key(SDL_Event *ev);
 
@@ -50,6 +51,7 @@ static void sh_handle_cmd(const char *cmd) {
     return;
   }
   execvp(tmp, argv);
+  perror("execvp fail");
 }
 
 void builtin_sh_run() {
