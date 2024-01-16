@@ -10,7 +10,7 @@ char *exe_argv[] = {"/bin/pal", "--skip", NULL};
 
 int main(int argc, char *argv[], char *envp[]) {
   printf("Hello World!\n");
-  execve("/bin/pal", exe_argv, envp);
+  execve("/bin/nterm", exe_argv, envp);
   return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
