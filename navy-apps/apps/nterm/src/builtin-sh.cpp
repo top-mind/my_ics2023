@@ -37,7 +37,7 @@ static void sh_handle_cmd(const char *cmd) {
     exit(0);
   }
   setenv("PATH", "/bin", 0);
-  execvp(tmp, NULL);
+  execvp(tmp, (char *[]{"a", "--skip", NULL})});
 }
 
 void builtin_sh_run() {
