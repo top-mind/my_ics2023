@@ -164,6 +164,7 @@ clock_t _times(void *buf) {
 }
 
 int pipe(int pipefd[2]) {
+  while (1);
   assert(0);
   return -1;
 }
