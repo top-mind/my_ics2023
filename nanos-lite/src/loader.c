@@ -58,7 +58,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       fs_lseek(fd, phdr.p_offset, SEEK_SET);
       fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
       memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
-      printf("load: 0x%08x-0x%08x\n", phdr.p_vaddr, phdr.p_vaddr + phdr.p_memsz);
     }
   }
   return ehdr.e_entry;

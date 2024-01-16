@@ -50,7 +50,6 @@ void do_syscall(Context *c) {
       c->GPRx = 0;
       break;
     case SYS_execve:
-      printf("execve: '%s'\n", (char *) a[1]);
       context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
       if (current->cp == NULL) {
         c->GPRx = -EACCES;
