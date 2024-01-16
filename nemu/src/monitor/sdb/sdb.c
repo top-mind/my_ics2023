@@ -53,12 +53,11 @@ static char *rl_gets() {
     }
   }
   if (is_spaces) {
-    if (line_read) {
-      free(line_read);
+    free(line_read);
+    if (history_length > 0)
       return strdup(history_get(history_length)->line);
-    } else {
+    else
       return rl_gets();
-    }
   } else {
     add_history(line_read);
   }
