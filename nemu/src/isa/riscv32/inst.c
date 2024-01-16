@@ -69,8 +69,9 @@ enum {
       case 0x305: *csr = &cpu.mtvec; break;   \
       case 0x341: *csr = &cpu.mepc; break;    \
       case 0x342: *csr = &cpu.mcause; break;  \
-      default: INV(s->pc); *csr = &R(0);          \
+      default: INV(s->pc); *csr = &R(0);      \
     }                                         \
+    R(*rd) = **csr;                           \
   } while (0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, word_t **csr,
