@@ -34,13 +34,17 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
   return -1;
 }
 
+size_t stdin_read(void *buf, size_t offset, size_t len) {
+  return 0;
+}
+
 /* This is the information about all files in disk.
  * Special read/write helpers:
  *   invalid_read, invalid_write: the device is not readable or writable.
  *   NULL, fs_read will call seekable_read, so as write.
  */
 static Finfo file_table[] __attribute__((used)) = {
-    [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
+    [FD_STDIN] = {"stdin", 0, 0, stdin_read, invalid_write},
     [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
     [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
     [FD_FB] = {"/dev/fb", 0, 0, invalid_read, NULL},

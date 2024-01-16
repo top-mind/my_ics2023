@@ -12,7 +12,7 @@ void do_syscall(Context *c) {
 
   switch (a[0]) {
     case SYS_exit: {
-      context_uload(current, "/bin/menu", (char *const[]){"/bin/menu", NULL}, (char *[]){NULL});
+      context_uload(current, "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *[]){NULL});
       switch_boot_pcb();
       yield();
       assert(0);
@@ -52,7 +52,7 @@ void do_syscall(Context *c) {
     case SYS_execve:
       context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
       if (current->cp == NULL) {
-        c->GPRx = -EACCES;
+        c->GPRx = -ENOENT;
       } else {
         // TODO free page
         switch_boot_pcb();

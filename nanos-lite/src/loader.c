@@ -72,8 +72,8 @@ void naive_uload(PCB *pcb, const char *filename) {
 #define NR_PAGE 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   int argc, envc;
-  void *sp;
-  sp = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
+  void *page = new_page(NR_PAGE);
+  void *sp = page + NR_PAGE * PGSIZE;
   for (envc = 0; envp[envc]; envc++);
   for (int i = envc - 1; i >= 0; i--) {
     sp -= strlen(envp[i]) + 1;
@@ -100,6 +100,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // loader may destroy pcb, must be called last
   uintptr_t entry = loader(pcb, filename);
   if (!entry) {
+    void free_page(void *);
+    free_page(page);
     pcb->cp = NULL;
     Log("Failed to load %s", filename);
     return;
