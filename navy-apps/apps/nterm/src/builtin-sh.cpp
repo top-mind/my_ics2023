@@ -37,7 +37,18 @@ static void sh_handle_cmd(const char *cmd) {
     exit(0);
   }
   setenv("PATH", "/bin", 0);
-  char *argv[] = {tmp, strtok(NULL, "\n"), NULL};
+  const int max_argc = 5;
+  char *argv[max_argc];
+  argv[0] = tmp;
+  int i;
+  for (i = 1; i < max_argc; i++) {
+    argv[i] = strtok(NULL, " \n");
+    if (argv[i] == NULL) break;
+  }
+  if (i == max_argc) {
+    term->write("Too many arguments\n", 19);
+    return;
+  }
   execvp(tmp, argv);
 }
 
