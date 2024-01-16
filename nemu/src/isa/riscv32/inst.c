@@ -64,14 +64,15 @@ enum {
   } while (0)
 #define csr()                                 \
   do {                                        \
+    bool flag = 0;                            \
     switch (BITS(i, 31, 20)) {                \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
       case 0x341: *csr = &cpu.mepc; break;    \
       case 0x342: *csr = &cpu.mcause; break;  \
-      default: INV(s->pc);                    \
+      default: INV(s->pc); flag = 1;          \
     }                                         \
-    R(*rd) = **csr;                           \
+    if (!flag) R(*rd) = **csr;                \
   } while (0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, word_t **csr,
@@ -225,10 +226,9 @@ static int decode_exec(Decode *s) {
   // The exact behaviour is MPP = PREV_LOW, MIE = MPIE, MPIE = 1
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = cpu.mepc,
           cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
-  // INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
-  INV(s->pc);
-  while (1);
+  INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
+
   R(0) = 0; // reset $zero to 0
   cpu.mstatus &= MSTATUS_MASK; // reset WARL bits
 
