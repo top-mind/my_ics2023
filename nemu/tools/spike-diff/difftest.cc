@@ -114,7 +114,7 @@ __EXPORT void difftest_init(int port) {
   cfg_t cfg(/*default_initrd_bounds=*/std::make_pair((reg_t)0, (reg_t)0),
             /*default_bootargs=*/nullptr,
             /*default_isa=*/isa,
-            /*default_priv=*/"M",
+            /*default_priv=*/"MSU",
             /*default_varch=*/DEFAULT_VARCH,
             /*default_misaligned=*/false,
             /*default_endianness*/endianness_little,
