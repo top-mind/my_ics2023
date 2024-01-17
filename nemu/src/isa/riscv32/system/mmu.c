@@ -19,6 +19,9 @@
 #include <memory/paddr.h>
 
 int isa_mmu_check(vaddr_t vaddr, int len, int type) {
+  if (cpu.mode) {
+    assert(0);
+  }
   return cpu.mode ? MMU_TRANSLATE : MMU_DIRECT;
 }
 
