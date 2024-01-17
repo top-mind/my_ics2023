@@ -22,10 +22,11 @@ static word_t vaddr_read_r(vaddr_t addr, int len, int type) {
   if (isa_mmu_check(addr, len, type) == MMU_TRANSLATE) {
     paddr_t res = isa_mmu_translate(addr, len, type);
     if ((res & PAGE_MASK) == MEM_RET_OK) {
-      return paddr_read(BITS(res, 31, 12) + (addr & PAGE_MASK), len);
+      paddr_t pa = (res & ~PAGE_MASK) | (addr & PAGE_MASK);
+      return paddr_read(pa, len);
     }
-    panic("vaddr_read_r: error vaddr = " FMT_WORD ", len=%d, type=%d, pga = " FMT_WORD "\n", addr,
-          len, type, res);
+    panic("vaddr_read: error vaddr = " FMT_WORD ", len=%d, mmu retrun " FMT_WORD "\n", addr, len,
+          res);
   }
   return paddr_read(addr, len);
 }
@@ -38,10 +39,11 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
   if (isa_mmu_check(addr, len, MEM_TYPE_WRITE) == MMU_TRANSLATE) {
     paddr_t res = isa_mmu_translate(addr, len, MEM_TYPE_WRITE);
     if ((res & PAGE_MASK) == MEM_RET_OK) {
-      paddr_write(BITS(res, 31, 12) + (addr & PAGE_MASK), len, data);
+      paddr_t pa = (res & ~PAGE_MASK) | (addr & PAGE_MASK);
+      paddr_write(pa, len, data);
     } else {
-      panic("vaddr_write: error vaddr = " FMT_WORD ", len=%d, data=" FMT_WORD ", pga = " FMT_WORD
-            "\n",
+      panic("vaddr_write: error vaddr = " FMT_WORD ", len=%d, data=" FMT_WORD
+            ", mmu retrun " FMT_WORD "\n",
             addr, len, data, res);
       set_nemu_state(NEMU_ABORT, cpu.pc, ABORT_MEMIO);
     }
