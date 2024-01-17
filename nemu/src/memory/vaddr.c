@@ -25,8 +25,8 @@ static word_t vaddr_read_r(vaddr_t addr, int len, int type) {
       paddr_t pa = (res & ~PAGE_MASK) | (addr & PAGE_MASK);
       return paddr_read(pa, len);
     }
-    panic("vaddr_read: error vaddr = " FMT_WORD ", len=%d, mmu retrun " FMT_WORD "\n", addr, len,
-          res);
+    panic("vaddr_read: error vaddr = " FMT_WORD ", len=%d, type = %d, mmu retrun " FMT_WORD "\n",
+          addr, len, type, res);
   }
   return paddr_read(addr, len);
 }
