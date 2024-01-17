@@ -73,6 +73,9 @@ void __am_switch(Context *c) {
 // prot is ignored
 // DAguXWR
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  if (!(va >= as->area.start && va < as->area.end)) {
+    printf("va = %p, area = [%p, %p)\n", va, as->area.start, as->area.end);
+  }
   assert(va >= as->area.start && va < as->area.end);
   PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
   PTE *p = as->ptr + ((uintptr_t)pa >> 22);
