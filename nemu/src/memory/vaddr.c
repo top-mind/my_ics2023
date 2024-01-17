@@ -14,10 +14,36 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <memory/vaddr.h>
 #include <memory/paddr.h>
+#include <cpu/cpu.h>
 
-word_t vaddr_ifetch(vaddr_t addr, int len) { return paddr_read(addr, len); }
+static word_t vaddr_read_r(vaddr_t addr, int len, int type) {
+  if (isa_mmu_check(addr, len, type) == MMU_TRANSLATE) {
+    paddr_t pga = isa_mmu_translate(addr, len, type);
+    if ((pga & PAGE_MASK) == MEM_RET_OK) { return paddr_read(pga + (addr & PAGE_MASK), len); }
+    panic("vaddr_read_r: error vaddr = " FMT_WORD ", len=%d, type=%d, pga = " FMT_WORD "\n", addr,
+          len, type, pga);
+  }
+  return paddr_read(addr, len);
+}
 
-word_t vaddr_read(vaddr_t addr, int len) { return paddr_read(addr, len); }
+word_t vaddr_ifetch(vaddr_t addr, int len) { return vaddr_read_r(addr, len, MEM_TYPE_IFETCH); }
 
-void vaddr_write(vaddr_t addr, int len, word_t data) { paddr_write(addr, len, data); }
+word_t vaddr_read(vaddr_t addr, int len) { return vaddr_read_r(addr, len, MEM_TYPE_READ); }
+
+void vaddr_write(vaddr_t addr, int len, word_t data) {
+  if (isa_mmu_check(addr, len, MEM_TYPE_WRITE) == MMU_TRANSLATE) {
+    paddr_t pga = isa_mmu_translate(addr, len, MEM_TYPE_WRITE);
+    if ((pga & PAGE_MASK) == MEM_RET_OK) {
+      paddr_write(pga + (addr & PAGE_MASK), len, data);
+    } else {
+      panic("vaddr_write: error vaddr = " FMT_WORD ", len=%d, data=" FMT_WORD ", pga = " FMT_WORD
+            "\n",
+            addr, len, data, pga);
+      set_nemu_state(NEMU_ABORT, cpu.pc, ABORT_MEMIO);
+    }
+  } else {
+    paddr_write(addr, len, data);
+  }
+}

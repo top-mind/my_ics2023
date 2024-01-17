@@ -65,6 +65,7 @@ enum {
 #define csr()                                 \
   do {                                        \
     switch (BITS(i, 31, 20)) {                \
+      case 0x180: *csr = &cpu.satp; break; \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
       case 0x341: *csr = &cpu.mepc; break;    \
@@ -256,8 +257,8 @@ void isa_ras_update(Decode *s) {
   INSTPAT("??????? ????? 00?01 000 ????? 11001 11", POP);
   // ecall
   INSTPAT("0000000 00000 00000 000 00000 11100 11", PUSH, ftrace_push(0xeca11, s->dnpc));
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", POP, POP);
   // mret
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", POP, POP);
   INSTPAT_END(ras);
 }
 #endif

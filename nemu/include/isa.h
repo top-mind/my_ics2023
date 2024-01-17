@@ -47,6 +47,15 @@ enum { MEM_RET_OK, MEM_RET_FAIL, MEM_RET_CROSS_PAGE };
 #ifndef isa_mmu_check
 int isa_mmu_check(vaddr_t vaddr, int len, int type);
 #endif
+/*
+ * translate virtual memory access in range [vaddr, vaddr + len)
+ * type can be one of MEM_TYPE_IFETCH, MEM_TYPE_READ, MEM_TYPE_WRITE
+ * return value:
+ * pg_paddr | MEM_RET_OK: traslation succeeded, pg_paddr is the physical page address (not the
+ * pyhsical address of vaddr)
+ * MEM_RET_FAIL: 地址转换失败, 原因包括权限检查失败等不可恢复的原因, 一般需要抛出异常
+ * MEM_RET_CROSS_PAGE: 地址转换失败, 原因为访存请求跨越了页面的边界
+ */
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type);
 
 // interrupt/exception
@@ -63,3 +72,4 @@ void isa_ras_update(struct Decode *s);
 #endif
 
 #endif
+// vim: fenc=utf-8
