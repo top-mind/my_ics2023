@@ -62,7 +62,7 @@ step2:
     if (i < 0) {
       return MEM_RET_FAIL;
     }
-    a = BITS(pte.val, 31, 12) * PAGE_SIZE;
+    a = BITS(pte.val, 31, 10) * PAGE_SIZE;
     goto step2;
   }
 step5:

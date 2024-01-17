@@ -66,7 +66,29 @@ void __am_switch(Context *c) {
   }
 }
 
+#define PAGE_SHIFT 12
+#define PAGE_SIZE  (1ul << PAGE_SHIFT)
+#define PAGE_MASK  (PAGE_SIZE - 1)
+
+// prot is ignored
+// DAguXWR
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  assert(va >= as->area.start && va < as->area.end);
+  PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
+  PTE *p = as->ptr + ((uintptr_t)pa >> 22);
+#ifndef __LP64__
+  PTE *pdir;
+  if (!(*p & PTE_V)) {
+    pdir = (PTE *)pgalloc_usr(PGSIZE);
+    *p = ((uintptr_t)pdir >> 2) | PTE_V;
+  } else {
+    pdir = (PTE *)((*p << 2) & ~PAGE_MASK);
+  }
+  pdir[((uintptr_t)va >> 12) & 0x3ff] = (((uintptr_t)pa & ~PAGE_MASK) >> 2) | pte;
+#else
+#error "not implemented"
+#endif
+  // PTE_D | PTE_A | PTE_X | PTE_W | PTE_R;
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
