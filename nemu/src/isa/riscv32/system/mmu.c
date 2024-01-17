@@ -25,17 +25,17 @@ int isa_mmu_check(vaddr_t vaddr, int len, int type) {
 typedef union {
   word_t val;
   struct {
-    uint32_t ppn1 : 12;
-    uint32_t ppn0 : 10;
-    uint32_t rsw : 2;
-    uint32_t d : 1;
-    uint32_t a : 1;
-    uint32_t g : 1;
-    uint32_t u : 1;
-    uint32_t x : 1;
-    uint32_t w : 1;
-    uint32_t r : 1;
     uint32_t v : 1;
+    uint32_t r : 1;
+    uint32_t w : 1;
+    uint32_t x : 1;
+    uint32_t u : 1;
+    uint32_t g : 1;
+    uint32_t a : 1;
+    uint32_t d : 1;
+    uint32_t rsw : 2;
+    uint32_t ppn0 : 10;
+    uint32_t ppn1 : 12;
   };
 } pte_t;
 

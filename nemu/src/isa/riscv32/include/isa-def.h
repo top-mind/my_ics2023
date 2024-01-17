@@ -37,9 +37,9 @@ typedef struct {
   union {
     word_t satp;
     struct {
-      word_t mode : 1;
-      word_t asid : 9;
       word_t ppn : 22;
+      word_t asid : 9;
+      word_t mode : 1;
     };
   };
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
