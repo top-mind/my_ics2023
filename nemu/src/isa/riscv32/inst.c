@@ -20,7 +20,7 @@
 #include <cpu/decode.h>
 #include <stdint.h>
 
-#define PRIV_LOW 3
+#define PRIV_LOW 0
 #define MSTATUS_MASK 0x00001888
 
 #define R(i) gpr(i)
