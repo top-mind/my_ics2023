@@ -76,10 +76,14 @@ void __am_switch(Context *c) {
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   assert(as);
   assert(as->ptr);
+  assert((uintptr_t)va % PGSIZE == 0);
+  assert((uintptr_t)pa % PGSIZE == 0);
   PTE *p = as->ptr;
   p += ((uintptr_t)va >> 22);
+
   PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
 #ifndef __LP64__
+  // Sv32 2-level page table
   PTE *pdir;
   if (!(*p & PTE_V)) {
     pdir = (PTE *)pgalloc_usr(PGSIZE);
@@ -91,7 +95,6 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 #else
 #error "not implemented"
 #endif
-  // PTE_D | PTE_A | PTE_X | PTE_W | PTE_R;
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
@@ -99,5 +102,6 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   c->gpr[2] = (uintptr_t) c;
   c->mepc = (uintptr_t) entry;
   c->mstatus = 0x1800;
+  c->pdir = as->ptr;
   return c;
 }

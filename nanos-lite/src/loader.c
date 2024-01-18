@@ -3,6 +3,7 @@
 #include <elf.h>
 #include <fs.h>
 #include <stdint.h>
+#include <memory.h>
 
 #ifdef __LP64__
 # define Elf_Ehdr Elf64_Ehdr
@@ -29,6 +30,7 @@
 void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
   pcb->cp = kcontext((Area){pcb, pcb + 1}, entry, arg);
 }
+
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
@@ -55,18 +57,44 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     fs_read(fd, &shdr, sizeof shdr);
     nr_ph = shdr.sh_info;
   }
-  for (uint32_t i = 0; i < nr_ph; i ++) {
-    Elf_Phdr phdr;
-    fs_lseek(fd, ehdr.e_phoff + i * sizeof phdr, SEEK_SET);
-    fs_read(fd, &phdr, sizeof phdr);
-    if (phdr.p_type == PT_LOAD) {
-      fs_lseek(fd, phdr.p_offset, SEEK_SET);
-      // phdr.p_offset, phdr.p_filesz
-      // phdr.p_vaddr, phdr.p_memsz
-      // fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
-      // memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
-    }
+  if (nr_ph * sizeof(Elf_Phdr) > PGSIZE) {
+    Log("Program header size too large (nr_ph = %d, file = %s)", nr_ph, filename);
+    nanos_errno = ENOEXEC;
+    return 0;
   }
+  Elf_Phdr *phdr = (Elf_Phdr *)new_page(1);
+  fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
+  fs_read(fd, phdr, nr_ph * sizeof(Elf_Phdr));
+  for (int i = 0; i < nr_ph; i++) {
+    if (phdr[i].p_type != PT_LOAD) continue;
+    if (phdr[i].p_memsz == 0) continue;
+    if (phdr[i].p_filesz > phdr[i].p_memsz) {
+      nanos_errno = ENOEXEC;
+      goto out;
+    }
+    if (phdr[i].p_align < 12) {
+      Log("Invalid alignment (p_align = %d, file = %s)", phdr[i].p_align, filename);
+      nanos_errno = ENOEXEC;
+      goto out;
+    }
+    uintptr_t va = phdr[i].p_vaddr;
+    uintptr_t va_hi = ROUNDDOWN(va, PGSIZE);
+    uintptr_t va_lo = va & (PGSIZE - 1);
+    uintptr_t va_end = va + phdr[i].p_memsz;
+    int nr_page = ROUNDUP(va_end, PGSIZE) - ROUNDDOWN(va, PGSIZE);
+    void *page = new_page(nr_page);
+    fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+    fs_read(fd, page + va_lo, phdr[i].p_filesz);
+    if (phdr[i].p_memsz > phdr[i].p_filesz) {
+      memset(page + va_lo + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);
+    }
+    int prot = (phdr[i].p_flags & PF_R ? MMAP_READ : 0) |
+               (phdr[i].p_flags & PF_W ? MMAP_WRITE : 0);
+    for (int j = 0; j < nr_page; j++)
+      map(&pcb->as, (void *)va_hi + j * PGSIZE, page + j * PGSIZE, prot);
+  }
+out:
+  free_page(phdr);
   return ehdr.e_entry;
 }
 
@@ -76,11 +104,16 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
-#define NR_PAGE 8
+#define NR_USTACKPG 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  uintptr_t entry = loader(pcb, filename);
+  if (!entry) {
+    pcb->cp = NULL;
+    return;
+  }
   int argc, envc;
-  void *page = new_page(NR_PAGE);
-  void *sp = page + NR_PAGE * PGSIZE;
+  void *page = new_page(NR_USTACKPG);
+  void *sp = page + NR_USTACKPG * PGSIZE;
   for (envc = 0; envp[envc]; envc++);
   for (int i = envc - 1; i >= 0; i--) {
     sp -= strlen(envp[i]) + 1;
@@ -104,14 +137,10 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     sp += strlen(envp[i]) + 1;
   }
   p[argc + 2 + envc] = 0;
-  // loader may destroy pcb, must be called last
-  uintptr_t entry = loader(pcb, filename);
-  if (!entry) {
-    void free_page(void *);
-    free_page(page);
-    pcb->cp = NULL;
-    return;
+  for (int i = 0; i < NR_USTACKPG; i++) {
+    map(&pcb->as, pcb->as.area.end - PGSIZE * i, page + PGSIZE * i, MMAP_WRITE);
   }
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
-  pcb->cp->GPRx = (uintptr_t)p;
+  pcb->cp->GPRx =
+      (uintptr_t)pcb->as.area.end - (page + NR_USTACKPG * PGSIZE - (void *)p);
 }

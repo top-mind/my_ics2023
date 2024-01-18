@@ -11,4 +11,6 @@
 
 void* new_page(size_t);
 
+void free_page(void *p);
+
 #endif
