@@ -29,6 +29,7 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
   pgfree_usr = pgfree_f;
 
   kas.ptr = pgalloc_f(PGSIZE);
+  printf("alloc page table (pg = %p)\n", kas.ptr);
 
   int i;
   for (i = 0; i < LENGTH(segments); i ++) {
@@ -80,8 +81,8 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 #ifndef __LP64__
   PTE *pdir;
   if (!(*p & PTE_V)) {
-    printf("alloc page table, va = %p\n", va);
     pdir = (PTE *)pgalloc_usr(PGSIZE);
+    printf("alloc page table (pg = %p), va = %p\n", pdir, va);
     *p = ((uintptr_t)pdir >> 2) | PTE_V;
   } else {
     pdir = (PTE *)((*p << 2) & ~PAGE_MASK);
