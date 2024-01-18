@@ -11,5 +11,6 @@ extern int _syscall_(int, uintptr_t, uintptr_t, uintptr_t);
 
 int main() {
   printf("%d\n", 10);
+  while (1);
   return 0;
 }
