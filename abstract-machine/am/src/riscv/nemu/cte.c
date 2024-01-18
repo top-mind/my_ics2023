@@ -29,7 +29,7 @@ Context *__am_irq_handle(Context *c) {
   }
   printf("before switch to %p\n", c);
   __am_switch(c);
-  printf("after switch to %p\n", c);
+  printf(" after switch to %p\n", c);
   return c;
 }
 
