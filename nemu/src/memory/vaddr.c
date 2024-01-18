@@ -27,7 +27,7 @@ static word_t vaddr_read_r(vaddr_t addr, int len, int type) {
     }
     Log("vaddr_read: error vaddr = " FMT_WORD ", len=%d, type = %d, mmu retrun " FMT_WORD "\n",
           addr, len, type, res);
-    return 0;
+    return paddr_read(addr, len);
   }
   return paddr_read(addr, len);
 }
