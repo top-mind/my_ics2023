@@ -106,6 +106,7 @@ void naive_uload(PCB *pcb, const char *filename) {
 
 #define NR_USTACKPG 8
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  protect(&pcb->as);
   uintptr_t entry = loader(pcb, filename);
   if (!entry) {
     pcb->cp = NULL;
