@@ -81,7 +81,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     uintptr_t va_hi = ROUNDDOWN(va, PGSIZE);
     uintptr_t va_lo = va & (PGSIZE - 1);
     uintptr_t va_end = va + phdr[i].p_memsz;
-    int nr_page = ROUNDUP(va_end, PGSIZE) - ROUNDDOWN(va, PGSIZE);
+    int nr_page = (ROUNDUP(va_end, PGSIZE) - ROUNDDOWN(va, PGSIZE)) / PGSIZE;
     void *page = new_page(nr_page);
     fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
     fs_read(fd, page + va_lo, phdr[i].p_filesz);
