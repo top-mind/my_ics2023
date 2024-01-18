@@ -19,7 +19,7 @@ void do_syscall(Context *c) {
       break;
     }
     case SYS_yield:
-      Log("Yield syscall");
+      yield();
       c->GPRx = 0;
       break;
     case SYS_write:

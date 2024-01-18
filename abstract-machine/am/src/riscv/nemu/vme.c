@@ -29,7 +29,6 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
   pgfree_usr = pgfree_f;
 
   kas.ptr = pgalloc_f(PGSIZE);
-  printf("alloc page table (pg = %p)\n", kas.ptr);
 
   int i;
   for (i = 0; i < LENGTH(segments); i ++) {
@@ -74,7 +73,6 @@ void __am_switch(Context *c) {
 // prot is ignored
 // DAguXWR
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  printf("map %p to %p\n", va, pa);
   assert(as);
   assert(as->ptr);
   assert((uintptr_t)va % PGSIZE == 0);
