@@ -53,7 +53,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 step2:
   pte.val = paddr_read(a + vpn(vaddr, i) * PTE_SIZE, PTE_SIZE);
   if (pte.v == 0 || (pte.x == 0 && pte.w == 1)) {
-    assert(0);
     return MEM_RET_FAIL;
   }
   if (pte.r == 1 || pte.x == 1) {
@@ -73,16 +72,13 @@ step5:
     case MEM_TYPE_IFETCH: valid = pte.x; break;
   }
   if (valid == 0) {
-    assert(0);
     return MEM_RET_FAIL;
   }
   if (i > 0 && pte.ppn0 != 0) {
-    assert(0);
     return MEM_RET_FAIL;
   }
   // step7 pte.a pte.d (scheme 1)
   if (pte.a == 0 || (type == MEM_TYPE_WRITE && pte.d == 0)) {
-    assert(0);
     return MEM_RET_FAIL;
   }
   paddr_t pgaddr = BITS(pte.val, 31, 12) * PAGE_SIZE;

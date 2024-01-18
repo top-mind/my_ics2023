@@ -25,8 +25,9 @@ static word_t vaddr_read_r(vaddr_t addr, int len, int type) {
       paddr_t pa = (res & ~PAGE_MASK) | (addr & PAGE_MASK);
       return paddr_read(pa, len);
     }
-    panic("vaddr_read: error vaddr = " FMT_WORD ", len=%d, type = %d, mmu retrun " FMT_WORD "\n",
+    Log("vaddr_read: error vaddr = " FMT_WORD ", len=%d, type = %d, mmu retrun " FMT_WORD "\n",
           addr, len, type, res);
+    return 0;
   }
   return paddr_read(addr, len);
 }
@@ -42,7 +43,7 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
       paddr_t pa = (res & ~PAGE_MASK) | (addr & PAGE_MASK);
       paddr_write(pa, len, data);
     } else {
-      panic("vaddr_write: error vaddr = " FMT_WORD ", len=%d, data=" FMT_WORD
+      Log("vaddr_write: error vaddr = " FMT_WORD ", len=%d, data=" FMT_WORD
             ", mmu retrun " FMT_WORD "\n",
             addr, len, data, res);
       set_nemu_state(NEMU_ABORT, cpu.pc, ABORT_MEMIO);
