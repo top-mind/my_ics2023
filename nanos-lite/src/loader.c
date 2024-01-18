@@ -138,10 +138,11 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     sp += strlen(envp[i]) + 1;
   }
   p[argc + 2 + envc] = 0;
+  void *vpage = pcb->as.area.end - NR_USTACKPG * PGSIZE;
   for (int i = 0; i < NR_USTACKPG; i++) {
-    map(&pcb->as, pcb->as.area.end - PGSIZE * i, page + PGSIZE * i, MMAP_WRITE);
+    map(&pcb->as, vpage + PGSIZE * i,
+        page + PGSIZE * i, MMAP_WRITE);
   }
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
-  pcb->cp->GPRx =
-      (uintptr_t)pcb->as.area.end - (page + NR_USTACKPG * PGSIZE - (void *)p);
+  pcb->cp->GPRx = vpage + (uintptr_t)p - page;
 }
