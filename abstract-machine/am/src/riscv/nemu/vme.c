@@ -80,6 +80,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 #ifndef __LP64__
   PTE *pdir;
   if (!(*p & PTE_V)) {
+    printf("alloc page table, va = %p\n", va);
     pdir = (PTE *)pgalloc_usr(PGSIZE);
     *p = ((uintptr_t)pdir >> 2) | PTE_V;
   } else {
