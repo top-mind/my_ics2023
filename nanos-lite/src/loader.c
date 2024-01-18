@@ -32,6 +32,8 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
+  assert(pcb);
+  assert(pcb->as.ptr);
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
@@ -59,8 +61,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     fs_read(fd, &phdr, sizeof phdr);
     if (phdr.p_type == PT_LOAD) {
       fs_lseek(fd, phdr.p_offset, SEEK_SET);
-      fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
-      memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
+      // phdr.p_offset, phdr.p_filesz
+      // phdr.p_vaddr, phdr.p_memsz
+      // fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
+      // memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
     }
   }
   return ehdr.e_entry;
