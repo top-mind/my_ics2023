@@ -27,7 +27,9 @@ Context *__am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
+  printf("before switch to %p\n", c);
   __am_switch(c);
+  printf("after switch to %p\n", c);
   return c;
 }
 
