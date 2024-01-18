@@ -81,11 +81,9 @@ step5:
   if (pte.a == 0 || (type == MEM_TYPE_WRITE && pte.d == 0)) {
     return MEM_RET_FAIL;
   }
-  paddr_t pgaddr = BITS(pte.val, 31, 12) * PAGE_SIZE;
-  Log("pgaddr = %x", pgaddr);
+  paddr_t pgaddr = BITS(pte.val, 31, 10) * PAGE_SIZE;
   if (i > 0) {
     pgaddr += BITS(vaddr, 21, 12) * PAGE_SIZE;
   }
-  Log("pgaddr = %x", pgaddr);
   return pgaddr| MEM_RET_OK;
 }
