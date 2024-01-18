@@ -76,7 +76,7 @@ void __am_switch(Context *c) {
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   assert(as);
   assert(as->ptr);
-  PTE *p = as->ptr + ((uintptr_t)pa >> 20);
+  PTE *p = as->ptr + (((uintptr_t)va >> 22) << 2);
   PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
 #ifndef __LP64__
   PTE *pdir;
