@@ -74,6 +74,7 @@ void __am_switch(Context *c) {
 // prot is ignored
 // DAguXWR
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  printf("map %p to %p\n", va, pa);
   assert(as);
   assert(as->ptr);
   assert((uintptr_t)va % PGSIZE == 0);
