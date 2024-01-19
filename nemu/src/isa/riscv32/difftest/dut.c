@@ -44,6 +44,14 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     printf("pc: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.pc, ref_r->pc, pc);
     return false;
   }
+  if (ref_r->satp != cpu.satp) {
+    printf("satp: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.satp, ref_r->satp, pc);
+    return false;
+  }
+  if (ref_r->privilege != cpu.privilege) {
+    printf("privilege: 0x%x, ref: 0x%x, pc: 0x%x\n", cpu.privilege, ref_r->privilege, pc);
+    return false;
+  }
   return true;
 }
 
