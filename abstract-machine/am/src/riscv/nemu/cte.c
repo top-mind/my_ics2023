@@ -54,7 +54,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *c = (Context *)kstack.end - 1;
   c->gpr[2] = (uintptr_t)c;
   c->mepc = (uintptr_t)entry;
-  c->mstatus = 0x1800;
+  c->mstatus = 0x1880;
   c->GPR2 = (uintptr_t)arg;
   c->pdir = NULL;
   return c;
@@ -68,6 +68,6 @@ void yield() {
 #endif
 }
 
-bool ienabled() { return false; }
-
-void iset(bool enable) {}
+// bool ienabled() { return false; }
+// 
+// void iset(bool enable) {}
