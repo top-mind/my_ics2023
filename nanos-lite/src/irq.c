@@ -6,6 +6,10 @@ Context *schedule(Context *prev);
 
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
+    case EVENT_PAGEFAULT:
+      Log("EVENT_PAGEFAULT hanging for debug");
+      while (1);
+      return c;
     case EVENT_IRQ_TIMER:
       return c;
     case EVENT_IRQ_IODEV:
