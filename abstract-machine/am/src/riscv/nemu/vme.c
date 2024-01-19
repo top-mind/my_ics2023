@@ -71,7 +71,7 @@ void __am_switch(Context *c) {
 #define PAGE_MASK  (PAGE_SIZE - 1)
 
 // prot is ignored
-// DAguXWR
+// DAgUXWR
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   assert(as);
   assert(as->ptr);
@@ -80,7 +80,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   PTE *p = as->ptr;
   p += ((uintptr_t)va >> 22);
 
-  PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
+  PTE pte = PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D;
 #ifndef __LP64__
   // Sv32 2-level page table
   PTE *pdir;
