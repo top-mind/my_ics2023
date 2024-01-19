@@ -44,7 +44,7 @@ word_t isa_query_intr() {
     return IRQ_TIMER;
   }
   */
-  if (cpu.INTR) {
+  if (cpu.INTR && cpu.mie) {
     cpu.INTR = 0;
     return IRQ_TIMER;
   }
