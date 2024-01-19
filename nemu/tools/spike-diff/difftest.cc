@@ -80,6 +80,7 @@ void sim_t::diff_set_regs(void* diff_context) {
   state->mepc->write(ctx->mepc);
   state->mtvec->write(ctx->mtvec);
   state->satp->write(ctx->satp);
+  printf("%d\n", ctx->prv);
   state->prv = ctx->prv;
 }
 
