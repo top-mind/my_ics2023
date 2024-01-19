@@ -2,6 +2,12 @@
 #include <riscv/riscv.h>
 #include <klib.h>
 
+#ifdef __ISA_RISCV32__
+#define MCAUSE_INT 0x80000000
+#elif defined(__ISA_RISCV64__)
+#define MCAUSE_INT 0x8000000000000000
+#endif
+
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 void __am_get_cur_as(Context *c);
@@ -23,8 +29,8 @@ Context *__am_irq_handle(Context *c) {
       ev.event = EVENT_ERROR;
       break;
     }
-
-    c->mepc += 4;
+    if (!(c->mcause & MCAUSE_INT))
+      c->mepc += 4;
     c = user_handler(ev, c);
     assert(c != NULL);
   }
