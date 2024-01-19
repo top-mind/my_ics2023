@@ -34,6 +34,7 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
+  pcb->max_brk = 0;
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
@@ -88,9 +89,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
     int prot = (phdr[i].p_flags & PF_R ? MMAP_READ : 0) |
                (phdr[i].p_flags & PF_W ? MMAP_WRITE : 0);
-    // assert(prot == (MMAP_READ | MMAP_WRITE));
-    // XXX
-    prot = MMAP_READ | MMAP_WRITE;
     printf("map [%p, %p) -> [%p, %p)\n", va_hi, va_end, page, page + nr_page * PGSIZE);
     for (int j = 0; j < nr_page; j++)
       map(&pcb->as, (void *)va_hi + j * PGSIZE, page + j * PGSIZE, prot);
