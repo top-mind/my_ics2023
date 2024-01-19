@@ -35,4 +35,10 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   return cpu.mtvec;
 }
 
-word_t isa_query_intr() { return INTR_EMPTY; }
+word_t isa_query_intr() {
+  if (cpu.INTR && cpu.mie) {
+    cpu.INTR = 0;
+    return cpu.mcause;
+  }
+  return INTR_EMPTY;
+}
