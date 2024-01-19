@@ -49,7 +49,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
   assert((offset & 3) == 0 && (len & 3) == 0);
-  // yield();
+  yield();
   int x = offset / 4 % screen_w;
   int y = offset / 4 / screen_w;
   io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len / 4, 1, 1);
