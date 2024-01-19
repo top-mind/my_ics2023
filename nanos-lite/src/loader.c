@@ -89,14 +89,12 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
     int prot = (phdr[i].p_flags & PF_R ? MMAP_READ : 0) |
                (phdr[i].p_flags & PF_W ? MMAP_WRITE : 0);
-    printf("map [%p, %p) -> [%p, %p)\n", va_hi, va_end, page, page + nr_page * PGSIZE);
     for (int j = 0; j < nr_page; j++)
       map(&pcb->as, (void *)va_hi + j * PGSIZE, page + j * PGSIZE, prot);
     if (pcb->max_brk < va_end) pcb->max_brk = va_end;
   }
   pcb->max_brk = ROUNDUP(pcb->max_brk, PGSIZE);
   free_page(phdr);
-  printf("max_brk = %x, entry = %p\n", pcb->max_brk, ehdr.e_entry);
   return ehdr.e_entry;
 out:
   free_page(phdr);
@@ -150,5 +148,4 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   }
   pcb->cp = ucontext(&pcb->as, (Area){pcb, pcb + 1}, (void *)entry);
   pcb->cp->GPRx = vpage + (uintptr_t)p - page;
-  printf("context of %s, pcb.as.ptr = %p\n", filename, pcb->as.ptr);
 }
