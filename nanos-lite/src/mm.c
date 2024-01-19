@@ -7,6 +7,7 @@ void* new_page(size_t nr_page) {
   void *p = pf;
   pf += nr_page * PGSIZE;
   if (!IN_RANGE(pf, heap)) {
+    printf("pf %p heap %p\n", pf, heap.end);
     panic("out of memory");
   }
   return p;
