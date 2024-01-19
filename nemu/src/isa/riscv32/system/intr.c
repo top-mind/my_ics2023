@@ -38,6 +38,10 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 }
 
 word_t isa_query_intr() {
+  if (cpu.mie)
+    return IRQ_TIMER;
+  else
+    return INTR_EMPTY;
   if (cpu.INTR && cpu.mie) {
     cpu.INTR = 0;
     return IRQ_TIMER;
