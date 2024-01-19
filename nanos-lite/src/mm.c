@@ -30,7 +30,6 @@ void free_page(void *p) {
 int mm_brk(uintptr_t brk){
   if (current->max_brk < brk) {
     int nr_page = ROUNDUP(brk - current->max_brk, PGSIZE) / PGSIZE;
-    printf("mm_brk: %d\n", nr_page);
     void *p = new_page(nr_page);
     for (int i = 0; i < nr_page; i++) {
       map(&current->as, (void *)(current->max_brk + i * PGSIZE), p + i * PGSIZE, 0);

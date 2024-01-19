@@ -90,10 +90,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                (phdr[i].p_flags & PF_W ? MMAP_WRITE : 0);
     for (int j = 0; j < nr_page; j++)
       map(&pcb->as, (void *)va_hi + j * PGSIZE, page + j * PGSIZE, prot);
+    if (pcb->max_brk < va_end) pcb->max_brk = va_end;
   }
-out:
+  pcb->max_brk = ROUNDUP(pcb->max_brk, PGSIZE);
   free_page(phdr);
   return ehdr.e_entry;
+out:
+  free_page(phdr);
+  return 0;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
