@@ -18,6 +18,11 @@
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.mepc = epc;
   cpu.mcause = NO;
+  cpu.mpie = cpu.mie;
+  cpu.mie = 0;
+  cpu.mpp = cpu.prv;
+  cpu.prv = 3;
+
   if (cpu.mtvec & 0x3) {
     word_t base = BITS(cpu.mtvec, 31, 2);
     word_t interrupt = BITS(NO, 31, 31);

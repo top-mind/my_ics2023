@@ -43,6 +43,7 @@ typedef struct {
     };
   };
   int prv;
+  int INTR;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode
