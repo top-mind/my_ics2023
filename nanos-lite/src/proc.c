@@ -11,10 +11,9 @@ void switch_boot_pcb() {
 }
 
 void hello_fun(void *arg) {
-  while (1)
-    yield();
   int j = 1;
   while (1) {
+    if (j % 100000 == 1)
     Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
     j ++;
     yield();
@@ -24,11 +23,9 @@ void hello_fun(void *arg) {
 void init_proc() {
   Log("Initializing processes...");
   context_kload(&pcb[0], (void *)hello_fun, (void *)0x12345678);
-  printf("pcb[0].cp->pdir = %x\n", pcb[0].cp->pdir);
   // context_uload(&pcb[1], "/bin/pal", (char *const[]){"/bin/pal", "-skip", NULL}, (char *const[]){NULL});
-  context_uload(&pcb[1], "/bin/dummy", (char *const[]){"/bin/dummy", NULL}, (char *const[]){NULL});
+  context_uload(&pcb[1], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
   // context_uload(&pcb[1], "/bin/hello", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
-  printf("pcb[1].cp->pdir = %x\n", pcb[1].cp->pdir);
   switch_boot_pcb();
 }
 

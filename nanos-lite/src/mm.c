@@ -1,10 +1,14 @@
 #include <memory.h>
+#include <proc.h>
 
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
   void *p = pf;
   pf += nr_page * PGSIZE;
+  if (!IN_RANGE(pf, heap)) {
+    panic("out of memory");
+  }
   return p;
 }
 
@@ -22,7 +26,15 @@ void free_page(void *p) {
 }
 
 /* The brk() system call handler. */
-int mm_brk(uintptr_t brk) {
+int mm_brk(uintptr_t brk){
+  if (current->max_brk < brk) {
+    int nr_page = ROUNDUP(brk - current->max_brk, PGSIZE) / PGSIZE;
+    void *p = new_page(nr_page);
+    for (int i = 0; i < nr_page; i++) {
+      map(&current->as, (void *)(current->max_brk + i * PGSIZE), p + i * PGSIZE, 0);
+    }
+    current->max_brk = ROUNDUP(brk, PGSIZE);
+  }
   return 0;
 }
 

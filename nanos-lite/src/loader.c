@@ -34,8 +34,6 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  assert(pcb);
-  assert(pcb->as.ptr);
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
