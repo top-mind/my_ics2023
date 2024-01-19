@@ -20,7 +20,12 @@
 #include <cpu/decode.h>
 #include <stdint.h>
 
-#define PRIV_LOW 0
+#define PRIV_MACHINE 3
+#define PRIV_USER 0
+#define PRIV_LOW PRIV_USER
+
+#define MCAUSE_ECALL_FROM_M 11
+#define MCAUSE_ECALL_FROM_U 8
 #define MSTATUS_MASK 0x00001888
 
 #define R(i) gpr(i)
@@ -211,8 +216,10 @@ static int decode_exec(Decode *s) {
                                                     : (sword_t)src1 % (sword_t)src2);
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11 ", remu, R,
           R(rd) = src2 == 0 ? src1 : src1 % src2);
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(11, s->pc),
-      cpu.mpie = cpu.mie, cpu.mie = 0, cpu.mpp = 3);
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N,
+          s->dnpc = isa_raise_intr(
+            cpu.privilege == PRIV_MACHINE ? MCAUSE_ECALL_FROM_M : MCAUSE_ECALL_FROM_U, s->pc),
+          cpu.mpie = cpu.mie, cpu.mie = 0, cpu.mpp = 3, cpu.privilege = PRIV_MACHINE);
   // may call isa_raise_intr(3, s->pc) or NEMUINT based on sdb mode
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, s->dnpc = s->pc,
           NEMUINT(s->pc, R(10))); // x10 = a0
@@ -225,7 +232,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 111 ????? 11100 11", csrrci, CSRwi, *csr &= ~imm);
   // The exact behaviour is MPP = PREV_LOW, MIE = MPIE, MPIE = 1
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = cpu.mepc,
-          cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
+          cpu.mpp = PRIV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1,
+          cpu.privilege = cpu.mpp);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
 

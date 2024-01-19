@@ -19,7 +19,7 @@
 #include <memory/paddr.h>
 
 int isa_mmu_check(vaddr_t vaddr, int len, int type) {
-  return cpu.satp_mode ? MMU_TRANSLATE : MMU_DIRECT;
+  return cpu.mode ? MMU_TRANSLATE : MMU_DIRECT;
 }
 
 typedef union {

@@ -35,6 +35,7 @@ static void restart() {
 
   /* set mstatus to 0x1800 for difftest */
   cpu.mstatus = 0x1800;
+  cpu.privilege = 3;
 }
 
 void init_isa() {
