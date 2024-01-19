@@ -61,7 +61,7 @@ void __am_get_cur_as(Context *c) {
 }
 
 void __am_switch(Context *c) {
-  if (vme_enable && c->pdir != NULL) {
+  if (vme_enable && c->pdir != NULL && c->pdir != kas.ptr) {
     set_satp(c->pdir);
   }
 }
