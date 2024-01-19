@@ -39,9 +39,10 @@ typedef struct {
     struct {
       word_t ppn : 22;
       word_t asid : 9;
-      word_t mode : 1;
+      word_t satp_mode : 1;
     };
   };
+  // int mode;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode
