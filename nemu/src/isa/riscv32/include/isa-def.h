@@ -42,7 +42,7 @@ typedef struct {
       word_t mode : 1;
     };
   };
-  int privilege;
+  int prv;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode
