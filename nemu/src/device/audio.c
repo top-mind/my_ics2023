@@ -108,7 +108,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         int nr_page = (pgend - pgstart) / PAGE_SIZE;
         for (int i = 0; i < nr_page; i++) {
           pa = isa_mmu_translate(pgstart + i * PAGE_SIZE, 4, MEM_TYPE_READ);
-          Assert((pa & PAGE_MASK) == MEM_RET_OK, "pgstart = %x, i = %d, pa = %x\n", pgstart, i, pa);
+          Assert((pa & PAGE_MASK) == MEM_RET_OK, "pgstart = %x, i = %x, pa = %x\n", pgstart, i, pa);
           SDL_QueueAudio(1, guest_to_host(pa), PAGE_SIZE);
         }
         if (pgend < end) {
