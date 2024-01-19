@@ -13,11 +13,13 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "memory/vaddr.h"
 #include <SDL2/SDL_audio.h>
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
-#include "memory/paddr.h"
+#include <isa.h>
+#include <memory/paddr.h>
 
 enum {
   reg_freq,
@@ -36,6 +38,7 @@ enum {
 static uint32_t *audio_base = NULL;
 
 #define PSEDOBUF_SIZE 0x10000
+uint8_t bufpage[PAGE_SIZE];
 
 // Do not change the value of AUDIO_DELAY
 #define AUDIO_DELAY 0
@@ -90,7 +93,30 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       while (SDL_GetQueuedAudioSize(1) + (end - start) > PSEDOBUF_SIZE) {
         SDL_Delay(1);
       }
-      SDL_QueueAudio(1, guest_to_host(start), end - start);
+      if (!isa_mmu_check(start, 4, MEM_TYPE_READ)) {
+        SDL_QueueAudio(1, guest_to_host(start), end - start);
+      } else {
+        vaddr_t pgstart = ROUNDUP(start, PAGE_SIZE);
+        vaddr_t pgend = ROUNDDOWN(end, PAGE_SIZE);
+        paddr_t pa = isa_mmu_translate(start, 4, MEM_TYPE_READ);
+        assert((pa & PAGE_MASK) == MEM_RET_OK);
+        if (pgstart > start) {
+          memcpy(bufpage, guest_to_host(pa), pgstart - start);
+          SDL_QueueAudio(1, bufpage, pgstart - start);
+        }
+        int nr_page = (pgend - pgstart) / PAGE_SIZE;
+        for (int i = 0; i < nr_page; i++) {
+          pa = isa_mmu_translate(pgstart + i * PAGE_SIZE, 4, MEM_TYPE_READ);
+          assert((pa & PAGE_MASK) == MEM_RET_OK);
+          SDL_QueueAudio(1, guest_to_host(pa), PAGE_SIZE);
+        }
+        if (pgend < end) {
+          pa = isa_mmu_translate(pgend, 4, MEM_TYPE_READ);
+          assert((pa & PAGE_MASK) == MEM_RET_OK);
+          memcpy(bufpage, guest_to_host(pa), end - pgend);
+          SDL_QueueAudio(1, bufpage, end - pgend);
+        }
+      }
       break;
     }
     default:
