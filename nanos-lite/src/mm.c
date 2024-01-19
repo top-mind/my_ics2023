@@ -27,17 +27,14 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk){
-  printf("brk %p\n", brk);
   if (current->max_brk < brk) {
     int nr_page = ROUNDUP(brk - current->max_brk, PGSIZE) / PGSIZE;
     void *p = new_page(nr_page);
     for (int i = 0; i < nr_page; i++) {
       map(&current->as, (void *)(current->max_brk + i * PGSIZE), p + i * PGSIZE, MMAP_READ | MMAP_WRITE);
     }
-    printf("map [%p, %p) to [%p, %p)\n", current->max_brk, ROUNDUP(brk, PGSIZE), p, p + nr_page * PGSIZE);
     current->max_brk = ROUNDUP(brk, PGSIZE);
   }
-  printf("max_brk %p\n", current->max_brk);
   return 0;
 }
 
