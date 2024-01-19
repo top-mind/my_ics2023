@@ -97,6 +97,13 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       if (!isa_mmu_check(start, 4, MEM_TYPE_READ)) {
         SDL_QueueAudio(1, guest_to_host(start), end - start);
       } else {
+        if ((start >> PAGE_SHIFT) == (end >> PAGE_SHIFT)) {
+          paddr_t pa = isa_mmu_translate(start, 4, MEM_TYPE_READ);
+          assert((pa & PAGE_MASK) == MEM_RET_OK);
+          memcpy(bufpage, guest_to_host(pa), end - start);
+          SDL_QueueAudio(1, bufpage, end - start);
+          break;
+        }
         vaddr_t pgstart = ROUNDUP(start, PAGE_SIZE);
         vaddr_t pgend = ROUNDDOWN(end, PAGE_SIZE);
         paddr_t pa = isa_mmu_translate(start, 4, MEM_TYPE_READ);
@@ -108,7 +115,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         int nr_page = (pgend - pgstart) / PAGE_SIZE;
         for (int i = 0; i < nr_page; i++) {
           pa = isa_mmu_translate(pgstart + i * PAGE_SIZE, 4, MEM_TYPE_READ);
-          Assert((pa & PAGE_MASK) == MEM_RET_OK, "pgstart = %x, i = %x, pa = %x (start = %x, end = %x)\n", pgstart, i, pa, start, end);
           SDL_QueueAudio(1, guest_to_host(pa), PAGE_SIZE);
         }
         if (pgend < end) {
