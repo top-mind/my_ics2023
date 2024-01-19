@@ -15,6 +15,8 @@
 
 #include <isa.h>
 
+#define IRQ_TIMER 0x80000007  // for riscv32
+
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.mepc = epc;
   cpu.mcause = NO;
@@ -38,7 +40,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 word_t isa_query_intr() {
   if (cpu.INTR && cpu.mie) {
     cpu.INTR = 0;
-    return cpu.mcause;
+    return IRQ_TIMER;
   }
   return INTR_EMPTY;
 }
