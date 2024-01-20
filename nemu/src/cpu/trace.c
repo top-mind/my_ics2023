@@ -233,6 +233,7 @@ void backtrace() {
   char *f_name;
   elf_getname_and_offset(cpu.pc, &f_name, NULL);
   printf("# 0 " FMT_PADDR " in %s ()\n", cpu.pc, f_name);
+  if (ras_depth == 0) return;
   size_t i = ras_depth - 1;
   if (ras_depth > ARRLEN(stk_func)) {
     printf("%u frame(s) folded\n", ras_depth - ARRLEN(stk_func));
