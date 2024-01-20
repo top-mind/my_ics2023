@@ -234,7 +234,8 @@ static int decode_exec(Decode *s) {
           cpu.prv = cpu.mpp, cpu.mpp = PRV_LOW, cpu.mie = cpu.mpie, cpu.mpie = 1);
 
   // 0x6b = 0b1101011
-  INSTPAT("0000000 00000 00000 000 00000 11010 11", trap, N, printf("0x6b trap: a0 = %d\n", R(10)));
+  INSTPAT("0000000 00000 00000 000 00000 11010 11", trap, N, printf("0x6b trap: a0 = %d\n", R(10))
+      , nemu_state.state = NEMU_STOP);
   //
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
   INSTPAT_END();
