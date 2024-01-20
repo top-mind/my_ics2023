@@ -51,7 +51,7 @@
 enum {
   TK_NOTYPE,
   TK_NUM,
-  TK_DOLLAR,
+  TK_PTR,
   TK_SYM,
   TK_REF     = '&' | PRIO(15),
   TK_DEREF   = '*' | PRIO(15),
@@ -106,7 +106,7 @@ static struct rule {
              {"[0-9]", TK_NUM},  // num
              {"\\(", '('},       // lbrace
              {"\\)", ')'},       // rbrace
-             {"\\$[a-z0-9$]+", TK_DOLLAR},
+             {"\\$[a-z0-9$]+", TK_PTR},
              {"[_[:alnum:]]+", TK_SYM}};
 
 #define NR_REGEX ARRLEN(rules)
@@ -134,7 +134,7 @@ typedef struct token {
   int type;
   union {
     word_t constant;
-    const word_t *preg;
+    const word_t *pword;
     const Symbol *sym;
     int lbmatch;
     int save_last_lbrace;
@@ -149,6 +149,13 @@ static int nr_token __attribute__((used)) = 0;
 static rpn_t g_rpn[ARRLEN(tokens)];
 static int nr_g_rpn;
 static char *p_expr;
+
+word_t *sdb_runtime_symbol(const char *name) {
+  extern uint64_t g_nr_guest_inst;
+  if (strcmp(name, "_nrilo") == 0) return (word_t *)&g_nr_guest_inst;
+  if (strcmp(name, "_nrihi") == 0) return (word_t *)((uint32_t *)&g_nr_guest_inst + 1);
+  return NULL;
+}
 
 static bool make_token(char *e) {
   int position = 0;
@@ -178,7 +185,7 @@ static bool make_token(char *e) {
         char *num_endptr;
         char save = substr_start[substr_len];
         const Symbol *sym;
-        word_t *preg;
+        word_t *pword;
         switch (tokens[nr_token].type = rules[i].token_type) {
           case TK_NUM:
             errno = 0;
@@ -190,18 +197,23 @@ static bool make_token(char *e) {
             substr_len = num_endptr - substr_start;
             position = num_endptr - e;
             break;
-          case TK_DOLLAR:
+          case TK_PTR:
             substr_start[substr_len] = '\0';
-            preg = isa_reg_str2ptr(substr_start + 1);
-            if (preg == NULL) {
+            pword = isa_reg_str2ptr(substr_start + 1);
+            if (pword == NULL) {
               printf("Invalid register name '%s'", substr_start + 1);
               return false;
             }
-            tokens[nr_token].preg = preg;
+            tokens[nr_token].pword = pword;
             substr_start[substr_len] = save;
             break;
           case TK_SYM:
             substr_start[substr_len] = '\0';
+            if ((pword = sdb_runtime_symbol(substr_start))) {
+              tokens[nr_token].pword = pword;
+              tokens[nr_token].type = TK_PTR;
+              break;
+            }
             sym = elf_find_symbol_byname(substr_start);
             if (!sym) {
               printf("No symbol `%s'", substr_start);
@@ -270,7 +282,7 @@ static int compile_token(int l, int r) {
     g_rpn[nr_g_rpn].type = tokens[l].type;
     switch (tokens[l].type) {
       case TK_NUM: g_rpn[nr_g_rpn].numconstant = tokens[l].constant; break;
-      case TK_DOLLAR: g_rpn[nr_g_rpn].preg = tokens[l].preg; break;
+      case TK_PTR: g_rpn[nr_g_rpn].preg = tokens[l].pword; break;
       case TK_SYM: g_rpn[nr_g_rpn].sym = tokens[l].sym; break;
       default: ESYNTAX(l + 1);
     }
@@ -402,7 +414,7 @@ eval_t eval(const rpn_t *p_rpn, size_t nr_rpn) {
         break;
       case TK_NEGTIVE: res = -rsrc; break;
       case TK_NUM: res = p_rpn[i].numconstant; break;
-      case TK_DOLLAR: res = *p_rpn[i].preg; break;
+      case TK_PTR: res = *p_rpn[i].preg; break;
       case TK_SYM:
         if (p_rpn[i].sym->type_func)
           res = p_rpn[i].sym->st_value;
