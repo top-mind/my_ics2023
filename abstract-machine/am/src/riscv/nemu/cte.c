@@ -73,6 +73,6 @@ void yield() {
 #endif
 }
 
-// bool ienabled() { return false; }
-// 
-// void iset(bool enable) {}
+bool ienabled() { return false; }
+
+void iset(bool enable) {}
