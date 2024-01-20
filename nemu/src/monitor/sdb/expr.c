@@ -212,6 +212,7 @@ static bool make_token(char *e) {
             if ((pword = sdb_runtime_symbol(substr_start))) {
               tokens[nr_token].pword = pword;
               tokens[nr_token].type = TK_PTR;
+              substr_start[substr_len] = save;
               break;
             }
             sym = elf_find_symbol_byname(substr_start);
