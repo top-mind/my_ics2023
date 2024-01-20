@@ -79,8 +79,9 @@ int _write(int fd, void *buf, size_t count) {
   return SYSTEM_CALL(SYS_write, fd, (intptr_t)buf, count);
 }
 
-extern int end;
-intptr_t program_break = (intptr_t)&end;
+// extern int end;
+// intptr_t program_break = (intptr_t)&end;
+intptr_t program_break = 0x4000000;
 void *_sbrk(intptr_t increment) {
   asm volatile (".word 0x6b");
   if (_syscall_(SYS_brk, program_break + increment, 0, 0) == 0) {
