@@ -96,11 +96,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   }
   pcb->max_brk = ROUNDUP(pcb->max_brk, PGSIZE);
   free_page(phdr);
+  printf("file '%s' return with %x", filename, ehdr.e_entry);;
   return ehdr.e_entry;
 out_free:
   free_page(phdr);
 out:
-  Log("file '%s' fail", filename);
   return 0;
 }
 
