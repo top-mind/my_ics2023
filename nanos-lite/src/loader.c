@@ -39,7 +39,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
     nanos_errno = ENOENT;
-    Log("fs_open '%s' return with %d", fd);
+    Log("fs_open '%s' return with %d", filename, fd);
     goto out;
   }
   fs_read(fd, &ehdr, sizeof ehdr);
