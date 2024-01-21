@@ -73,6 +73,7 @@ enum {
       case 0x180: *csr = &cpu.satp; break; \
       case 0x300: *csr = &cpu.mstatus; break; \
       case 0x305: *csr = &cpu.mtvec; break;   \
+      case 0x340: *csr = &cpu.mscratch; break;    \
       case 0x341: *csr = &cpu.mepc; break;    \
       case 0x342: *csr = &cpu.mcause; break;  \
       default: INV(s->pc); *csr = &R(0);      \

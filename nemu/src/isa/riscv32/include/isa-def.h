@@ -19,9 +19,10 @@
 #include <common.h>
 // For difftest, this must match tools/spike-diff/difftest.cc: diff_context_t
 typedef struct {
+  // gprs, pc, mscratch, mepc, mstatus, mcause, mtvec, satp, prv, INTR
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;
-  word_t mepc;
+  word_t mscratch, mepc;
   union {
     word_t mstatus;
     struct {
