@@ -13,7 +13,6 @@ static Context* do_event(Event e, Context* c) {
     case EVENT_IRQ_TIMER:
       return schedule(c);
     case EVENT_IRQ_IODEV:
-      Log("EVENT_IRQ_IODEV");
       return c;
     case EVENT_YIELD:
       return schedule(c);
