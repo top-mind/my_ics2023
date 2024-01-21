@@ -22,7 +22,8 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   Log("Initializing processes...");
-  context_kload(&pcb[0], (void *)hello_fun, (void *)0x12345678);
+  context_uload(&pcb[0], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
+  // context_kload(&pcb[0], (void *)hello_fun, (void *)0x12345678);
   assert(pcb[0].cp);
   context_uload(&pcb[1], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
   // context_uload(&pcb[1], "/bin/pal", (char *const[]){"/bin/pal", "--skip", NULL}, (char *const[]){NULL});
