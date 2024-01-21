@@ -31,12 +31,6 @@ static void sh_handle_cmd(const char *cmd) {
   if (strcmp(tmp, "exit") == 0)
     exit(0);
   setenv("PATH", "/bin:/usr/bin", 0);
-  char *env = getenv("PATH");
-  while (*env) {
-    printf("'%s',", env);
-    env++;
-  }
-  puts("");
   const int max_argc = 16;
   char *argv[max_argc];
   argv[0] = tmp;
