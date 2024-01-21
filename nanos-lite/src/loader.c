@@ -34,6 +34,7 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
+  Log("Try to load '%s'", filename);
   pcb->max_brk = 0;
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
