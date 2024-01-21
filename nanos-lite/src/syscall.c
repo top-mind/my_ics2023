@@ -56,10 +56,10 @@ void do_syscall(Context *c) {
       context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
       if (current->cp == NULL) {
         extern int nanos_errno;
-        Log("current->cp == NULL");
         c->GPRx = -nanos_errno;
       } else {
         // TODO free page
+        Log("switch");
         switch_boot_pcb();
         yield();
         assert(0);
