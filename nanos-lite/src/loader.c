@@ -34,13 +34,12 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
 int nanos_errno;
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  Log("Try to load '%s'", filename);
   pcb->max_brk = 0;
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
     nanos_errno = ENOENT;
-    return 0;
+    goto out;
   }
   fs_read(fd, &ehdr, sizeof ehdr);
   if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0
@@ -48,7 +47,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       || ehdr.e_machine != EXPECT_VALUE
       || ehdr.e_version != EV_CURRENT) {
     nanos_errno = ENOEXEC;
-    return 0;
+    goto out;
   }
   uint32_t nr_ph = ehdr.e_phnum;
   if (nr_ph == PN_XNUM) {
@@ -60,7 +59,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   if (nr_ph * sizeof(Elf_Phdr) > PGSIZE) {
     Log("Program header size too large (nr_ph = %d, file = %s)", nr_ph, filename);
     nanos_errno = ENOEXEC;
-    return 0;
+    goto out;
   }
   Elf_Phdr *phdr = (Elf_Phdr *)new_page(1);
   fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
@@ -70,12 +69,12 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     if (phdr[i].p_memsz == 0) continue;
     if (phdr[i].p_filesz > phdr[i].p_memsz) {
       nanos_errno = ENOEXEC;
-      goto out;
+      goto out_free;
     }
     if (phdr[i].p_align < 12) {
       Log("Invalid alignment (p_align = %d, file = %s)", phdr[i].p_align, filename);
       nanos_errno = ENOEXEC;
-      goto out;
+      goto out_free;
     }
     uintptr_t va = phdr[i].p_vaddr;
     uintptr_t va_hi = ROUNDDOWN(va, PGSIZE);
@@ -97,8 +96,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   pcb->max_brk = ROUNDUP(pcb->max_brk, PGSIZE);
   free_page(phdr);
   return ehdr.e_entry;
-out:
+out_free:
   free_page(phdr);
+  Log("file '%s' fail1", filename);
+out:
+  Log("file '%s' fail2", filename);
   return 0;
 }
 
