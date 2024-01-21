@@ -60,6 +60,7 @@ void do_syscall(Context *c) {
       } else {
         // TODO free page
         Log("switch");
+        printf("cur = %p, pcb = %p\n", current, 0);
         switch_boot_pcb();
         yield();
         assert(0);
