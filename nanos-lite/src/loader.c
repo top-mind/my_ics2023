@@ -39,6 +39,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd = fs_open(filename, 0, 0);
   if(fd < 0) {
     nanos_errno = ENOENT;
+    Log("file '%s' line%d", filename, __LINE__);
     goto out;
   }
   fs_read(fd, &ehdr, sizeof ehdr);
@@ -47,6 +48,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       || ehdr.e_machine != EXPECT_VALUE
       || ehdr.e_version != EV_CURRENT) {
     nanos_errno = ENOEXEC;
+    Log("file '%s' line%d", filename, __LINE__);
     goto out;
   }
   uint32_t nr_ph = ehdr.e_phnum;
@@ -59,6 +61,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   if (nr_ph * sizeof(Elf_Phdr) > PGSIZE) {
     Log("Program header size too large (nr_ph = %d, file = %s)", nr_ph, filename);
     nanos_errno = ENOEXEC;
+    Log("file '%s' line%d", filename, __LINE__);
     goto out;
   }
   Elf_Phdr *phdr = (Elf_Phdr *)new_page(1);
