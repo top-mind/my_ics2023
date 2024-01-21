@@ -17,7 +17,14 @@
 
 #define IRQ_TIMER 0x80000007  // for riscv32
 
+#ifdef CONFIG_TRACE
+void ftrace_push(vaddr_t _pc, vaddr_t dnpc);
+#endif
+
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
+#ifdef CONFIG_TRACE
+  ftrace_push(cpu.pc, cpu.mtvec);
+#endif
   cpu.mepc = epc;
   cpu.mcause = NO;
   cpu.mpie = cpu.mie;

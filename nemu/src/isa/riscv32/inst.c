@@ -262,10 +262,8 @@ void isa_ras_update(Decode *s) {
   INSTPAT("??????? ????? 00001 000 00101 11001 11", POP, PUSH);
   INSTPAT("??????? ????? ????? 000 00?01 11001 11", PUSH);
   INSTPAT("??????? ????? 00?01 000 ????? 11001 11", POP);
-  // ecall
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", PUSH, ftrace_push(0xeca11, s->dnpc));
   // mret
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", POP, POP);
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", POP);
   INSTPAT_END(ras);
 }
 #endif
