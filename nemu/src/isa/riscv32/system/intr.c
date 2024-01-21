@@ -24,6 +24,7 @@ void ftrace_push(vaddr_t _pc, vaddr_t dnpc);
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 #ifdef CONFIG_TRACE
   ftrace_push(cpu.pc, cpu.mtvec);
+  ftrace_push(0xeca11, 0xeca11);
 #endif
   cpu.mepc = epc;
   cpu.mcause = NO;
