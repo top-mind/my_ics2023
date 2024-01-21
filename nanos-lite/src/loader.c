@@ -98,9 +98,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   free_page(phdr);
   return ehdr.e_entry;
 out_free:
-  Log("file '%s' fail", filename);
   free_page(phdr);
 out:
+  Log("file '%s' fail", filename);
   return 0;
 }
 
