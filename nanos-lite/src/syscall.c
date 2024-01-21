@@ -59,8 +59,6 @@ void do_syscall(Context *c) {
         c->GPRx = -nanos_errno;
       } else {
         // TODO free page
-        Log("switch");
-        printf("cur = %p, pcb = %p\n", current, 0);
         switch_boot_pcb();
         yield();
         assert(0);
