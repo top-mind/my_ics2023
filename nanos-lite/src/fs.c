@@ -64,7 +64,6 @@ void init_fs() {
  */
 
 int fs_open(const char *pathname, int flags, int mode) {
-  printf("pathname = '%s'\n", pathname);
   if (flags & 0x0008) {
     panic("sfs does not support O_APPEND");
     return -EINVAL;
