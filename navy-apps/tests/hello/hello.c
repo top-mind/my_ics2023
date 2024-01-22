@@ -18,6 +18,7 @@ int main(int argc, char *argv[], char *envp[]) {
   // for (int i = 0; i < argc; i ++) {
   //   printf("argv[%d] = %s\n", i, argv[i]);
   // }
+  while (1);
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
