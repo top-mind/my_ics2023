@@ -5,9 +5,11 @@
 #ifdef __ISA_RISCV32__
 #define MCAUSE_INT 0x80000000
 #define IRQ_TIMER 0x80000007
+#define IRQ_IODEV 0x8000000b
 #elif defined(__ISA_RISCV64__)
 #define MCAUSE_INT 0x8000000000000000
 #define IRQ_TIMER 0x8000000000000007
+#define IRQ_IODEV 0x800000000000000b
 #endif
 
 static Context* (*user_handler)(Event, Context*) = NULL;
@@ -22,6 +24,9 @@ Context *__am_irq_handle(Context *c) {
     switch (c->mcause) {
     case IRQ_TIMER:
       ev.event = EVENT_IRQ_TIMER;
+      break;
+    case IRQ_IODEV:
+      ev.event = EVENT_IRQ_IODEV;
       break;
     case 8:
     case 11:
