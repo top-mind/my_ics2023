@@ -25,7 +25,7 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/hello", (char *const[]){"hello", NULL}, (char *const[]){NULL});
   context_uload(&pcb[1], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
   context_uload(&pcb[2], "/bin/pal", (char *const[]){"/bin/pal", "--skip", NULL}, (char *const[]){NULL});
-  context_uload(&pcb[3], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
+  context_uload(&pcb[3], "/bin/menu", (char *const[]){"/bin/menu", NULL}, (char *const[]){NULL});
   switch_boot_pcb();
 }
 
