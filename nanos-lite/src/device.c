@@ -41,7 +41,7 @@ void update_keybrd() {
         keybrd_queue[keybrd_tail++] = ev;
         keybrd_tail %= 256;
         if (keybrd_tail == keybrd_head)
-          panic("keybrd_queue overflow");
+          keybrd_head = (keybrd_head + 1) % 256;
       } else {
         break;
       }
