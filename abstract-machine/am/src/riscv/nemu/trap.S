@@ -70,6 +70,7 @@ save_context:
   li t1, 0x1800
   and t0, t0, t1
   bnez t0, restore_context
+  addi t0, sp, CONTEXT_SIZE
   csrw mscratch, sp
 restore_context:
   mv sp, a0
