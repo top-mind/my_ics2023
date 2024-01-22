@@ -48,11 +48,12 @@ save_context:
   addi sp, sp, -CONTEXT_SIZE
 
   MAP(REGS, PUSH)
-
+  // sp <- sp before trap
+  // mscratch = 0 to enable nested trap
   csrr t0, mscratch
   STORE t0, OFFSET_SP(sp)
   csrw mscratch, zero
-
+  // save mcause, mstatus, mepc
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
@@ -74,6 +75,7 @@ save_context:
   csrw mscratch, t0
 restore_context:
   mv sp, a0
+  // restore mstatus, mepc
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
   csrw mstatus, t1
