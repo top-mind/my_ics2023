@@ -18,12 +18,6 @@ int main(int argc, char *argv[], char *envp[]) {
   // for (int i = 0; i < argc; i ++) {
   //   printf("argv[%d] = %s\n", i, argv[i]);
   // }
-  while (1) {
-    int opt = getopt_long_only(argc, argv, "", long_options, NULL);
-    if (opt == -1) break;
-  }
-  while (1);
-  return 0;
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
