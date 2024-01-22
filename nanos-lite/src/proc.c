@@ -28,7 +28,7 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/dummy", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
   context_kload(&pcb[1], (void *)hello_fun, (void *)0x12345678);
   context_kload(&pcb[2], (void *)hello_fun, (void *)0x87654321);
-  context_uload(&pcb[3], "/bin/dummy", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
+  // context_uload(&pcb[3], "/bin/dummy", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
   // b(k) -> u -> k -> k -> u
   switch_boot_pcb();
 }
@@ -41,8 +41,6 @@ Context* schedule(Context *prev) {
     current = &pcb[1];
   } else if (current == &pcb[1]) {
     current = &pcb[2];
-  } else if (current == &pcb[2]) {
-    current = &pcb[3];
   } else {
     current = &pcb[0];
   }
