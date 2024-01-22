@@ -71,7 +71,7 @@ save_context:
   and t0, t0, t1
   bnez t0, restore_context
   addi t0, sp, CONTEXT_SIZE
-  csrw mscratch, sp
+  csrw mscratch, t0
 restore_context:
   mv sp, a0
   LOAD t1, OFFSET_STATUS(sp)
