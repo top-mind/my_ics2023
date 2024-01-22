@@ -13,7 +13,7 @@ const struct option long_options[] = {
 };
 
 int main(int argc, char *argv[], char *envp[]) {
-  return 0;
+  exit(0);
   // printf("Hello World!\n");
   // printf("argc = %d\n", argc);
   // for (int i = 0; i < argc; i ++) {
