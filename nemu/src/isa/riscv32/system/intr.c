@@ -14,8 +14,13 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <device/intr.h>
 
-#define IRQ_TIMER 0x80000007  // for riscv32
+const word_t IRQ_NO[NR_INTR] = {
+  [INTR_TIMER] = 0x80000007,
+  [INTR_IODEV] = 0x8000000b,
+};
+
 
 #ifdef CONFIG_TRACE
 void ftrace_push(vaddr_t _pc, vaddr_t dnpc);
@@ -46,9 +51,13 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 }
 
 word_t isa_query_intr() {
-  if (cpu.INTR && cpu.mie) {
-    cpu.INTR = 0;
-    return IRQ_TIMER;
+  if (cpu.mie) {
+    for (int i = 0; i < NR_INTR; i++) {
+      if (INTR[i]) {
+        INTR[i] = false;
+        return IRQ_NO[i];
+      }
+    }
   }
   return INTR_EMPTY;
 }

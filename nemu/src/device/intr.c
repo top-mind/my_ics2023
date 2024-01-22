@@ -13,8 +13,10 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
+#include <device/intr.h>
 
-void dev_raise_intr() {
-  cpu.INTR = 1;
+bool INTR[NR_INTR];
+
+void dev_raise_intr(int NO) {
+  INTR[NO] = true;
 }

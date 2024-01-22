@@ -16,6 +16,8 @@
 #include <common.h>
 #include <utils.h>
 #include <device/alarm.h>
+#include <device/intr.h>
+
 #ifndef CONFIG_TARGET_AM
 #include <SDL2/SDL.h>
 #endif
@@ -53,6 +55,7 @@ void device_update() {
         uint8_t k = event.key.keysym.scancode;
         bool is_keydown = (event.key.type == SDL_KEYDOWN);
         send_key(k, is_keydown);
+        dev_raise_intr(INTR_IODEV);
         break;
       }
 #endif
