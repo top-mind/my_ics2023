@@ -22,17 +22,29 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   Log("Initializing processes...");
-  context_kload(&pcb[1], (void *)hello_fun, (void *)0x12345678);
   // context_uload(&pcb[0], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
   // context_uload(&pcb[1], "/bin/pal", (char *const[]){"/bin/pal", "--skip", NULL}, (char *const[]){NULL});
   // context_uload(&pcb[1], "/bin/nterm", (char *const[]){"/bin/nterm", NULL}, (char *const[]){NULL});
   context_uload(&pcb[0], "/bin/dummy", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
+  context_kload(&pcb[1], (void *)hello_fun, (void *)0x12345678);
+  context_kload(&pcb[2], (void *)hello_fun, (void *)0x87654321);
+  context_uload(&pcb[3], "/bin/dummy", (char *const[]){"/bin/hello", "-s", NULL}, (char *const[]){"a=x", "b=y", NULL});
+  // b(k) -> u -> k -> k -> u
   switch_boot_pcb();
 }
 
 Context* schedule(Context *prev) {
   Log("prev: %p", prev);
   current->cp = prev;
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  if (current == &pcb[0]) {
+    current = &pcb[1];
+  } else if (current == &pcb[1]) {
+    current = &pcb[2];
+  } else if (current == &pcb[2]) {
+    current = &pcb[3];
+  } else if (current == &pcb[3]) {
+    current = &pcb[0];
+  }
   return current->cp;
 }
