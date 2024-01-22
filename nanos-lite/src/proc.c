@@ -30,7 +30,7 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  Log("prev: %p", prev);
+  // Log("prev: %p", prev);
   current->cp = prev;
   // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   if (current == &pcb[0]) {
