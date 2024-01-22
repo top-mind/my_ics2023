@@ -4,6 +4,8 @@ void do_syscall(Context *c);
 
 Context *schedule(Context *prev);
 
+void update_keybrd();
+
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     case EVENT_PAGEFAULT:
@@ -13,7 +15,8 @@ static Context* do_event(Event e, Context* c) {
     case EVENT_IRQ_TIMER:
       return schedule(c);
     case EVENT_IRQ_IODEV:
-      Log("EVENT_IRQ_IODEV");
+      // Log("EVENT_IRQ_IODEV");
+      update_keybrd();
       return c;
     case EVENT_YIELD:
       return schedule(c);

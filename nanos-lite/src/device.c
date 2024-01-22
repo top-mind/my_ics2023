@@ -30,13 +30,33 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return i;
 }
 
+AM_INPUT_KEYBRD_T keybrd_queue[256];
+int keybrd_head = 0, keybrd_tail = 0;
+
+void update_keybrd() {
+  if (has_key) {
+    while (1) {
+      AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
+      if (ev.keycode != AM_KEY_NONE) {
+        keybrd_queue[keybrd_tail++] = ev;
+        keybrd_tail %= 256;
+        if (keybrd_tail == keybrd_head)
+          panic("keybrd_queue overflow");
+      } else {
+        break;
+      }
+    }
+  }
+}
+
 size_t events_read(void *buf, size_t offset, size_t len) {
   // yield();
   if (has_uart)
     ; /* not implemented */
   if (has_key) {
-    AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
-    if (ev.keycode != AM_KEY_NONE) {
+    if (keybrd_head != keybrd_tail) {
+      AM_INPUT_KEYBRD_T ev = keybrd_queue[keybrd_head++];
+      keybrd_head %= 256;
       return snprintf(buf, len, "k%c %s\n", ev.keydown ? 'd' : 'u', keyname[ev.keycode]);
     }
   }
