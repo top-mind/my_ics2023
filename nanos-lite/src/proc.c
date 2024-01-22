@@ -42,3 +42,7 @@ Context* schedule(Context *prev) {
   }
   return current->cp;
 }
+
+void switch_fg(int i) {
+  fg_pcb = &pcb[i];
+}

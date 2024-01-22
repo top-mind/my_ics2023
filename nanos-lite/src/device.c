@@ -38,6 +38,20 @@ void update_keybrd() {
     while (1) {
       AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
       if (ev.keycode != AM_KEY_NONE) {
+        if (ev.keydown) {
+          extern void switch_fg(int);
+          switch(ev.keycode) {
+            case AM_KEY_F1:
+              switch_fg(1);
+              break;
+            case AM_KEY_F2:
+              switch_fg(2);
+              break;
+            case AM_KEY_F3:
+              switch_fg(3);
+              break;
+          }
+        }
         keybrd_queue[keybrd_tail++] = ev;
         keybrd_tail %= 256;
         if (keybrd_tail == keybrd_head)
