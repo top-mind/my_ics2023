@@ -66,7 +66,7 @@ save_context:
 
   LOAD t0, OFFSET_STATUS(a0)
   // if ((t0 & MSTATUS_MPP) == PRV_U)
-  // ksp = sp + CONTEXT_SIZE;
+  // ksp = sp;
   li t1, 0x1800
   and t0, t0, t1
   bnez t0, restore_context
