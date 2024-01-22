@@ -43,7 +43,7 @@ Context* schedule(Context *prev) {
     current = &pcb[2];
   } else if (current == &pcb[2]) {
     current = &pcb[3];
-  } else if (current == &pcb[3]) {
+  } else {
     current = &pcb[0];
   }
   return current->cp;
