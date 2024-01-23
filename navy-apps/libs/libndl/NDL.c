@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <errno.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
@@ -27,17 +28,24 @@ int NDL_PollEvent(char *buf, int len) {
   int ret = read(evtdev, buf, len);
   // to make it easy, panic when buffer is not enough
   // this mean a event is lost
-  assert(ret != -1 && ret < len);
+  if (ret < 0) {
+    assert(errno == EAGAIN || errno == EWOULDBLOCK);
+    return 0;
+  }
+  assert(ret < len);
   return ret;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
+  if (*w == 0 || *w > screen_w) *w = screen_w;
+  if (*h == 0 || *h > screen_h) *h = screen_h;
   if (getenv("NWM_APP")) {
     int fbctl = 4;
     fbdev = 5;
     screen_w = *w; screen_h = *h;
     char buf[64];
     int len = sprintf(buf, "%d %d", screen_w, screen_h);
+    printf("NDL_OpenCanvas: %d %d\n", screen_w, screen_h);
     // let NWM resize the window and create the frame buffer
     write(fbctl, buf, len);
     while (1) {
@@ -49,8 +57,6 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   } else {
-    if (*w == 0 || *w > screen_w) *w = screen_w;
-    if (*h == 0 || *h > screen_h) *h = screen_h;
     canvas_x = (screen_w - *w) / 2;
     canvas_y = (screen_h - *h) / 2;
   }
@@ -86,9 +92,12 @@ static void init_event() {
   assert(evtdev != -1);
 }
 
-static void init_display() {
+static void init_fb() {
   fbdev = open("/dev/fb", 0);
   assert(fbdev != -1);
+}
+
+static void init_display() {
   int dispinfo = open("/proc/dispinfo", 0);
   assert(dispinfo != -1);
   char buf[64];
@@ -113,12 +122,13 @@ static void init_audio() {
 }
 
 int NDL_Init(uint32_t flags) {
+  init_display();
+  init_audio();
   if (getenv("NWM_APP")) {
     evtdev = 3;
   } else {
+    init_fb();
     init_event();
-    init_display();
-    init_audio();
   }
   struct timeval tv;
   gettimeofday(&tv, NULL);
